@@ -4,7 +4,7 @@ from pathlib import Path
 import yaml
 
 
-def get_header(filename: Union[Path, str]) -> Dict[str, Any]:
+def load_header(filename: Union[Path, str]) -> Dict[str, Any]:
     """_summary_
 
     Args:
