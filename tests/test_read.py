@@ -5,7 +5,7 @@ def test_get_header(data_path, data_comment_path):
     assert isinstance(header, dict)
     assert len(header) == 16
 
-    header2 = load_header(data_comment_path)
+    header2 = load_header(data_comment_path, "#")
     assert isinstance(header2, dict)
     assert len(header2) == 16
 

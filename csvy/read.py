@@ -4,25 +4,26 @@ from pathlib import Path
 import yaml
 
 
-def load_header(filename: Union[Path, str]) -> Dict[str, Any]:
-    """_summary_
+def load_header(filename: Union[Path, str], comment: str = "") -> Dict[str, Any]:
+    """Loads the yaml-formatted header from a file.
 
     Args:
-        filename (Union[Path, str]): _description_
+        filename (Union[Path, str]): Name of the file to save the header into. If it
+        exists, it will be overwritten.
+        comment (str): String that marks the header lines as comments.
 
     Returns:
-        Dict[str, Any]: _description_
+        Dict[str, Any]: Dictionary with the header information.
     """
     header = []
     markers = 0
     with Path(filename).open("r") as f:
         for line in f:
-            if line.startswith("---") or line.startswith("# ---"):
+            if line.startswith(f"{comment}---\n"):
                 markers += 1
                 if markers == 2:
                     break
-                continue
-            line = line[2:] if line[0] == "#" else line
+            line = line.lstrip(comment)
             header.append(line)
 
     return yaml.safe_load("".join(header))

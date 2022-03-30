@@ -22,9 +22,9 @@ def test_save_header(tmpdir):
         lines = [line.strip() for line in f.readlines()]
     print(lines)
     assert len(lines) == 4
-    assert all([line.startswith("# ") for line in lines])
-    assert lines[0] == "# ---"
-    assert lines[-1] == "# ---"
+    assert all([line.startswith("#") for line in lines])
+    assert lines[0] == "#---"
+    assert lines[-1] == "#---"
     for i, (k, v) in enumerate(sorted(header.items())):
         assert k in lines[i + 1]
         assert v in lines[i + 1]
