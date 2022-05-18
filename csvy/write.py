@@ -1,7 +1,17 @@
-from typing import Union, Any, Dict
+from typing import Union, Any, Dict, List, Callable
 from pathlib import Path
+import logging
 
 import yaml
+
+
+KNOWN_WRITERS: List[Callable[[Union[Path, str], Any], bool]] = []
+"""Writers known"""
+
+
+def register_writer(fun: Callable[[Union[Path, str], Any], bool]) -> Callable:
+    if fun not in KNOWN_WRITERS:
+        KNOWN_WRITERS.append(fun)
 
 
 def save_header(
@@ -21,3 +31,102 @@ def save_header(
     stream = marker + stream + "---\n"
     with Path(filename).open("w") as f:
         f.write(stream)
+
+
+def save_data(filename: Union[Path, str], data: Any, **kwargs) -> None:
+    """Saves the tabular data to the chosen file, adding it after the header.
+
+    Args:
+        filename (Union[Path, str]): Name of the file to save the data into. The data
+        will be added to the end of the file.
+        data (Any): The data to add to the file. Depending on its type, a different
+        method will be used to save the data to disk. By default, it will use the built
+        in CSV package. If it is a numpy array, the `savetxt` will be used, while if it
+        is a pandas Dataframe, the `to_csv` method will be used.
+        kwargs: Arguments to be passed to the underlaying saving method.
+    """
+    register_writer(write_csv)
+    for fun in KNOWN_WRITERS:
+        if fun(filename, data, **kwargs):
+            break
+
+
+@register_writer
+def write_numpy(filename: Union[Path, str], data: Any, **kwargs) -> bool:
+    """Saves the numpy array to the chosen file, adding it after the header.
+
+    Args:
+        filename (Union[Path, str]): Name of the file to save the data into. The data
+        will be added to the end of the file.
+        data (Any): The data. If it is a numpy array, it will be saved, otherwise
+        nothing is done.
+        kwargs: Arguments to be passed to the underlaying saving method.
+
+    Return:
+        (bool) True if the saver worked, false otherwise.
+    """
+    try:
+        import numpy as np
+
+        if isinstance(data, np.ndarray):
+            with open(filename, "a") as f:
+                np.savetxt(f, data, **kwargs)
+
+            return True
+
+    except ModuleNotFoundError:
+        logging.getLogger().debug("Numpy is not installed, so not using 'savetxt'.")
+
+    return False
+
+
+@register_writer
+def write_pandas(filename: Union[Path, str], data: Any, **kwargs) -> bool:
+    """Saves the pandas dataframe to the chosen file, adding it after the header.
+
+    Args:
+        filename (Union[Path, str]): Name of the file to save the data into. The data
+        will be added to the end of the file.
+        data (Any): The data. If it is a pandas dataframe, it will be saved, otherwise
+        nothing is done.
+        kwargs: Arguments to be passed to the underlaying saving method.
+
+    Return:
+        (bool) True if the saver worked, false otherwise.
+    """
+    try:
+        import pandas as pd
+
+        if isinstance(data, pd.DataFrame):
+            with open(filename, "a") as f:
+                data.to_csv(f, **kwargs)
+
+            return True
+
+    except ModuleNotFoundError:
+        logging.getLogger().debug("Pandas is not installed, so not using 'to_csv'.")
+
+    return False
+
+
+def write_csv(filename: Union[Path, str], data: Any, **kwargs) -> bool:
+    """Saves the tabular to the chosen file, adding it after the header.
+
+    Args:
+        filename (Union[Path, str]): Name of the file to save the data into. The data
+        will be added to the end of the file.
+        data (Any): The data. Can have anything that counts as a sequence. Each
+        component of the sequence will be saved in a different row.
+        kwargs: Arguments to be passed to the underlaying saving method.
+
+    Return:
+        (bool) True if the saver worked, false otherwise.
+    """
+    import csv
+
+    with open(filename, "a", newline="") as f:
+        writer = csv.writer(f, **kwargs)
+        for row in data:
+            writer.writerow(row)
+
+    return True
