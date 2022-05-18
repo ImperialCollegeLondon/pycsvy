@@ -1,9 +1,8 @@
-from typing import Union, Any, Dict, List, Callable
-from pathlib import Path
 import logging
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Union
 
 import yaml
-
 
 KNOWN_WRITERS: List[Callable[[Union[Path, str], Any], bool]] = []
 """Writers known"""
@@ -12,6 +11,7 @@ KNOWN_WRITERS: List[Callable[[Union[Path, str], Any], bool]] = []
 def register_writer(fun: Callable[[Union[Path, str], Any], bool]) -> Callable:
     if fun not in KNOWN_WRITERS:
         KNOWN_WRITERS.append(fun)
+    return fun
 
 
 def save_header(
