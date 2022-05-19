@@ -1,8 +1,16 @@
 [tool.poetry]
 name = "pycsvy"
-version = "0.1.0"
-description = "Library that implement saving/loading together tabular data and yaml-formatted metadata."
+version = "0.1.1"
+description = "Python reader/writer for CSV files with YAML header information."
 authors = ["Diego <d.alonso-alvarez@imperial.ac.uk>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+repository = "https://github.com/ImperialCollegeLondon/pycsvy"
+classifiers = [
+	"Development Status :: 4 - Beta",
+	"Intended Audience :: Developers",
+	"Intended Audience :: Science/Research"
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
