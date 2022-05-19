@@ -1,4 +1,4 @@
-from pycsvy import __version__
+from csvy import __version__
 
 
 def test_version():

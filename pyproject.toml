@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "pycsvy"
-version = "0.1.1"
+version = "0.1.2"
 description = "Python reader/writer for CSV files with YAML header information."
-authors = ["Diego <d.alonso-alvarez@imperial.ac.uk>"]
+authors = ["Diego Alonso Álvarez <d.alonso-alvarez@imperial.ac.uk>"]
 license = "BSD-3-Clause"
 readme = "README.md"
 repository = "https://github.com/ImperialCollegeLondon/pycsvy"
@@ -10,6 +10,10 @@ classifiers = [
 	"Development Status :: 4 - Beta",
 	"Intended Audience :: Developers",
 	"Intended Audience :: Science/Research"
+]
+
+packages = [
+    { include = "csvy" },
 ]
 
 [tool.poetry.dependencies]
