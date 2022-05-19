@@ -37,6 +37,9 @@ def write(
         yaml_options (Optional[Dict], optional): Arguments to pass to the
         'yaml.safe_dump' function to control writing the header. Defaults to None.
     """
+    csv_options = csv_options if csv_options is not None else {}
+    yaml_options = yaml_options if yaml_options is not None else {}
+
     write_header(filename, header, comment, **yaml_options)
     write_data(filename, data, comment, **csv_options)
 

@@ -126,5 +126,5 @@ def read_to_dataframe(
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines
-    options["comment"] = comment[0] if len(comment) > 1 else comment
+    options["comment"] = comment[0] if len(comment) >= 1 else None
     return pd.read_csv(filename, **options), header
