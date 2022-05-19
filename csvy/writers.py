@@ -5,7 +5,6 @@ from typing import Any, Callable, Dict, List, Optional, Union
 import yaml
 
 KNOWN_WRITERS: List[Callable[[Union[Path, str], Any, str], bool]] = []
-"""Writers known"""
 
 
 def register_writer(fun: Callable[[Union[Path, str], Any, str], bool]) -> Callable:
