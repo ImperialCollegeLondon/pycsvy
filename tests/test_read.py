@@ -1,12 +1,12 @@
 def test_get_header(data_path, data_comment_path):
-    from csvy.readers import load_header
+    from csvy.readers import read_header
 
-    header = load_header(data_path)
+    header, nlines = read_header(data_path)
     assert isinstance(header, dict)
-    assert len(header) == 16
+    assert nlines == 18
 
-    header2 = load_header(data_comment_path, "#")
+    header2, nlines = read_header(data_comment_path, "#")
     assert isinstance(header2, dict)
-    assert len(header2) == 16
+    assert nlines == 18
 
     assert header == header2
