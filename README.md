@@ -47,7 +47,7 @@ The resulting file will have the YAML-formatted header in between `---` markers 
 optionally, a comment character starting each header line. It could look something like
 the following:
 
-```
+```text
 ---
 name: my-dataset
 title: Example file of csvy
@@ -93,4 +93,3 @@ YAML-formatted header, respectively.
 
 Finally, you can control the character(s) used to indicate comments by setting the
 `comment` keyword. By default, there is no character ("").
-
