@@ -1,5 +1,5 @@
 def test_get_header(data_path, data_comment_path):
-    from csvy.read import load_header
+    from csvy.readers import load_header
 
     header = load_header(data_path)
     assert isinstance(header, dict)
