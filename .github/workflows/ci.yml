@@ -45,3 +45,8 @@ jobs:
 
     - name: Run tests
       run: poetry run pytest
+
+    - name: Run codecov
+      if: success() && (matrix.os == 'ubuntu-latest' && matrix.python-version == 3.9)
+      run: |
+        poetry run codecov

@@ -34,6 +34,8 @@ pandas = "^1.4.1"
 flake8 = "^4.0.1"
 mypy = "^0.950"
 types-PyYAML = "^6.0.7"
+codecov = "^2.1.12"
+coverage = "^6.3.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
