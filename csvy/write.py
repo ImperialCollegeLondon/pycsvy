@@ -14,10 +14,10 @@ def register_writer(fun: Callable[[Union[Path, str], Any], bool]) -> Callable:
     return fun
 
 
-def save_header(
+def write_header(
     filename: Union[Path, str], header: Dict[str, Any], comment: str = ""
 ) -> None:
-    """Saves the header dictionary into the file with lines starting with comment.
+    """Writes the header dictionary into the file with lines starting with comment.
 
     Args:
         filename (Union[Path, str]): Name of the file to save the header into. If it
@@ -33,27 +33,28 @@ def save_header(
         f.write(stream)
 
 
-def save_data(filename: Union[Path, str], data: Any, **kwargs) -> None:
-    """Saves the tabular data to the chosen file, adding it after the header.
+def write_data(filename: Union[Path, str], data: Any, **kwargs) -> None:
+    """Writes the tabular data to the chosen file, adding it after the header.
 
     Args:
         filename (Union[Path, str]): Name of the file to save the data into. The data
         will be added to the end of the file.
         data (Any): The data to add to the file. Depending on its type, a different
-        method will be used to save the data to disk. By default, it will use the built
+        method will be used to save the data to disk. The fallback will be the built
         in CSV package. If it is a numpy array, the `savetxt` will be used, while if it
         is a pandas Dataframe, the `to_csv` method will be used.
         kwargs: Arguments to be passed to the underlaying saving method.
     """
-    register_writer(write_csv)
     for fun in KNOWN_WRITERS:
         if fun(filename, data, **kwargs):
-            break
+            return
+
+    write_csv(filename, data, **kwargs)
 
 
 @register_writer
 def write_numpy(filename: Union[Path, str], data: Any, **kwargs) -> bool:
-    """Saves the numpy array to the chosen file, adding it after the header.
+    """Writes the numpy array to the chosen file, adding it after the header.
 
     Args:
         filename (Union[Path, str]): Name of the file to save the data into. The data
@@ -63,7 +64,7 @@ def write_numpy(filename: Union[Path, str], data: Any, **kwargs) -> bool:
         kwargs: Arguments to be passed to the underlaying saving method.
 
     Return:
-        (bool) True if the saver worked, false otherwise.
+        (bool) True if the writer worked, false otherwise.
     """
     try:
         import numpy as np
@@ -82,7 +83,7 @@ def write_numpy(filename: Union[Path, str], data: Any, **kwargs) -> bool:
 
 @register_writer
 def write_pandas(filename: Union[Path, str], data: Any, **kwargs) -> bool:
-    """Saves the pandas dataframe to the chosen file, adding it after the header.
+    """Writes the pandas dataframe to the chosen file, adding it after the header.
 
     Args:
         filename (Union[Path, str]): Name of the file to save the data into. The data
@@ -92,7 +93,7 @@ def write_pandas(filename: Union[Path, str], data: Any, **kwargs) -> bool:
         kwargs: Arguments to be passed to the underlaying saving method.
 
     Return:
-        (bool) True if the saver worked, false otherwise.
+        (bool) True if the writer worked, false otherwise.
     """
     try:
         import pandas as pd
@@ -110,7 +111,7 @@ def write_pandas(filename: Union[Path, str], data: Any, **kwargs) -> bool:
 
 
 def write_csv(filename: Union[Path, str], data: Any, **kwargs) -> bool:
-    """Saves the tabular to the chosen file, adding it after the header.
+    """Writes the tabular to the chosen file, adding it after the header.
 
     Args:
         filename (Union[Path, str]): Name of the file to save the data into. The data
@@ -120,7 +121,7 @@ def write_csv(filename: Union[Path, str], data: Any, **kwargs) -> bool:
         kwargs: Arguments to be passed to the underlaying saving method.
 
     Return:
-        (bool) True if the saver worked, false otherwise.
+        (bool) True if the writer worked, false otherwise.
     """
     import csv
 

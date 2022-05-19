@@ -1,10 +1,10 @@
 def test_save_header(tmpdir):
-    from csvy.write import save_header
+    from csvy.write import write_header
 
     header = {"Name": "Ada Lovelace", "Country of origin": "UK"}
 
     filename = tmpdir / "some_file.cvsy"
-    save_header(filename, header)
+    write_header(filename, header)
 
     with filename.open("r") as f:
         lines = [line.strip() for line in f.readlines()]
@@ -16,7 +16,7 @@ def test_save_header(tmpdir):
         assert k in lines[i + 1]
         assert v in lines[i + 1]
 
-    save_header(filename, header, comment="#")
+    write_header(filename, header, comment="#")
 
     with filename.open("r") as f:
         lines = [line.strip() for line in f.readlines()]
