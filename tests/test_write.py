@@ -1,5 +1,5 @@
 def test_save_header(tmpdir):
-    from csvy.writers import write_header
+    from pycsvy.writers import write_header
 
     header = {"Name": "Ada Lovelace", "Country of origin": "UK"}
 

@@ -1,5 +1,5 @@
 def test_get_header(data_path, data_comment_path):
-    from csvy.readers import read_header
+    from pycsvy.readers import read_header
 
     header, nlines = read_header(data_path)
     assert isinstance(header, dict)
