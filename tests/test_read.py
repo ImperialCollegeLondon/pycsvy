@@ -5,7 +5,7 @@ def test_get_header(data_path, data_comment_path):
     assert isinstance(header, dict)
     assert nlines == 18
 
-    header2, nlines = read_header(data_comment_path, "#")
+    header2, nlines = read_header(data_comment_path, "# ")
     assert isinstance(header2, dict)
     assert nlines == 18
 
