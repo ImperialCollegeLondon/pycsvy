@@ -37,7 +37,7 @@ def test_read_to_array(array_data_path):
 
     data, header = read_to_array(array_data_path, csv_options={"delimiter": ","})
     assert isinstance(data, np.ndarray)
-    assert data.shape[1] == 4
+    assert data.shape == (15, 4)
     assert isinstance(header, dict)
     assert len(header) > 0
 
@@ -66,3 +66,14 @@ def test_read_to_dataframe(data_path):
 
     with pytest.raises(ModuleNotFoundError):
         read_to_dataframe(data_path)
+
+
+def test_read_to_list(array_data_path):
+    from csvy.readers import read_to_list
+
+    data, header = read_to_list(array_data_path, csv_options={"delimiter": ","})
+    assert isinstance(data, list)
+    assert len(data) == 15
+    assert len(data[0]) == 4
+    assert isinstance(header, dict)
+    assert len(header) > 0

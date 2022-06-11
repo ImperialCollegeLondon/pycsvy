@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import yaml
 
@@ -90,7 +90,7 @@ def read_to_array(
     """Reads a CSVY file into dict with the header and array with the data.
 
     Args:
-        filename (Union[Path, str]): _description_
+        filename (Union[Path, str]):  Name of the file to read.
         marker (str): The marker characters that indicate the yaml header.
         Defaults to "---".
         csv_options (Optional[Dict[str, Any]], optional): Options to pass to np.loadtxt.
@@ -131,10 +131,9 @@ def read_to_dataframe(
     will be ignored.
 
     Args:
-        filename (Union[Path, str]): _description_
+        filename (Union[Path, str]):  Name of the file to read.
         marker (str): The marker characters that indicate the yaml header.
         Defaults to "---".
-        csv_options (Optional[Dict[str, Any]], optional): _description_. Defaults to
         csv_options (Optional[Dict[str, Any]], optional): Options to pass to
         pd.read_csv. Defaults to None.
         yaml_options (Optional[Dict[str, Any]], optional): Options to pass to
@@ -160,3 +159,47 @@ def read_to_dataframe(
     options["skiprows"] = nlines
     options["comment"] = comment[0] if len(comment) >= 1 else None
     return pd.read_csv(filename, **options), header
+
+
+def read_to_list(
+    filename: Union[Path, str],
+    marker: str = "---",
+    csv_options: Optional[Dict[str, Any]] = None,
+    yaml_options: Optional[Dict[str, Any]] = None,
+) -> Tuple[List[List], Dict[str, Any]]:
+    """Reads a CSVY file into a list with the header and a nested list with the data.
+
+    Args:
+        filename (Union[Path, str]): Name of the file to read.
+        marker (str): The marker characters that indicate the yaml header.
+        Defaults to "---".
+        csv_options (Optional[Dict[str, Any]], optional): Options to pass to csv.reader.
+        Defaults to None.
+        yaml_options (Optional[Dict[str, Any]], optional): Options to pass to
+        yaml.safe_load. Defaults to None.
+
+    Raises:
+        ModuleNotFoundError: If numpy is not found.
+
+    Returns:
+        Tuple[List[List], Dict[str, Any]]: The numpy array and the header as a
+        dictionary.
+    """
+    import csv
+
+    yaml_options = yaml_options if yaml_options is not None else {}
+    header, nlines, _ = read_header(filename, marker=marker, **yaml_options)
+
+    options = csv_options.copy() if csv_options is not None else {}
+
+    data = []
+    with open(filename, "r", newline="") as csvfile:
+        csvreader = csv.reader(csvfile, **options)
+
+        for _ in range(nlines):
+            next(csvreader)
+
+        for row in csvreader:
+            data.append(row)
+
+    return data, header
