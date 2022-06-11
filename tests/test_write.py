@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 
 def test_save_header(tmpdir, mocker):
     import yaml
+
     from csvy.writers import write_header
 
     dumper = mocker.spy(yaml, "safe_dump")

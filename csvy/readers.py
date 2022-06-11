@@ -40,9 +40,7 @@ def get_comment(line: str, marker: str = "---") -> str:
         str: The comment character found.
     """
     if marker not in line:
-        raise ValueError(
-            f"Yaml header marker '{marker}' not found in line '{line}'."
-            )
+        raise ValueError(f"Yaml header marker '{marker}' not found in line '{line}'.")
     else:
         return "" if line.startswith(marker) else line.split(marker)[0]
 
