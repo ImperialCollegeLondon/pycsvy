@@ -115,9 +115,7 @@ def read_to_array(
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines
-    if len(comment) >= 1:
-        options["comments"] = comment
-
+    options["comments"] = comment[0] if len(comment) >= 1 else "#"
     return np.loadtxt(filename, **options), header
 
 
