@@ -85,3 +85,30 @@ def test_write_csv(mock_save, tmpdir):
 
     mock_save.assert_called_once()
     assert Writer.writerow.call_count == len(data)
+
+
+@patch("csvy.writers.write_header")
+@patch("csvy.writers.write_data")
+def test_write(mock_write_data, mock_write_header):
+    from csvy.writers import write
+
+    filename = "here.csv"
+    data = [[1, 2], [3, 4]]
+    header = {"name": "HAL"}
+    comment = "# "
+    csv_options = {"delimiter": ","}
+    yaml_options = {"sort_keys": False}
+
+    write(
+        filename,
+        data,
+        header,
+        comment,
+        csv_options=csv_options,
+        yaml_options=yaml_options,
+    )
+
+    mock_write_header.assert_called_once_with(
+        filename, header, comment, sort_keys=False
+    )
+    mock_write_data.assert_called_once_with(filename, data, comment, delimiter=",")
