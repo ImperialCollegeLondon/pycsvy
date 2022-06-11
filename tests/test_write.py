@@ -1,13 +1,16 @@
 from unittest.mock import MagicMock, patch
 
 
-def test_save_header(tmpdir):
+def test_save_header(tmpdir, mocker):
+    import yaml
     from csvy.writers import write_header
 
+    dumper = mocker.spy(yaml, "safe_dump")
     header = {"Name": "Ada Lovelace", "Country of origin": "UK"}
 
     filename = tmpdir / "some_file.cvsy"
     write_header(filename, header)
+    dumper.assert_called_with(header, sort_keys=False)
 
     with filename.open("r") as f:
         lines = [line.strip() for line in f.readlines()]
@@ -15,11 +18,12 @@ def test_save_header(tmpdir):
     assert len(lines) == 4
     assert lines[0] == "---"
     assert lines[-1] == "---"
-    for i, (k, v) in enumerate(sorted(header.items())):
+    for i, (k, v) in enumerate(header.items()):
         assert k in lines[i + 1]
         assert v in lines[i + 1]
 
-    write_header(filename, header, comment="#")
+    write_header(filename, header, comment="#", sort_keys=True)
+    dumper.assert_called_with(header, sort_keys=True)
 
     with filename.open("r") as f:
         lines = [line.strip() for line in f.readlines()]

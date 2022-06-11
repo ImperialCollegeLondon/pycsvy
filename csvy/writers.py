@@ -53,8 +53,12 @@ def write_header(
         exists, it will be overwritten.
         header (Dict[str, Any]): Dictionary with the header information to save.
         comment (str): String to use to mark the header lines as comments.
-        kwargs: Arguments to pass to 'yaml.safe_dump'.
+        kwargs: Arguments to pass to 'yaml.safe_dump'. If "sort_keys" is not one of
+        arguments, it will be set to sort_keys=False.
     """
+    if "sort_keys" not in kwargs:
+        kwargs["sort_keys"] = False
+
     stream = yaml.safe_dump(header, **kwargs)
     stream = "\n".join([f"{comment}" + line for line in stream.split("\n")])
     marker = f"{comment}---\n"
