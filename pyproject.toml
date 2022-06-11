@@ -17,7 +17,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.7"
 PyYAML = "^6.0"
 
 [tool.poetry.dev-dependencies]
