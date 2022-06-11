@@ -21,6 +21,32 @@ except ModuleNotFoundError:
     )
 
 
+def get_comment(line: str, marker: str = "---") -> str:
+    """Retrieves the comment character used in the header.
+
+    Given that we know the header limiting markers are '---' it is possible to
+    automatically find out the comment character by simply retrieving what is
+    before the first occurrence of the marker. So, if we find '# ---', then we
+    know that the comment characters are '# '.
+
+    This will save the user to having to check the file before reading it.
+
+    Args:
+        line (str): Line of text, typically the first one of the file.
+        marker (str): The marker characters that indicate the yaml header.
+        Defaults to "---".
+
+    Returns:
+        str: The comment character found.
+    """
+    if marker not in line:
+        raise ValueError(
+            f"Yaml header marker '{marker}' not found in line '{line}'."
+            )
+    else:
+        return "" if line.startswith(marker) else line.split(marker)[0]
+
+
 def read_header(
     filename: Union[Path, str], comment: str = "", **kwargs
 ) -> Tuple[Dict[str, Any], int]:

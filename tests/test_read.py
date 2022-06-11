@@ -1,3 +1,17 @@
+import pytest
+
+
+def test_get_comment():
+    from csvy.readers import get_comment
+
+    assert "" == get_comment("--- Something else")
+    assert "# " == get_comment("# ---")
+    assert "# " == get_comment("# @@", marker="@@")
+
+    with pytest.raises(ValueError):
+        get_comment("Wrong marker")
+
+
 def test_get_header(data_path, data_comment_path):
     from csvy.readers import read_header
 
