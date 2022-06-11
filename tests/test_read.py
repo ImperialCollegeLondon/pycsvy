@@ -41,6 +41,13 @@ def test_read_to_array(array_data_path):
     assert isinstance(header, dict)
     assert len(header) > 0
 
+    import csvy.readers as readers
+
+    readers.NDArray = NotImplemented
+
+    with pytest.raises(ModuleNotFoundError):
+        read_to_array(array_data_path)
+
 
 def test_read_to_dataframe(data_path):
     import pandas as pd
@@ -52,3 +59,10 @@ def test_read_to_dataframe(data_path):
     assert tuple(data.columns) == ("Date", "WTI")
     assert isinstance(header, dict)
     assert len(header) > 0
+
+    import csvy.readers as readers
+
+    readers.DataFrame = NotImplemented
+
+    with pytest.raises(ModuleNotFoundError):
+        read_to_dataframe(data_path)
