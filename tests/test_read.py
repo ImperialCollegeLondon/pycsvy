@@ -28,3 +28,22 @@ def test_get_header(data_path, data_comment_path):
     assert comment == "# "
 
     assert header == header2
+
+
+@pytest.mark.xfail
+def test_read_to_array(data_path):
+    from csvy.readers import read_to_array
+
+    data, header = read_to_array(data_path)
+
+
+def test_read_to_dataframe(data_path):
+    import pandas as pd
+
+    from csvy.readers import read_to_dataframe
+
+    data, header = read_to_dataframe(data_path)
+    assert isinstance(data, pd.DataFrame)
+    assert tuple(data.columns) == ("Date", "WTI")
+    assert isinstance(header, dict)
+    assert len(header) > 0
