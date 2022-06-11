@@ -48,38 +48,44 @@ def get_comment(line: str, marker: str = "---") -> str:
 
 
 def read_header(
-    filename: Union[Path, str], comment: str = "", **kwargs
-) -> Tuple[Dict[str, Any], int]:
+    filename: Union[Path, str], marker: str = "---", **kwargs
+) -> Tuple[Dict[str, Any], int, str]:
     """Read the yaml-formatted header from a file.
 
     Args:
         filename (Union[Path, str]): Name of the file to read the header from.
-        comment (str): String that marks the header lines as comments.
+        marker (str): The marker characters that indicate the yaml header.
+        Defaults to "---".
         kwargs: Arguments to pass to 'yaml.safe_load'.
 
     Returns:
-        Tuple[Dict[str, Any], int]: Tuple with a dictionary with the header information
-        and the number of header lines.
+        Tuple[Dict[str, Any], int, srt]: Tuple with a dictionary with the header
+        information the number of header lines and the comment character.
     """
     header = []
     markers = 0
     nlines = 0
+    comment = ""
     with Path(filename).open("r") as f:
         for line in f:
+            if nlines == 0:
+                comment = get_comment(line, marker=marker)
+
             nlines += 1
-            if line.startswith(f"{comment}---\n"):
+            if line.startswith(f"{comment}{marker}\n"):
                 markers += 1
                 if markers == 2:
                     break
+
             line = line.lstrip(comment)
             header.append(line)
 
-    return yaml.safe_load("".join(header), **kwargs), nlines
+    return yaml.safe_load("".join(header), **kwargs), nlines, comment
 
 
 def read_to_array(
     filename: Union[Path, str],
-    comment: str = "",
+    marker: str = "---",
     csv_options: Optional[Dict[str, Any]] = None,
     yaml_options: Optional[Dict[str, Any]] = None,
 ) -> Tuple[NDArray, Dict[str, Any]]:
@@ -87,7 +93,8 @@ def read_to_array(
 
     Args:
         filename (Union[Path, str]): _description_
-        comment (str, optional): _description_. Defaults to "".
+        marker (str): The marker characters that indicate the yaml header.
+        Defaults to "---".
         csv_options (Optional[Dict[str, Any]], optional): Options to pass to np.loadtxt.
         Defaults to None.
         yaml_options (Optional[Dict[str, Any]], optional): Options to pass to
@@ -106,7 +113,7 @@ def read_to_array(
     import numpy as np
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines = read_header(filename, comment, **yaml_options)
+    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines
@@ -116,7 +123,7 @@ def read_to_array(
 
 def read_to_dataframe(
     filename: Union[Path, str],
-    comment: str = "",
+    marker: str = "---",
     csv_options: Optional[Dict[str, Any]] = None,
     yaml_options: Optional[Dict[str, Any]] = None,
 ) -> Tuple[DataFrame, Dict[str, Any]]:
@@ -127,7 +134,8 @@ def read_to_dataframe(
 
     Args:
         filename (Union[Path, str]): _description_
-        comment (str, optional): _description_. Defaults to "".
+        marker (str): The marker characters that indicate the yaml header.
+        Defaults to "---".
         csv_options (Optional[Dict[str, Any]], optional): _description_. Defaults to
         csv_options (Optional[Dict[str, Any]], optional): Options to pass to
         pd.read_csv. Defaults to None.
@@ -148,7 +156,7 @@ def read_to_dataframe(
     import pandas as pd
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines = read_header(filename, comment, **yaml_options)
+    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines

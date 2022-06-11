@@ -94,4 +94,4 @@ want to pass to `yaml.safe_load` and `yaml.safe_dump` functions, reading/writing
 YAML-formatted header, respectively.
 
 Finally, you can control the character(s) used to indicate comments by setting the
-`comment` keyword. By default, there is no character ("").
+`comment` keyword when writing a file. By default, there is no character (""). During reading, the comment character is found atomatically.
