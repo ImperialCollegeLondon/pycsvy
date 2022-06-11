@@ -108,7 +108,27 @@ def test_write(mock_write_data, mock_write_header):
         yaml_options=yaml_options,
     )
 
-    mock_write_header.assert_called_once_with(
-        filename, header, comment, sort_keys=False
-    )
-    mock_write_data.assert_called_once_with(filename, data, comment, delimiter=",")
+    mock_write_header.assert_called_once_with(filename, header, comment, **yaml_options)
+    mock_write_data.assert_called_once_with(filename, data, comment, **csv_options)
+
+
+@patch("csvy.writers.write_csv")
+def test_write_data(mock_write_csv):
+    from csvy.writers import KNOWN_WRITERS, write_data
+
+    filename = "here.csv"
+    data = [[1, 2], [3, 4]]
+    comment = "# "
+    csv_options = {"delimiter": ","}
+
+    KNOWN_WRITERS.clear()
+    KNOWN_WRITERS.append(MagicMock(return_value=True))
+    write_data(filename, data, comment, **csv_options)
+    KNOWN_WRITERS[0].assert_called_once_with(filename, data, comment, **csv_options)
+    mock_write_csv.assert_not_called()
+
+    KNOWN_WRITERS.clear()
+    KNOWN_WRITERS.append(MagicMock(return_value=False))
+    write_data(filename, data, comment, **csv_options)
+    KNOWN_WRITERS[0].assert_called_once_with(filename, data, comment, **csv_options)
+    mock_write_csv.assert_called_once_with(filename, data, comment, **csv_options)
