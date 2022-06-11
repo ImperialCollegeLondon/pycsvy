@@ -30,11 +30,16 @@ def test_get_header(data_path, data_comment_path):
     assert header == header2
 
 
-@pytest.mark.xfail
-def test_read_to_array(data_path):
+def test_read_to_array(array_data_path):
+    import numpy as np
+
     from csvy.readers import read_to_array
 
-    data, header = read_to_array(data_path)
+    data, header = read_to_array(array_data_path, csv_options={"delimiter": ","})
+    assert isinstance(data, np.ndarray)
+    assert data.shape[1] == 4
+    assert isinstance(header, dict)
+    assert len(header) > 0
 
 
 def test_read_to_dataframe(data_path):

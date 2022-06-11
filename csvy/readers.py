@@ -117,6 +117,7 @@ def read_to_array(
     options["skiprows"] = nlines
     if len(comment) >= 1:
         options["comments"] = comment
+
     return np.loadtxt(filename, **options), header
 
 
