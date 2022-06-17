@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pycsvy"
-version = "0.1.3"
+version = "0.2.0"
 description = "Python reader/writer for CSV files with YAML header information."
 authors = ["Diego Alonso Álvarez <d.alonso-alvarez@imperial.ac.uk>"]
 license = "BSD-3-Clause"
