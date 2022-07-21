@@ -1,0 +1,31 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: CSVY for Python
+message: Please cite this software using these metadata.
+type: software
+authors:
+  - given-names: Diego
+    family-names: Alonso-Álvarez
+    email: d.alonso-alvarez@imperial.ac.uk
+    affiliation: Imperial College London
+    orcid: 'https://orcid.org/0000-0002-0060-9495'
+abstract: >-
+  CSV is a popular format for storing tabular data
+  used in many disciplines. Metadata concerning the
+  contents of the file is often included in the
+  header, but it rarely follows a format that is
+  machine readable - sometimes is not even human
+  readable! In some cases, such information is
+  provided in a separate file, which is not ideal as
+  it is easy for data and metadata to get separated.
+
+
+  CSVY is a small Python package to handle CSV files
+  in which the metadata in the header is formatted in
+  YAML. It supports reading/writing tabular data
+  contained in numpy arrays, pandas DataFrames and
+  nested lists, as well as metadata using a standard
+  python dictionary. 
+license: BSD-3-Clause
