@@ -19,6 +19,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "alexdewar",
+      "name": "Alex Dewar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23149834?v=4",
+      "profile": "https://www.imperial.ac.uk/research-software-engineering",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
