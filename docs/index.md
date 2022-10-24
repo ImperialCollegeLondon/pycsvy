@@ -1,1 +1,1 @@
-# pyCSVY Docs
+--8<-- "README.md"
