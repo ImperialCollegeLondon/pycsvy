@@ -1,5 +1,4 @@
 site_name: pyCSVY Docs
-
 watch: [csvy]
 
 theme:
@@ -35,6 +34,6 @@ plugins:
         paths: [csvy]
 
 nav:
-- pyCSVY Docs: index.md
+- index.md
 # defer to gen-files + literate-nav
 - Code Reference: reference/

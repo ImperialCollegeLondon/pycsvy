@@ -24,17 +24,16 @@ def write(
     """Writes the data and header in a CSV file, formating the header as yaml.
 
     Args:
-        filename (Union[Path, str]): Name of the file to save the information into. If
-        it exists, it will be overwritten.
-        data (Any): The data to add to the file.
-        header (Optional[Dict]): Dictionary with the header information to save.
-        comment (str, optional): String to use to mark the header lines as comments.
-        Defaults to "".
-        csv_options (Optional[Dict], optional): Arguments to pass to the CSV writer,
-        being this savetxt, panda's 'to_csv' or something else. Mind that any argument
-        related to the character to indicate a comment or header line will be ignored.
-        yaml_options (Optional[Dict], optional): Arguments to pass to the
-        'yaml.safe_dump' function to control writing the header. Defaults to None.
+        filename: Name of the file to save the information into. If it exists, it will
+            be overwritten.
+        data: The data to add to the file.
+        header: Dictionary with the header information to save.
+        comment: String to use to mark the header lines as comments.
+        csv_options: Arguments to pass to the CSV writer, being this `savetxt`, panda's
+            `to_csv` or something else. Mind that any argument related to the character
+            to indicate a comment or header line will be ignored.
+        yaml_options: Arguments to pass to the 'yaml.safe_dump' function to control
+            writing the header.
     """
     csv_options = csv_options if csv_options is not None else {}
     yaml_options = yaml_options if yaml_options is not None else {}
@@ -44,17 +43,17 @@ def write(
 
 
 def write_header(
-    filename: Union[Path, str], header: Dict[str, Any], comment: str = "", **kwargs
+    filename: Union[Path, str], header: Dict[str, Any], comment: str = "", **kwargs: Any
 ) -> None:
     """Writes the header dictionary into the file with lines starting with comment.
 
     Args:
-        filename (Union[Path, str]): Name of the file to save the header into. If it
-        exists, it will be overwritten.
-        header (Dict[str, Any]): Dictionary with the header information to save.
-        comment (str): String to use to mark the header lines as comments.
-        kwargs: Arguments to pass to 'yaml.safe_dump'. If "sort_keys" is not one of
-        arguments, it will be set to sort_keys=False.
+        filename: Name of the file to save the header into. If it exists, it will be
+            overwritten.
+        header: Dictionary with the header information to save.
+        comment: String to use to mark the header lines as comments.
+        **kwargs: Arguments to pass to 'yaml.safe_dump'. If "sort_keys" is not one of
+            arguments, it will be set to sort_keys=False.
     """
     if "sort_keys" not in kwargs:
         kwargs["sort_keys"] = False
@@ -68,19 +67,19 @@ def write_header(
 
 
 def write_data(
-    filename: Union[Path, str], data: Any, comment: str = "", **kwargs
+    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
 ) -> None:
     """Writes the tabular data to the chosen file, adding it after the header.
 
     Args:
-        filename (Union[Path, str]): Name of the file to save the data into. The data
-        will be added to the end of the file.
-        data (Any): The data to add to the file. Depending on its type, a different
-        method will be used to save the data to disk. The fallback will be the built
-        in CSV package. If it is a numpy array, the `savetxt` will be used, while if it
-        is a pandas Dataframe, the `to_csv` method will be used.
-        comment (str): String to use to mark the header lines as comments.
-        kwargs: Arguments to be passed to the underlaying saving method.
+        filename: Name of the file to save the data into. The data will be added to the
+            end of the file.
+        data: The data to add to the file. Depending on its type, a different method
+            will be used to save the data to disk. The fallback will be the built in CSV
+            package. If it is a numpy array, the `savetxt` will be used, while if it is
+            a pandas Dataframe, the `to_csv` method will be used.
+        comment: String to use to mark the header lines as comments.
+        **kwargs: Arguments to be passed to the underlaying saving method.
     """
     for fun in KNOWN_WRITERS:
         if fun(filename, data, comment, **kwargs):
@@ -91,20 +90,20 @@ def write_data(
 
 @register_writer
 def write_numpy(
-    filename: Union[Path, str], data: Any, comment: str = "", **kwargs
+    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
     """Writes the numpy array to the chosen file, adding it after the header.
 
     Args:
-        filename (Union[Path, str]): Name of the file to save the data into. The data
-        will be added to the end of the file.
-        data (Any): The data. If it is a numpy array, it will be saved, otherwise
-        nothing is done.
-        comment (str): String to use to mark the header lines as comments.
-        kwargs: Arguments to be passed to the underlaying saving method.
+        filename: Name of the file to save the data into. The data will be added to the
+            end of the file.
+        data: The data. If it is a numpy array, it will be saved, otherwise nothing is
+            done.
+        comment: String to use to mark the header lines as comments.
+        **kwargs: Arguments to be passed to the underlaying saving method.
 
     Return:
-        (bool) True if the writer worked, false otherwise.
+        True if the writer worked, False otherwise.
     """
     try:
         import numpy as np
@@ -124,20 +123,20 @@ def write_numpy(
 
 @register_writer
 def write_pandas(
-    filename: Union[Path, str], data: Any, comment: str = "", **kwargs
+    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
     """Writes the pandas dataframe to the chosen file, adding it after the header.
 
     Args:
-        filename (Union[Path, str]): Name of the file to save the data into. The data
-        will be added to the end of the file.
-        data (Any): The data. If it is a pandas dataframe, it will be saved, otherwise
-        nothing is done.
-        comment (str): String to use to mark the header lines as comments.
-        kwargs: Arguments to be passed to the underlaying saving method.
+        filename: Name of the file to save the data into. The data will be added to the
+            end of the file.
+        data: The data. If it is a pandas dataframe, it will be saved, otherwise nothing
+            is done.
+        comment: String to use to mark the header lines as comments.
+        **kwargs: Arguments to be passed to the underlaying saving method.
 
-    Return:
-        (bool) True if the writer worked, false otherwise.
+    Returns:
+        True if the writer worked, False otherwise.
     """
     try:
         import pandas as pd
@@ -155,20 +154,20 @@ def write_pandas(
 
 
 def write_csv(
-    filename: Union[Path, str], data: Any, comment: str = "", **kwargs
+    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
     """Writes the tabular to the chosen file, adding it after the header.
 
     Args:
-        filename (Union[Path, str]): Name of the file to save the data into. The data
-        will be added to the end of the file.
-        data (Any): The data. Can have anything that counts as a sequence. Each
-        component of the sequence will be saved in a different row.
-        comment (str): String to use to mark the header lines as comments.
-        kwargs: Arguments to be passed to the underlaying saving method.
+        filename: Name of the file to save the data into. The data will be added to the
+            end of the file.
+        data: The data. Can have anything that counts as a sequence. Each component of
+            the sequence will be saved in a different row.
+        comment: String to use to mark the header lines as comments.
+        **kwargs: Arguments to be passed to the underlaying saving method.
 
-    Return:
-        (bool) True if the writer worked, false otherwise.
+    Returns:
+        True if the writer worked, False otherwise.
     """
     import csv
 
