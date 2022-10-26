@@ -28,6 +28,16 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "AdrianDAlessandro",
+      "name": "Adrian D'Alessandro",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40875798?v=4",
+      "profile": "https://github.com/AdrianDAlessandro",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
