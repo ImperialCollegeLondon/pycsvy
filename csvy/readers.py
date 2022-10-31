@@ -32,12 +32,11 @@ def get_comment(line: str, marker: str = "---") -> str:
     This will save the user to having to check the file before reading it.
 
     Args:
-        line (str): Line of text, typically the first one of the file.
-        marker (str): The marker characters that indicate the yaml header.
-        Defaults to "---".
+        line: Line of text, typically the first one of the file.
+        marker: The marker characters that indicate the yaml header.
 
     Returns:
-        str: The comment character found.
+        The comment character found.
     """
     if marker not in line:
         raise ValueError(f"Yaml header marker '{marker}' not found in line '{line}'.")
@@ -46,19 +45,18 @@ def get_comment(line: str, marker: str = "---") -> str:
 
 
 def read_header(
-    filename: Union[Path, str], marker: str = "---", **kwargs
+    filename: Union[Path, str], marker: str = "---", **kwargs: Any
 ) -> Tuple[Dict[str, Any], int, str]:
     """Read the yaml-formatted header from a file.
 
     Args:
-        filename (Union[Path, str]): Name of the file to read the header from.
-        marker (str): The marker characters that indicate the yaml header.
-        Defaults to "---".
-        kwargs: Arguments to pass to 'yaml.safe_load'.
+        filename: Name of the file to read the header from.
+        marker: The marker characters that indicate the yaml header.
+        **kwargs: Arguments to pass to 'yaml.safe_load'.
 
     Returns:
-        Tuple[Dict[str, Any], int, srt]: Tuple with a dictionary with the header
-        information the number of header lines and the comment character.
+        Tuple containing: a dictionary with the header information, the number of header
+            lines, and the comment character.
     """
     header = []
     markers = 0
@@ -90,19 +88,16 @@ def read_to_array(
     """Reads a CSVY file into dict with the header and array with the data.
 
     Args:
-        filename (Union[Path, str]):  Name of the file to read.
-        marker (str): The marker characters that indicate the yaml header.
-        Defaults to "---".
-        csv_options (Optional[Dict[str, Any]], optional): Options to pass to np.loadtxt.
-        Defaults to None.
-        yaml_options (Optional[Dict[str, Any]], optional): Options to pass to
-        yaml.safe_load. Defaults to None.
+        filename:  Name of the file to read.
+        marker: The marker characters that indicate the yaml header.
+        csv_options: Options to pass to np.loadtxt.
+        yaml_options: Options to pass to yaml.safe_load.
 
     Raises:
         ModuleNotFoundError: If numpy is not found.
 
     Returns:
-        Tuple[NDArray, Dict[str, Any]]: The numpy array and the header as a dictionary.
+        Tuple containing: The numpy array and the header as a dictionary.
     """
     if NDArray is NotImplemented:
         raise ModuleNotFoundError(
@@ -131,20 +126,16 @@ def read_to_dataframe(
     will be ignored.
 
     Args:
-        filename (Union[Path, str]):  Name of the file to read.
-        marker (str): The marker characters that indicate the yaml header.
-        Defaults to "---".
-        csv_options (Optional[Dict[str, Any]], optional): Options to pass to
-        pd.read_csv. Defaults to None.
-        yaml_options (Optional[Dict[str, Any]], optional): Options to pass to
-        yaml.safe_load. Defaults to None.
+        filename:  Name of the file to read.
+        marker: The marker characters that indicate the yaml header.
+        csv_options: Options to pass to pd.read_csv.
+        yaml_options: Options to pass to yaml.safe_load.
 
     Raises:
         ModuleNotFoundError: If pandas is not found.
 
     Returns:
-        Tuple[DataFrame, Dict[str, Any]]: The pandas DataFrame and the header as a
-        dictionary.
+        Tuple containing: The pandas DataFrame and the header as a dictionary.
     """
     if DataFrame is NotImplemented:
         raise ModuleNotFoundError(
@@ -170,20 +161,16 @@ def read_to_list(
     """Reads a CSVY file into a list with the header and a nested list with the data.
 
     Args:
-        filename (Union[Path, str]): Name of the file to read.
-        marker (str): The marker characters that indicate the yaml header.
-        Defaults to "---".
-        csv_options (Optional[Dict[str, Any]], optional): Options to pass to csv.reader.
-        Defaults to None.
-        yaml_options (Optional[Dict[str, Any]], optional): Options to pass to
-        yaml.safe_load. Defaults to None.
+        filename: Name of the file to read.
+        marker: The marker characters that indicate the yaml header.
+        csv_options: Options to pass to csv.reader.
+        yaml_options: Options to pass to yaml.safe_load.
 
     Raises:
         ModuleNotFoundError: If numpy is not found.
 
     Returns:
-        Tuple[List[List], Dict[str, Any]]: The numpy array and the header as a
-        dictionary.
+        Tuple containing: The nested list and the header as a dictionary.
     """
     import csv
 
