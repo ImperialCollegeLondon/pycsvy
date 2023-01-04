@@ -79,6 +79,22 @@ def read_header(
     return yaml.safe_load("".join(header), **kwargs), nlines, comment
 
 
+def read_metadata(
+    filename: Union[Path, str], marker: str = "---", **kwargs: Any
+) -> Dict[str, Any]:
+    """Read the yaml-formatted metadata from a file.
+
+    Args:
+        filename: Name of the file to read the header from.
+        marker: The marker characters that indicate the yaml header.
+        **kwargs: Arguments to pass to 'yaml.safe_load'.
+
+    Returns:
+        The metadata stored in the header.
+    """
+    return read_header(filename, marker, **kwargs)[0]
+
+
 def read_to_array(
     filename: Union[Path, str],
     marker: str = "---",
