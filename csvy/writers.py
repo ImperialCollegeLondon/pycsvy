@@ -1,4 +1,5 @@
 import logging
+from io import TextIOBase
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
@@ -43,18 +44,25 @@ def write(
 
 
 def write_header(
-    filename: Union[Path, str], header: Dict[str, Any], comment: str = "", **kwargs: Any
+    file: Union[Path, str, TextIOBase],
+    header: Dict[str, Any],
+    comment: str = "",
+    **kwargs: Any,
 ) -> None:
     """Writes the header dictionary into the file with lines starting with comment.
 
     Args:
-        filename: Name of the file to save the header into. If it exists, it will be
-            overwritten.
+        file: File handle or path to file. Will be overwritten if it exists.
         header: Dictionary with the header information to save.
         comment: String to use to mark the header lines as comments.
         **kwargs: Arguments to pass to 'yaml.safe_dump'. If "sort_keys" is not one of
             arguments, it will be set to sort_keys=False.
     """
+    if not isinstance(file, TextIOBase):
+        with Path(file).open("w") as f:
+            write_header(f, header, comment, **kwargs)
+            return
+
     if "sort_keys" not in kwargs:
         kwargs["sort_keys"] = False
 
@@ -62,8 +70,7 @@ def write_header(
     stream = "\n".join([f"{comment}" + line for line in stream.split("\n")])
     marker = f"{comment}---\n"
     stream = marker + stream + "---\n"
-    with Path(filename).open("w") as f:
-        f.write(stream)
+    file.write(stream)  # type: ignore
 
 
 def write_data(
