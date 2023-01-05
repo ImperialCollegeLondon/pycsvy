@@ -87,6 +87,31 @@ def test_write_csv(mock_save, tmpdir):
     assert Writer.writerow.call_count == len(data)
 
 
+@patch("csv.writer")
+@patch("csvy.writers.write_header")
+def test_writer(mock_write_header, mock_save, tmpdir):
+    from csvy.writers import Writer
+
+    class CSVWriter:
+        writerow = MagicMock()
+        writerows = MagicMock()
+
+    mock_save.return_value = CSVWriter
+
+    filename = tmpdir / "some_file.csv"
+    header = {"name": "HAL"}
+    comment = "# "
+    csv_options = {"delimiter": ","}
+    yaml_options = {"sort_keys": False}
+
+    writer = Writer(filename, header, comment, csv_options, yaml_options)
+    mock_write_header.assert_called_once_with(
+        writer._file, header, comment, **yaml_options
+    )
+
+    mock_save.assert_called_once_with(writer._file, **csv_options)
+
+
 @patch("csvy.writers.write_header")
 @patch("csvy.writers.write_data")
 def test_write(mock_write_data, mock_write_header):
