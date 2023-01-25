@@ -1,5 +1,12 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
+
+
+class MockCSVWriter:
+    writerow = MagicMock()
+    writerows = MagicMock()
+
 
 def test_save_header(tmpdir, mocker):
     import yaml
@@ -85,6 +92,86 @@ def test_write_csv(mock_save, tmpdir):
 
     mock_save.assert_called_once()
     assert Writer.writerow.call_count == len(data)
+
+
+@patch("csv.writer")
+@patch("csvy.writers.write_header")
+@pytest.mark.parametrize(
+    "csv_options,yaml_options",
+    (
+        (csv_options, yaml_options)
+        for csv_options in (None, {"delimiter": ","})
+        for yaml_options in (None, {"sort_keys": False})
+    ),
+)
+def test_writer(mock_write_header, mock_csv_writer, csv_options, yaml_options, tmpdir):
+    from csvy.writers import Writer
+
+    mock_csv_writer.return_value = MockCSVWriter
+
+    filename = tmpdir / "some_file.csv"
+    header = {"name": "HAL"}
+    comment = "# "
+
+    writer = Writer(filename, header, comment, csv_options, yaml_options)
+    csv_options = csv_options or {}
+    yaml_options = yaml_options or {}
+    mock_write_header.assert_called_once_with(
+        writer._file, header, comment, **yaml_options
+    )
+
+    mock_csv_writer.assert_called_once_with(writer._file, **csv_options)
+
+
+@patch("csv.writer")
+@patch("csvy.writers.write_header")
+def test_writer_writerow(mock_write_header, mock_csv_writer, tmpdir):
+    from csvy.writers import Writer
+
+    filename = tmpdir / "some_file.csv"
+    writer = Writer(filename, {})
+
+    data = (1, 2, 3)
+    writer.writerow(data)
+    writer._writer.writerow.assert_called_once_with(data)
+
+
+@patch("csv.writer")
+@patch("csvy.writers.write_header")
+def test_writer_writerows(mock_write_header, mock_csv_writer, tmpdir):
+    from csvy.writers import Writer
+
+    filename = tmpdir / "some_file.csv"
+    writer = Writer(filename, {})
+
+    data = ((1, 2, 3),)
+    writer.writerows(data)
+    writer._writer.writerows.assert_called_once_with(data)
+
+
+def test_writer_close(tmpdir):
+    from csvy.writers import Writer
+
+    filename = tmpdir / "some_file.csv"
+    writer = Writer(filename, {})
+    writer._file = MagicMock()
+    writer.close()
+    writer._file.close.assert_called_once()
+
+
+def test_writer_context(tmpdir):
+    from csvy.writers import Writer
+
+    filename = tmpdir / "some_file.csv"
+    writer = Writer(filename, {})
+    writer._file = MagicMock()
+
+    # Test the context manager
+    with writer:
+        pass
+
+    # The file should be closed on leaving the with-block
+    writer._file.close.assert_called_once()
 
 
 @patch("csvy.writers.write_header")

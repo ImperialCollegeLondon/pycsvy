@@ -1,6 +1,10 @@
+from __future__ import annotations
+
+import csv
 import logging
+from io import TextIOBase
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Union
 
 import yaml
 
@@ -42,19 +46,81 @@ def write(
     write_data(filename, data, comment, **csv_options)
 
 
+class Writer:
+    """A class for writing the CSV data to a file incrementally.
+
+    Under the hood, this class uses csv.writer to write lines of data to CSV files.
+    """
+
+    def __init__(
+        self,
+        filename: Union[Path, str],
+        header: Dict[str, Any],
+        comment: str = "",
+        csv_options: Optional[Dict[str, Any]] = None,
+        yaml_options: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """Create a new Writer.
+
+        Args:
+            filename: Path to file. If it exists it will be overwritten.
+            header: Dictionary with the header information to save.
+            comment: String to use to mark the header lines as comments.
+            csv_options: Arguments to pass to csv.writer()
+            yaml_options: Arguments to pass to the 'yaml.safe_dump' function to control
+                writing the header.
+        """
+
+        if not csv_options:
+            csv_options = {}
+        if not yaml_options:
+            yaml_options = {}
+
+        # Newline must be "" as per csv.writer's documentation
+        self._file = Path(filename).open("w", newline="")
+        write_header(self._file, header, comment, **yaml_options)
+
+        self._writer = csv.writer(self._file, **csv_options)
+
+    def __enter__(self) -> Writer:
+        return self
+
+    def __exit__(self, *_: Any) -> None:
+        self._file.close()
+
+    def close(self) -> None:
+        """Close the underlying file handle."""
+        self._file.close()
+
+    def writerow(self, row: Iterable[Any]) -> None:
+        """Write a single row of data to the CSV file."""
+        self._writer.writerow(row)
+
+    def writerows(self, rows: Iterable[Iterable[Any]]) -> None:
+        """Write multiple rows of data to the CSV file."""
+        self._writer.writerows(rows)
+
+
 def write_header(
-    filename: Union[Path, str], header: Dict[str, Any], comment: str = "", **kwargs: Any
+    file: Union[Path, str, TextIOBase],
+    header: Dict[str, Any],
+    comment: str = "",
+    **kwargs: Any,
 ) -> None:
     """Writes the header dictionary into the file with lines starting with comment.
 
     Args:
-        filename: Name of the file to save the header into. If it exists, it will be
-            overwritten.
+        file: File handle or path to file. Will be overwritten if it exists.
         header: Dictionary with the header information to save.
         comment: String to use to mark the header lines as comments.
         **kwargs: Arguments to pass to 'yaml.safe_dump'. If "sort_keys" is not one of
             arguments, it will be set to sort_keys=False.
     """
+    if not isinstance(file, TextIOBase):
+        with Path(file).open("w") as f:
+            write_header(f, header, comment, **kwargs)
+            return
+
     if "sort_keys" not in kwargs:
         kwargs["sort_keys"] = False
 
@@ -62,8 +128,7 @@ def write_header(
     stream = "\n".join([f"{comment}" + line for line in stream.split("\n")])
     marker = f"{comment}---\n"
     stream = marker + stream + "---\n"
-    with Path(filename).open("w") as f:
-        f.write(stream)
+    file.write(stream)  # type: ignore
 
 
 def write_data(

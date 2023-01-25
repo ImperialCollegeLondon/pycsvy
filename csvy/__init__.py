@@ -8,4 +8,4 @@ from .readers import (  # noqa: F401
     read_to_array,
     read_to_dataframe,
 )
-from .writers import write  # noqa: F401
+from .writers import Writer, write, write_header  # noqa: F401
