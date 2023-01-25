@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import csv
 import logging
 from io import TextIOBase
@@ -80,7 +82,7 @@ class Writer:
 
         self._writer = csv.writer(self._file, **csv_options)
 
-    def __enter__(self) -> "Writer":
+    def __enter__(self) -> Writer:
         return self
 
     def __exit__(self, *_: Any) -> None:
