@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 
@@ -28,6 +30,20 @@ def test_get_header(data_path, data_comment_path):
     assert comment == "# "
 
     assert header == header2
+
+
+@patch("csvy.readers.read_header")
+def test_read_metadata(read_header_mock, data_path):
+    from csvy import read_metadata
+
+    read_header_mock.return_value = ("a", "b")
+
+    filename = "test.csv"
+    marker = "!!!"
+    kwargs = {"key": "value"}
+    assert read_metadata(filename=filename, marker=marker, **kwargs) == "a"
+
+    read_header_mock.assert_called_once_with(filename, marker, **kwargs)
 
 
 def test_read_to_array(array_data_path):
