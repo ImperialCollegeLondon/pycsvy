@@ -45,7 +45,10 @@ def write(
 
 
 class Writer:
-    """A class for writing the CSV data to a file incrementally."""
+    """A class for writing the CSV data to a file incrementally.
+
+    Under the hood, this class uses csv.writer to write lines of data to CSV files.
+    """
 
     def __init__(
         self,
