@@ -1,7 +1,7 @@
 """
 Python reader/writer for CSV files with YAML header information.
 """
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 from .readers import (  # noqa: F401
     read_header,
     read_metadata,
