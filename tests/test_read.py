@@ -59,7 +59,7 @@ def test_read_to_array(array_data_path):
 
     import csvy.readers as readers
 
-    readers.NDArray = NotImplemented
+    readers.NDArray = None
 
     with pytest.raises(ModuleNotFoundError):
         read_to_array(array_data_path)
@@ -78,7 +78,7 @@ def test_read_to_dataframe(data_path):
 
     import csvy.readers as readers
 
-    readers.DataFrame = NotImplemented
+    readers.DataFrame = None
 
     with pytest.raises(ModuleNotFoundError):
         read_to_dataframe(data_path)
