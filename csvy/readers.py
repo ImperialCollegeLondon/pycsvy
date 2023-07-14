@@ -7,7 +7,7 @@ import yaml
 try:
     from numpy.typing import NDArray
 except ModuleNotFoundError:
-    NDArray = NotImplemented  # type: ignore
+    NDArray = None  # type: ignore
     logging.getLogger().debug(
         "Numpy is not installed. Reading into an array will not work."
     )
@@ -15,7 +15,7 @@ except ModuleNotFoundError:
 try:
     from pandas import DataFrame
 except ModuleNotFoundError:
-    DataFrame = NotImplemented  # type: ignore
+    DataFrame = None  # type: ignore
     logging.getLogger().debug(
         "Pandas is not installed. Reading into a DataFrame will not work."
     )
@@ -115,7 +115,7 @@ def read_to_array(
     Returns:
         Tuple containing: The numpy array and the header as a dictionary.
     """
-    if NDArray is NotImplemented:
+    if NDArray is None:
         raise ModuleNotFoundError(
             "Module numpy is not present. Install it to read data into an array."
         )
@@ -153,7 +153,7 @@ def read_to_dataframe(
     Returns:
         Tuple containing: The pandas DataFrame and the header as a dictionary.
     """
-    if DataFrame is NotImplemented:
+    if DataFrame is None:
         raise ModuleNotFoundError(
             "Module pandas is not present. Install it to read data into DataFrame."
         )
