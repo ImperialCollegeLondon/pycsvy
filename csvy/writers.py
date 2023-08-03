@@ -234,7 +234,6 @@ def write_csv(
     Returns:
         True if the writer worked, False otherwise.
     """
-    import csv
 
     with open(filename, "a", newline="") as f:
         writer = csv.writer(f, **kwargs)
