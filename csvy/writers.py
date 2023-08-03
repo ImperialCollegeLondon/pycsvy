@@ -59,6 +59,7 @@ class Writer:
         comment: str = "",
         csv_options: Optional[Dict[str, Any]] = None,
         yaml_options: Optional[Dict[str, Any]] = None,
+        line_buffering: bool = False,
     ) -> None:
         """Create a new Writer.
 
@@ -69,6 +70,7 @@ class Writer:
             csv_options: Arguments to pass to csv.writer()
             yaml_options: Arguments to pass to the 'yaml.safe_dump' function to control
                 writing the header.
+            line_buffering: Line buffering instead of chunk buffering (default False).
         """
 
         if not csv_options:
@@ -76,8 +78,11 @@ class Writer:
         if not yaml_options:
             yaml_options = {}
 
+        # Line buffering: 1 and default chunk buffering: -1
+        buffering = 1 if line_buffering else -1
+
         # Newline must be "" as per csv.writer's documentation
-        self._file = Path(filename).open("w", newline="")
+        self._file = Path(filename).open("w", newline="", buffering=buffering)
         write_header(self._file, header, comment, **yaml_options)
 
         self._writer = csv.writer(self._file, **csv_options)
