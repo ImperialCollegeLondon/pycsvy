@@ -97,7 +97,7 @@ dictionary. Likewise you can set the `yaml_options` dictionary with whatever opt
 want to pass to `yaml.safe_load` and `yaml.safe_dump` functions, reading/writing the
 YAML-formatted header, respectively.
 
-You can also instruct a writer to use line buffering, instead of the usual chunk buffering
+You can also instruct a writer to use line buffering, instead of the usual chunk buffering.
 
 Finally, you can control the character(s) used to indicate comments by setting the
 `comment` keyword when writing a file. By default, there is no character (""). During reading, the comment character is found atomatically.
