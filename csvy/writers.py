@@ -59,7 +59,7 @@ class Writer:
         comment: str = "",
         csv_options: Optional[Dict[str, Any]] = None,
         yaml_options: Optional[Dict[str, Any]] = None,
-        flush_immediately: bool = False,
+        line_buffering: bool = False,
     ) -> None:
         """Create a new Writer.
 
@@ -70,7 +70,7 @@ class Writer:
             csv_options: Arguments to pass to csv.writer()
             yaml_options: Arguments to pass to the 'yaml.safe_dump' function to control
                 writing the header.
-            flush_immediately: Flush immediately after each write (default False).
+            line_buffering: Line buffering instead of chunk buffering (default False).
         """
 
         if not csv_options:
@@ -78,15 +78,14 @@ class Writer:
         if not yaml_options:
             yaml_options = {}
 
+        # Line buffering: 1 and default chunk buffering: -1
+        buffering = 1 if line_buffering else -1
+
         # Newline must be "" as per csv.writer's documentation
-        self._file = Path(filename).open("w", newline="")
+        self._file = Path(filename).open("w", newline="", buffering=buffering)
         write_header(self._file, header, comment, **yaml_options)
 
         self._writer = csv.writer(self._file, **csv_options)
-
-        self._flush_immediately = flush_immediately
-        if self._flush_immediately:
-            self._file.flush()
 
     def __enter__(self) -> Writer:
         return self
@@ -101,22 +100,10 @@ class Writer:
     def writerow(self, row: Iterable[Any]) -> None:
         """Write a single row of data to the CSV file."""
         self._writer.writerow(row)
-        if self._flush_immediately:
-            self._file.flush()
 
     def writerows(self, rows: Iterable[Iterable[Any]]) -> None:
         """Write multiple rows of data to the CSV file."""
         self._writer.writerows(rows)
-        if self._flush_immediately:
-            self._file.flush()
-
-    @property
-    def flush_immediately(self) -> bool:
-        return self._flush_immediately
-
-    @flush_immediately.setter
-    def flush_immediately(self, flag: bool) -> None:
-        self._flush_immediately = flag
 
 
 def write_header(
