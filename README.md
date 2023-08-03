@@ -26,7 +26,7 @@ dialect](https://specs.frictionlessdata.io/csv-dialect/) used and a [Table
 Schema](https://specs.frictionlessdata.io/table-schema/) specifying the contents of each
 column to aid the reading and interpretation of the data.
 
-## Instalation
+## Installation
 
 'pycsvy' is available in PyPI therefore its installation is as easy as:
 
