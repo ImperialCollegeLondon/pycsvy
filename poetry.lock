@@ -624,17 +624,17 @@ mkdocs = ">=1.0.3,<2.0.0"
 
 [[package]]
 name = "mkdocs-literate-nav"
-version = "0.5.0"
+version = "0.6.0"
 description = "MkDocs plugin to specify the navigation in Markdown instead of YAML"
 optional = false
-python-versions = ">=3.6,<4.0"
+python-versions = ">=3.7"
 files = [
-    {file = "mkdocs-literate-nav-0.5.0.tar.gz", hash = "sha256:c63d4385bb2b520baede25badad2d0936acebff3da175922c600d0a91902d8ff"},
-    {file = "mkdocs_literate_nav-0.5.0-py3-none-any.whl", hash = "sha256:b41149172af38c1a1df5e8d63292cbe7ed2a1431cd5daf884289036f2a9c7cca"},
+    {file = "mkdocs_literate_nav-0.6.0-py3-none-any.whl", hash = "sha256:8c1b84714e5974da5e44e011ec0069275ae7647270c13a679662cf6ffce675a4"},
+    {file = "mkdocs_literate_nav-0.6.0.tar.gz", hash = "sha256:81ccbea18163ae8e10bd0bd39237fe70c32a1f2dff6c170779f5d52dd98a0470"},
 ]
 
 [package.dependencies]
-mkdocs = ">=1.0.3,<2.0.0"
+mkdocs = ">=1.0.3"
 
 [[package]]
 name = "mkdocs-material"
@@ -878,9 +878,9 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.20.3", markers = "python_version < \"3.10\""},
     {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
     {version = ">=1.23.2", markers = "python_version >= \"3.11\""},
+    {version = ">=1.20.3", markers = "python_version < \"3.10\""},
 ]
 python-dateutil = ">=2.8.1"
 pytz = ">=2020.1"
@@ -1070,12 +1070,12 @@ files = [
 attrs = ">=19.0"
 filelock = ">=3.0"
 mypy = [
-    {version = ">=0.700", markers = "python_version >= \"3.8\" and python_version < \"3.9\""},
     {version = ">=0.780", markers = "python_version >= \"3.9\""},
+    {version = ">=0.700", markers = "python_version >= \"3.8\" and python_version < \"3.9\""},
 ]
 pytest = [
-    {version = ">=4.6", markers = "python_version >= \"3.6\" and python_version < \"3.10\""},
     {version = ">=6.2", markers = "python_version >= \"3.10\""},
+    {version = ">=4.6", markers = "python_version >= \"3.6\" and python_version < \"3.10\""},
 ]
 
 [[package]]
@@ -1341,4 +1341,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "2bcdaccad228261ec751162a1cf7bfb873a10f57b481e508da1c462431ce1eed"
+content-hash = "ec5bddb8b53fc137febd86e7898763e2023180cd1609af7cf8a639012d6808f0"
