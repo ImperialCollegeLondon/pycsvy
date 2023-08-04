@@ -50,7 +50,7 @@ optional = true
 mkdocs = "^1.4.1"
 mkdocstrings = {extras = ["python"], version = "^0.19.0"}
 mkdocs-material = "^8.5.7"
-mkdocs-gen-files = "^0.4.0"
+mkdocs-gen-files = ">=0.4,<0.6"
 mkdocs-literate-nav = "^0.5.0"
 mkdocs-section-index = "^0.3.4"
 
