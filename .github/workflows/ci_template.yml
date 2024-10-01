@@ -9,7 +9,7 @@ on:
         type: string
       python-version:
         description: 'Python version'
-        default: '["3.10"]'
+        default: '["3.12"]'
         type: string
 
 jobs:
@@ -27,12 +27,17 @@ jobs:
         python-version: ${{ matrix.python-version }}
   
     - name: Install Poetry
-      uses: abatilo/actions-poetry@v2.0.0
+      uses: abatilo/actions-poetry@v2.3.0
       with:
-        poetry-version: 1.1.11
+        poetry-version: 1.5.1
 
     - name: Install dependencies
-      run: poetry install
+      run: poetry install --with dev
 
     - name: Run tests
       run: poetry run pytest
+
+    - name: Upload coverage to Codecov
+      if: success() && (matrix.os == 'ubuntu-latest' && matrix.python-version == 3.9)
+      uses: codecov/codecov-action@v3
+
