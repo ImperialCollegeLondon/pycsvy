@@ -1412,7 +1412,12 @@ enabler = ["pytest-enabler (>=2.2)"]
 test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-ignore-flaky"]
 type = ["pytest-mypy"]
 
+[extras]
+numpy = ["numpy"]
+pandas = ["pandas"]
+polars = ["polars"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "13364fb2c65525dd9c7718d630b55e5fb263798b47947fba272fdeca42105460"
+content-hash = "6321c85f6246e8baff7fad55345b0eb4585acce9a54e70f845665f5f9dd63ea2"
