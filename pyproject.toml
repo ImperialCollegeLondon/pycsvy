@@ -19,9 +19,7 @@ classifiers = [
 	"Operating System :: OS Independent",
 ]
 
-packages = [
-    { include = "csvy" },
-]
+packages = [{ include = "csvy" }]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -49,11 +47,12 @@ pandas = "^2.0.0"
 types-PyYAML = "^6.0.7"
 bump2version = "^1.0.1"
 coverage = "^7.1.0"
+polars = "^1.8.2"
 ruff = "^0.6.8"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.1"
-mkdocstrings = {extras = ["python"], version = "^0.19.0"}
+mkdocstrings = { extras = ["python"], version = "^0.19.0" }
 mkdocs-material = "^8.5.7"
 mkdocs-gen-files = "^0.4.0"
 mkdocs-literate-nav = "^0.5.0"
@@ -62,12 +61,12 @@ mkdocs-section-index = "^0.3.4"
 [tool.ruff]
 target-version = "py39"
 lint.select = [
-    "D",   # pydocstyle
-    "E",   # pycodestyle
-    "F",   # Pyflakes
-    "I",   # isort
-    "UP",  # pyupgrade
-    "RUF", # ruff
+	"D",   # pydocstyle
+	"E",   # pycodestyle
+	"F",   # Pyflakes
+	"I",   # isort
+	"UP",  # pyupgrade
+	"RUF", # ruff
 ]
 lint.pydocstyle.convention = "google"
 

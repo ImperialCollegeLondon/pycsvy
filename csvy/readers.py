@@ -1,5 +1,7 @@
 """A collection of functions for parsing CSVY files."""
 
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 from typing import Any
@@ -19,7 +21,17 @@ try:
 except ModuleNotFoundError:
     DataFrame = None  # type: ignore
     logging.getLogger().debug(
-        "Pandas is not installed. Reading into a DataFrame will not work."
+        "Pandas is not installed. Reading into a pd.DataFrame will not work."
+    )
+
+try:
+    from polars import DataFrame as PolarsDataFrame
+    from polars import LazyFrame
+except ModuleNotFoundError:
+    LazyFrame = None  # type: ignore
+    PolarsDataFrame = None  # type: ignore
+    logging.getLogger().debug(
+        "Polars is not installed. Reading into a pl.DataFrame will not work."
     )
 
 
@@ -168,6 +180,54 @@ def read_to_dataframe(
     options["skiprows"] = nlines
     options["comment"] = comment[0] if len(comment) >= 1 else None
     return pd.read_csv(filename, **options), header
+
+
+def read_to_polars(
+    filename: Path | str,
+    marker: str = "---",
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
+    eager: bool = False,
+) -> tuple[LazyFrame | PolarsDataFrame, dict[str, Any]]:
+    """Reads a CSVY file into dict with the header and a Polars LazyFrame with the data.
+
+    This uses the `scan_csv` method from Polars to read the data. This returns a polars
+    LazyFrame, which means the data is not loaded into memory until it is needed. To
+    load the data into memory, set the `eager` parameter to `True`.
+
+    Possible 'skip_rows' and 'comment_prefix' argument provided in the 'csv_options'
+    dictionary will be ignored.
+
+    Args:
+        filename:  Name of the file to read.
+        marker: The marker characters that indicate the yaml header.
+        csv_options: Options to pass to pl.scan_csv.
+        yaml_options: Options to pass to yaml.safe_load.
+        eager: Whether to load the data into memory.
+
+    Raises:
+        ModuleNotFoundError: If polars is not found.
+
+    Returns:
+        Tuple containing: The polars LazyFrame and the header as a dictionary.
+    """
+    if LazyFrame is None:
+        raise ModuleNotFoundError(
+            "Module polars is not present. Install it to read data into DataFrame."
+        )
+    import polars as pl
+
+    yaml_options = yaml_options if yaml_options is not None else {}
+    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
+
+    options = csv_options.copy() if csv_options is not None else {}
+    options["skip_rows"] = nlines
+    options["comment_prefix"] = comment[0] if len(comment) >= 1 else None
+
+    lf = pl.scan_csv(filename, **options)
+    if eager:
+        return lf.collect(), header
+    return lf, header
 
 
 def read_to_list(

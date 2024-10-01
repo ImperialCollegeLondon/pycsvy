@@ -946,7 +946,7 @@ testing = ["pytest", "pytest-benchmark"]
 name = "polars"
 version = "1.8.2"
 description = "Blazingly fast DataFrame library"
-optional = true
+optional = false
 python-versions = ">=3.8"
 files = [
     {file = "polars-1.8.2-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:114be1ebfb051b794fb9e1f15999430c79cc0824595e237d3f45632be3e56d73"},
@@ -1420,4 +1420,4 @@ polars = ["polars"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ac29a3d758e1ed07f70686c6f24379bcf86e1645a33086cda2d3a17ed76c87ba"
+content-hash = "6321c85f6246e8baff7fad55345b0eb4585acce9a54e70f845665f5f9dd63ea2"
