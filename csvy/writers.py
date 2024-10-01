@@ -1,29 +1,40 @@
+"""A collection of functions for writing CSVY files."""
+
 from __future__ import annotations
 
 import csv
 import logging
+from collections.abc import Callable, Iterable
 from io import TextIOBase
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Optional, Union
+from typing import Any
 
 import yaml
 
-KNOWN_WRITERS: List[Callable[[Union[Path, str], Any, str], bool]] = []
+KNOWN_WRITERS: list[Callable[[Path | str, Any, str], bool]] = []
 
 
-def register_writer(fun: Callable[[Union[Path, str], Any, str], bool]) -> Callable:
+def register_writer(fun: Callable[[Path | str, Any, str], bool]) -> Callable:
+    """Register a file writer.
+
+    Args:
+        fun (Callable): The writer function.
+
+    Returns:
+        Callable: the writer function.
+    """
     if fun not in KNOWN_WRITERS:
         KNOWN_WRITERS.append(fun)
     return fun
 
 
 def write(
-    filename: Union[Path, str],
+    filename: Path | str,
     data: Any,
-    header: Dict[str, Any],
+    header: dict[str, Any],
     comment: str = "",
-    csv_options: Optional[Dict[str, Any]] = None,
-    yaml_options: Optional[Dict[str, Any]] = None,
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
 ) -> None:
     """Writes the data and header in a CSV file, formating the header as yaml.
 
@@ -54,11 +65,11 @@ class Writer:
 
     def __init__(
         self,
-        filename: Union[Path, str],
-        header: Dict[str, Any],
+        filename: Path | str,
+        header: dict[str, Any],
         comment: str = "",
-        csv_options: Optional[Dict[str, Any]] = None,
-        yaml_options: Optional[Dict[str, Any]] = None,
+        csv_options: dict[str, Any] | None = None,
+        yaml_options: dict[str, Any] | None = None,
         line_buffering: bool = False,
     ) -> None:
         """Create a new Writer.
@@ -72,7 +83,6 @@ class Writer:
                 writing the header.
             line_buffering: Line buffering instead of chunk buffering (default False).
         """
-
         if not csv_options:
             csv_options = {}
         if not yaml_options:
@@ -88,9 +98,11 @@ class Writer:
         self._writer = csv.writer(self._file, **csv_options)
 
     def __enter__(self) -> Writer:
+        """Enter the context manager."""
         return self
 
     def __exit__(self, *_: Any) -> None:
+        """Exit the context manager."""
         self._file.close()
 
     def close(self) -> None:
@@ -107,8 +119,8 @@ class Writer:
 
 
 def write_header(
-    file: Union[Path, str, TextIOBase],
-    header: Dict[str, Any],
+    file: Path | str | TextIOBase,
+    header: dict[str, Any],
     comment: str = "",
     **kwargs: Any,
 ) -> None:
@@ -137,7 +149,7 @@ def write_header(
 
 
 def write_data(
-    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> None:
     """Writes the tabular data to the chosen file, adding it after the header.
 
@@ -160,7 +172,7 @@ def write_data(
 
 @register_writer
 def write_numpy(
-    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
     """Writes the numpy array to the chosen file, adding it after the header.
 
@@ -193,7 +205,7 @@ def write_numpy(
 
 @register_writer
 def write_pandas(
-    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
     """Writes the pandas dataframe to the chosen file, adding it after the header.
 
@@ -224,7 +236,7 @@ def write_pandas(
 
 
 def write_csv(
-    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
     """Writes the tabular to the chosen file, adding it after the header.
 
@@ -239,7 +251,6 @@ def write_csv(
     Returns:
         True if the writer worked, False otherwise.
     """
-
     with open(filename, "a", newline="") as f:
         writer = csv.writer(f, **kwargs)
         for row in data:
