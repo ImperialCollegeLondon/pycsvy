@@ -9,7 +9,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8d1b791b315f4814a128d94483499561)](https://app.codacy.com/gh/ImperialCollegeLondon/pycsvy/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ImperialCollegeLondon/pycsvy&amp;utm_campaign=Badge_Grade)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/ImperialCollegeLondon/pycsvy/develop.svg)](https://results.pre-commit.ci/latest/github/ImperialCollegeLondon/pycsvy/develop)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 CSV is a popular format for storing tabular data used in many disciplines. Metadata
@@ -127,6 +127,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://www.imperial.ac.uk/research-software-engineering"><img src="https://avatars.githubusercontent.com/u/23149834?v=4?s=100" width="100px;" alt="Alex Dewar"/><br /><sub><b>Alex Dewar</b></sub></a><br /><a href="#ideas-alexdewar" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=alexdewar" title="Tests">⚠️</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=alexdewar" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/AdrianDAlessandro"><img src="https://avatars.githubusercontent.com/u/40875798?v=4?s=100" width="100px;" alt="Adrian D'Alessandro"/><br /><sub><b>Adrian D'Alessandro</b></sub></a><br /><a href="https://github.com/ImperialCollegeLondon/pycsvy/issues?q=author%3AAdrianDAlessandro" title="Bug reports">🐛</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=AdrianDAlessandro" title="Code">💻</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=AdrianDAlessandro" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.imperial.ac.uk/research-software-engineering"><img src="https://avatars.githubusercontent.com/u/6853046?v=4?s=100" width="100px;" alt="James Paul Turner"/><br /><sub><b>James Paul Turner</b></sub></a><br /><a href="#infra-jamesturner246" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=jamesturner246" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://dc2917.github.io"><img src="https://avatars.githubusercontent.com/u/45606273?v=4?s=100" width="100px;" alt="Dan Cummins"/><br /><sub><b>Dan Cummins</b></sub></a><br /><a href="#infra-dc2917" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=dc2917" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
