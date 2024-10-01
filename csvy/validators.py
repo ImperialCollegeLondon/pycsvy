@@ -1,5 +1,5 @@
 import csv
-from typing import Type, TypeVar
+from typing import Optional, Type, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -29,22 +29,22 @@ class CSVDialectValidator(BaseModel):
             characters. It defaults to '"'.
         skipinitialspace: When True, whitespace immediately following the delimiter is
             ignored. It defaults to False.
-        strict: When True, raise exception Error on bad CSV input. It defaults to False.
     """
 
     delimiter: str = Field(default=",")
     doublequote: bool = Field(default=True)
-    escapechar: str = Field(default=None)
+    escapechar: Optional[str] = Field(default=None)
     lineterminator: str = Field(default="\r\n")
     quotechar: str = Field(default='"')
     skipinitialspace: bool = Field(default=False)
-    strict: bool = Field(default=False)
 
     def to_dialect(self) -> csv.Dialect:
         """Converts the validator to a custom csv.Dialect object.
 
         This method converts the validator to a custom csv.Dialect object that can be
         used to read or write CSV files with the specified dialect.
+
+        For 'quoting', the default value is used, as it is not serializable.
 
         Returns:
             A custom csv.Dialect object with the specified attributes.
@@ -59,7 +59,7 @@ class CSVDialectValidator(BaseModel):
                 "lineterminator": self.lineterminator,
                 "quotechar": self.quotechar,
                 "skipinitialspace": self.skipinitialspace,
-                "strict": self.strict,
+                "quoting": csv.QUOTE_MINIMAL,  # This is not serializable.
             },
         )
         return dialect()
@@ -82,7 +82,6 @@ class CSVDialectValidator(BaseModel):
             lineterminator=excel.lineterminator,
             quotechar=excel.quotechar,
             skipinitialspace=excel.skipinitialspace,
-            strict=excel.strict,
         )
 
     @classmethod
@@ -91,6 +90,8 @@ class CSVDialectValidator(BaseModel):
 
         This method returns a validator for the Excel Tab CSV Dialect, which is a common
         dialect used in Excel files with tab delimiters.
+
+        `excel` has not parameter `strict` so that one is ignored.
 
         Returns:
             A validator for the Excel Tab CSV Dialect.
@@ -103,11 +104,10 @@ class CSVDialectValidator(BaseModel):
             lineterminator=excel_tab.lineterminator,
             quotechar=excel_tab.quotechar,
             skipinitialspace=excel_tab.skipinitialspace,
-            strict=excel_tab.strict,
         )
 
     @classmethod
-    def unix(cls: Type[T]) -> T:
+    def unix_dialect(cls: Type[T]) -> T:
         """Returns a validator for the Unix CSV Dialect.
 
         This method returns a validator for the Unix CSV Dialect, which is a common
@@ -124,5 +124,4 @@ class CSVDialectValidator(BaseModel):
             lineterminator=unix.lineterminator,
             quotechar=unix.quotechar,
             skipinitialspace=unix.skipinitialspace,
-            strict=unix.strict,
         )
