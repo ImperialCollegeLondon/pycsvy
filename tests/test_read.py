@@ -91,6 +91,30 @@ def test_read_to_dataframe(data_path):
         read_to_dataframe(data_path)
 
 
+def test_read_to_polars(data_path):
+    """Test the read_to_polars function."""
+    import polars as pl
+    from polars.testing import assert_frame_equal
+
+    from csvy.readers import read_to_polars
+
+    lazy_data, header = read_to_polars(data_path)
+    assert isinstance(lazy_data, pl.LazyFrame)
+    assert tuple(lazy_data.columns) == ("Date", "WTI")
+    assert isinstance(header, dict)
+    assert len(header) > 0
+
+    eager_data, _ = read_to_polars(data_path, eager=True)
+    assert_frame_equal(lazy_data.collect(), eager_data)
+
+    import csvy.readers as readers
+
+    readers.LazyFrame = None
+
+    with pytest.raises(ModuleNotFoundError):
+        read_to_polars(data_path)
+
+
 def test_read_to_list(array_data_path):
     """Test the read_to_list function."""
     from csvy.readers import read_to_list
