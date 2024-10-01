@@ -1,6 +1,10 @@
+"""A collection of functions for parsing CSVY files."""
+
+from __future__ import annotations
+
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import yaml
 
@@ -55,8 +59,8 @@ def get_comment(line: str, marker: str = "---") -> str:
 
 
 def read_header(
-    filename: Union[Path, str], marker: str = "---", **kwargs: Any
-) -> Tuple[Dict[str, Any], int, str]:
+    filename: Path | str, marker: str = "---", **kwargs: Any
+) -> tuple[dict[str, Any], int, str]:
     """Read the yaml-formatted header from a file.
 
     Args:
@@ -90,8 +94,8 @@ def read_header(
 
 
 def read_metadata(
-    filename: Union[Path, str], marker: str = "---", **kwargs: Any
-) -> Dict[str, Any]:
+    filename: Path | str, marker: str = "---", **kwargs: Any
+) -> dict[str, Any]:
     """Read the yaml-formatted metadata from a file.
 
     Args:
@@ -106,11 +110,11 @@ def read_metadata(
 
 
 def read_to_array(
-    filename: Union[Path, str],
+    filename: Path | str,
     marker: str = "---",
-    csv_options: Optional[Dict[str, Any]] = None,
-    yaml_options: Optional[Dict[str, Any]] = None,
-) -> Tuple[NDArray, Dict[str, Any]]:
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
+) -> tuple[NDArray, dict[str, Any]]:
     """Reads a CSVY file into dict with the header and array with the data.
 
     Args:
@@ -141,11 +145,11 @@ def read_to_array(
 
 
 def read_to_dataframe(
-    filename: Union[Path, str],
+    filename: Path | str,
     marker: str = "---",
-    csv_options: Optional[Dict[str, Any]] = None,
-    yaml_options: Optional[Dict[str, Any]] = None,
-) -> Tuple[DataFrame, Dict[str, Any]]:
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
+) -> tuple[DataFrame, dict[str, Any]]:
     """Reads a CSVY file into dict with the header and a DataFrame with the data.
 
     Possible 'skiprows' and 'comment' argument provided in the 'csv_options' dictionary
@@ -179,12 +183,12 @@ def read_to_dataframe(
 
 
 def read_to_polars(
-    filename: Union[Path, str],
+    filename: Path | str,
     marker: str = "---",
-    csv_options: Optional[Dict[str, Any]] = None,
-    yaml_options: Optional[Dict[str, Any]] = None,
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
     eager: bool = False,
-) -> Tuple[Union[LazyFrame, PolarsDataFrame], Dict[str, Any]]:
+) -> tuple[LazyFrame | PolarsDataFrame, dict[str, Any]]:
     """Reads a CSVY file into dict with the header and a Polars LazyFrame with the data.
 
     This uses the `scan_csv` method from Polars to read the data. This returns a polars
@@ -227,11 +231,11 @@ def read_to_polars(
 
 
 def read_to_list(
-    filename: Union[Path, str],
+    filename: Path | str,
     marker: str = "---",
-    csv_options: Optional[Dict[str, Any]] = None,
-    yaml_options: Optional[Dict[str, Any]] = None,
-) -> Tuple[List[List], Dict[str, Any]]:
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
+) -> tuple[list[list], dict[str, Any]]:
     """Reads a CSVY file into a list with the header and a nested list with the data.
 
     Args:
@@ -254,7 +258,7 @@ def read_to_list(
     options = csv_options.copy() if csv_options is not None else {}
 
     data = []
-    with open(filename, "r", newline="") as csvfile:
+    with open(filename, newline="") as csvfile:
         csvreader = csv.reader(csvfile, **options)
 
         for _ in range(nlines):

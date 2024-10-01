@@ -1,14 +1,19 @@
+"""Tests for the csvy writer functions."""
+
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 
 class MockCSVWriter:
+    """A mock CSV writer."""
+
     writerow = MagicMock()
     writerows = MagicMock()
 
 
 def test_save_header(tmpdir, mocker):
+    """Test the write_header function."""
     import yaml
 
     from csvy.writers import write_header
@@ -47,6 +52,7 @@ def test_save_header(tmpdir, mocker):
 
 @patch("numpy.savetxt")
 def test_write_numpy(mock_save, tmpdir):
+    """Test the write_numpy function."""
     import numpy as np
 
     from csvy.writers import write_numpy
@@ -63,6 +69,7 @@ def test_write_numpy(mock_save, tmpdir):
 
 @patch("pandas.DataFrame.to_csv")
 def test_write_pandas(mock_save, tmpdir):
+    """Test the write_pandas function."""
     import pandas as pd
 
     from csvy.writers import write_pandas
@@ -79,6 +86,7 @@ def test_write_pandas(mock_save, tmpdir):
 
 @patch("polars.DataFrame.write_csv")
 def test_write_polars(mock_save, tmpdir, mocker):
+    """Test the write_polars function."""
     import polars as pl
 
     from csvy.writers import write_polars
@@ -102,6 +110,7 @@ def test_write_polars(mock_save, tmpdir, mocker):
 
 @patch("csv.writer")
 def test_write_csv(mock_save, tmpdir):
+    """Test the write_csv function."""
     from csvy.writers import write_csv
 
     class Writer:
@@ -128,6 +137,7 @@ def test_write_csv(mock_save, tmpdir):
     ),
 )
 def test_writer(mock_write_header, mock_csv_writer, csv_options, yaml_options, tmpdir):
+    """Test the Writer class."""
     from csvy.writers import Writer
 
     mock_csv_writer.return_value = MockCSVWriter
@@ -149,6 +159,7 @@ def test_writer(mock_write_header, mock_csv_writer, csv_options, yaml_options, t
 @patch("csv.writer")
 @patch("csvy.writers.write_header")
 def test_writer_writerow(mock_write_header, mock_csv_writer, tmpdir):
+    """Test Writer's writerow method."""
     from csvy.writers import Writer
 
     filename = tmpdir / "some_file.csv"
@@ -162,6 +173,7 @@ def test_writer_writerow(mock_write_header, mock_csv_writer, tmpdir):
 @patch("csv.writer")
 @patch("csvy.writers.write_header")
 def test_writer_writerows(mock_write_header, mock_csv_writer, tmpdir):
+    """Test Writer's writerows method."""
     from csvy.writers import Writer
 
     filename = tmpdir / "some_file.csv"
@@ -173,6 +185,7 @@ def test_writer_writerows(mock_write_header, mock_csv_writer, tmpdir):
 
 
 def test_writer_close(tmpdir):
+    """Test Writer's file closure."""
     from csvy.writers import Writer
 
     filename = tmpdir / "some_file.csv"
@@ -183,6 +196,7 @@ def test_writer_close(tmpdir):
 
 
 def test_writer_context(tmpdir):
+    """Test Writer's context manager."""
     from csvy.writers import Writer
 
     filename = tmpdir / "some_file.csv"
@@ -200,6 +214,7 @@ def test_writer_context(tmpdir):
 @patch("csvy.writers.write_header")
 @patch("csvy.writers.write_data")
 def test_write(mock_write_data, mock_write_header):
+    """Test the write function."""
     from csvy.writers import write
 
     filename = "here.csv"
@@ -224,6 +239,7 @@ def test_write(mock_write_data, mock_write_header):
 
 @patch("csvy.writers.write_csv")
 def test_write_data(mock_write_csv):
+    """Test the write_data function."""
     from csvy.writers import KNOWN_WRITERS, write_data
 
     filename = "here.csv"
