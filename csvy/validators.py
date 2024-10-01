@@ -1,5 +1,7 @@
+"""This module contains validators for the CSVY file format."""
+
 import csv
-from typing import Optional, Type, TypeVar
+from typing import Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -8,7 +10,7 @@ T = TypeVar("T", bound="CSVDialectValidator")
 
 
 class CSVDialectValidator(BaseModel):
-    """Implements a validator for CSV Dialects.
+    r"""Implements a validator for CSV Dialects.
 
     This class is used to validate the CSV Dialects in the CSVY file. It is based on the
     `csv.Dialect` class from the Python Standard Library. It does not include the
@@ -65,7 +67,7 @@ class CSVDialectValidator(BaseModel):
         return dialect()
 
     @classmethod
-    def excel(cls: Type[T]) -> T:
+    def excel(cls: type[T]) -> T:
         """Returns a validator for the Excel CSV Dialect.
 
         This method returns a validator for the Excel CSV Dialect, which is a common
@@ -85,7 +87,7 @@ class CSVDialectValidator(BaseModel):
         )
 
     @classmethod
-    def excel_tab(cls: Type[T]) -> T:
+    def excel_tab(cls: type[T]) -> T:
         """Returns a validator for the Excel Tab CSV Dialect.
 
         This method returns a validator for the Excel Tab CSV Dialect, which is a common
@@ -107,7 +109,7 @@ class CSVDialectValidator(BaseModel):
         )
 
     @classmethod
-    def unix_dialect(cls: Type[T]) -> T:
+    def unix_dialect(cls: type[T]) -> T:
         """Returns a validator for the Unix CSV Dialect.
 
         This method returns a validator for the Unix CSV Dialect, which is a common
