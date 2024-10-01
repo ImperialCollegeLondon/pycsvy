@@ -1,9 +1,12 @@
+"""Tests for the csvy reader functions."""
+
 from unittest.mock import patch
 
 import pytest
 
 
 def test_get_comment():
+    """Test the get_comment function."""
     from csvy.readers import get_comment
 
     assert "" == get_comment("--- Something else")
@@ -15,6 +18,7 @@ def test_get_comment():
 
 
 def test_get_header(data_path, data_comment_path):
+    """Test the read_header function."""
     from csvy.readers import read_header
 
     header, nlines, comment = read_header(data_path)
@@ -34,6 +38,7 @@ def test_get_header(data_path, data_comment_path):
 
 @patch("csvy.readers.read_header")
 def test_read_metadata(read_header_mock, data_path):
+    """Test the read_metadata function."""
     from csvy import read_metadata
 
     read_header_mock.return_value = ("a", "b")
@@ -47,6 +52,7 @@ def test_read_metadata(read_header_mock, data_path):
 
 
 def test_read_to_array(array_data_path):
+    """Test the read_to_array function."""
     import numpy as np
 
     from csvy.readers import read_to_array
@@ -66,6 +72,7 @@ def test_read_to_array(array_data_path):
 
 
 def test_read_to_dataframe(data_path):
+    """Test the read_to_dataframe function."""
     import pandas as pd
 
     from csvy.readers import read_to_dataframe
@@ -85,6 +92,7 @@ def test_read_to_dataframe(data_path):
 
 
 def test_read_to_list(array_data_path):
+    """Test the read_to_list function."""
     from csvy.readers import read_to_list
 
     data, header = read_to_list(array_data_path, csv_options={"delimiter": ","})
