@@ -42,6 +42,7 @@ flake8 = "^4.0.1"
 types-PyYAML = "^6.0.7"
 bump2version = "^1.0.1"
 coverage = "^7.1.0"
+polars = "^1.8.2"
 
 [tool.poetry.group.docs]
 optional = true
