@@ -197,7 +197,7 @@ def read_to_polars(
     Args:
         filename:  Name of the file to read.
         marker: The marker characters that indicate the yaml header.
-        csv_options: Options to pass to pd.read_csv.
+        csv_options: Options to pass to pl.scan_csv.
         yaml_options: Options to pass to yaml.safe_load.
         eager: Whether to load the data into memory.
 
