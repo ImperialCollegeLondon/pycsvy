@@ -35,15 +35,13 @@ pytest = "^7.2"
 pytest-cov = "^3.0.0"
 pytest-mypy = "^0.9.1"
 pytest-mock = "^3.7.0"
-isort = "^5.10.1"
 pre-commit = "^2.18.1"
-black = "^23.3.0"
 numpy = "^1.24.2"
 pandas = "^2.0.0"
-flake8 = "^4.0.1"
 types-PyYAML = "^6.0.7"
 bump2version = "^1.0.1"
 coverage = "^7.1.0"
+ruff = "^0.6.8"
 
 [tool.poetry.group.docs]
 optional = true
@@ -55,6 +53,18 @@ mkdocs-material = "^8.5.7"
 mkdocs-gen-files = "^0.4.0"
 mkdocs-literate-nav = "^0.5.0"
 mkdocs-section-index = "^0.3.4"
+
+[tool.ruff]
+target-version = "py39"
+lint.select = [
+    "D",   # pydocstyle
+    "E",   # pycodestyle
+    "F",   # Pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "RUF", # ruff
+]
+lint.pydocstyle.convention = "google"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
