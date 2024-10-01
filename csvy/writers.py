@@ -223,6 +223,42 @@ def write_pandas(
     return False
 
 
+@register_writer
+def write_polars(
+    filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
+) -> bool:
+    """Writes the polars dataframe to the chosen file, adding it after the header.
+
+    Args:
+        filename: Name of the file to save the data into. The data will be added to the
+            end of the file.
+        data: The data. If it is a polars DataFrame or LazyFrame, it will be saved,
+            otherwise nothing is done.
+        comment: String to use to mark the header lines as comments.
+        **kwargs: Arguments to be passed to the underlaying saving method.
+
+    Returns:
+        True if the writer worked, False otherwise.
+    """
+    try:
+        import polars as pl
+
+        if isinstance(data, pl.LazyFrame):
+            # Streaming mode (saving with `LazyFrame.sink_csv`) is unstable, so we
+            # collect the data into a DataFrame first
+            data = data.collect()
+        if isinstance(data, pl.DataFrame):
+            with open(filename, "a", newline="") as f:
+                data.write_csv(f, **kwargs)
+
+            return True
+
+    except ModuleNotFoundError:
+        logging.getLogger().debug("Polars is not installed, so not using 'write_csv'.")
+
+    return False
+
+
 def write_csv(
     filename: Union[Path, str], data: Any, comment: str = "", **kwargs: Any
 ) -> bool:

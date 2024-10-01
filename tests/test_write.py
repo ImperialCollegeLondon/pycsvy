@@ -77,6 +77,29 @@ def test_write_pandas(mock_save, tmpdir):
     mock_save.assert_called_once()
 
 
+@patch("polars.DataFrame.write_csv")
+def test_write_polars(mock_save, tmpdir, mocker):
+    import polars as pl
+
+    from csvy.writers import write_polars
+
+    filename = tmpdir / "some_file.csv"
+
+    data = []
+    assert not write_polars(filename, data)
+
+    data = pl.DataFrame()
+    assert write_polars(filename, data)
+    mock_save.assert_called_once()
+
+    data = pl.LazyFrame()
+    collect_spy = mocker.spy(data, "collect")
+    mock_save.reset_mock()
+    assert write_polars(filename, data)
+    collect_spy.assert_called_once()
+    mock_save.assert_called_once()
+
+
 @patch("csv.writer")
 def test_write_csv(mock_save, tmpdir):
     from csvy.writers import write_csv
