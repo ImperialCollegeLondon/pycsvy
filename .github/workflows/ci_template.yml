@@ -9,7 +9,7 @@ on:
         type: string
       python-version:
         description: 'Python version'
-        default: '["3.12"]'
+        default: '["3.9", "3.12"]'
         type: string
 
 jobs:

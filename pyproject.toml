@@ -24,6 +24,7 @@ packages = [{ include = "csvy" }]
 [tool.poetry.dependencies]
 python = "^3.9"
 PyYAML = "^6.0"
+pydantic = "^2.9.2"
 
 # A list of all of the optional dependencies, which are included in the
 # below `extras`. They can be opted into by apps.
