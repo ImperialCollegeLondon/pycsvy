@@ -1,0 +1,94 @@
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  attestations: write
+  id-token: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci_template.yml
+    with:
+      os: '["ubuntu-latest", "windows-latest", "macos-latest"]'
+      python-version: '["3.9", "3.10", "3.11", "3.12"]'
+
+  build-wheel:
+    needs: test
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - uses: hynek/build-and-inspect-python-package@v2
+      with:
+        attest-build-provenance-github: true
+        skip-wheel: true
+
+  publish-docs:
+    needs: build-wheel
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install Poetry
+      uses: abatilo/actions-poetry@v2.3.0
+      with:
+        poetry-version: 1.8.3
+
+    - name: Install dependencies
+      run: poetry install --with docs
+
+    - name: Deploy Docs
+      run: poetry run mkdocs gh-deploy --force
+
+  publish-TestPyPI:
+    needs: publish-docs
+    name: Publish to TestPyPI
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download packages built by build-and-inspect-python-package
+      uses: actions/download-artifact@v4
+      with:
+        name: Packages
+        path: dist
+
+    - name: Generate artifact attestation for sdist and wheel
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-path: dist
+
+    - name: Publish package distributions to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        skip-existing: true
+
+  publish-PyPI:
+    needs: publish-TestPyPI
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download packages built by build-and-inspect-python-package
+      uses: actions/download-artifact@v4
+      with:
+        name: Packages
+        path: dist
+
+    - name: Generate artifact attestation for sdist and wheel
+      uses: actions/attest-build-provenance@v1
+      with:
+        subject-path: dist
+
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1

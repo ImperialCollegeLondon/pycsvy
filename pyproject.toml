@@ -11,10 +11,12 @@ classifiers = [
 	"Intended Audience :: Developers",
 	"Intended Audience :: Science/Research",
 	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.8",
 	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
-	"Programming Language :: Python :: 3.11"
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"License :: OSI Approved :: BSD License",
+	"Operating System :: OS Independent",
 ]
 
 packages = [
@@ -22,7 +24,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 PyYAML = "^6.0"
 
 [tool.poetry.group.dev]
@@ -37,7 +39,7 @@ isort = "^5.10.1"
 pre-commit = "^2.18.1"
 black = "^23.3.0"
 numpy = "^1.24.2"
-pandas = "^1.4.1"
+pandas = "^2.0.0"
 flake8 = "^4.0.1"
 types-PyYAML = "^6.0.7"
 bump2version = "^1.0.1"
