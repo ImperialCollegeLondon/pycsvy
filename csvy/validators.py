@@ -1,6 +1,10 @@
 import csv
+from typing import Type, TypeVar
 
 from pydantic import BaseModel, Field
+
+# Create a generic variable that can be 'Parent', or any subclass.
+T = TypeVar("T", bound="CSVDialectValidator")
 
 
 class CSVDialectValidator(BaseModel):
@@ -37,7 +41,14 @@ class CSVDialectValidator(BaseModel):
     strict: bool = Field(default=False)
 
     def to_dialect(self) -> csv.Dialect:
-        """Converts the validator to a custom csv.Dialect object."""
+        """Converts the validator to a custom csv.Dialect object.
+
+        This method converts the validator to a custom csv.Dialect object that can be
+        used to read or write CSV files with the specified dialect.
+
+        Returns:
+            A custom csv.Dialect object with the specified attributes.
+        """
         dialect = type(
             "CustomDialect",
             (csv.Dialect,),
@@ -52,3 +63,66 @@ class CSVDialectValidator(BaseModel):
             },
         )
         return dialect()
+
+    @classmethod
+    def excel(cls: Type[T]) -> T:
+        """Returns a validator for the Excel CSV Dialect.
+
+        This method returns a validator for the Excel CSV Dialect, which is a common
+        dialect used in Excel files.
+
+        Returns:
+            A validator for the Excel CSV Dialect.
+        """
+        excel = csv.excel()
+        return cls(
+            delimiter=excel.delimiter,
+            doublequote=excel.doublequote,
+            escapechar=excel.escapechar,
+            lineterminator=excel.lineterminator,
+            quotechar=excel.quotechar,
+            skipinitialspace=excel.skipinitialspace,
+            strict=excel.strict,
+        )
+
+    @classmethod
+    def excel_tab(cls: Type[T]) -> T:
+        """Returns a validator for the Excel Tab CSV Dialect.
+
+        This method returns a validator for the Excel Tab CSV Dialect, which is a common
+        dialect used in Excel files with tab delimiters.
+
+        Returns:
+            A validator for the Excel Tab CSV Dialect.
+        """
+        excel_tab = csv.excel_tab()
+        return cls(
+            delimiter=excel_tab.delimiter,
+            doublequote=excel_tab.doublequote,
+            escapechar=excel_tab.escapechar,
+            lineterminator=excel_tab.lineterminator,
+            quotechar=excel_tab.quotechar,
+            skipinitialspace=excel_tab.skipinitialspace,
+            strict=excel_tab.strict,
+        )
+
+    @classmethod
+    def unix(cls: Type[T]) -> T:
+        """Returns a validator for the Unix CSV Dialect.
+
+        This method returns a validator for the Unix CSV Dialect, which is a common
+        dialect used in Unix files.
+
+        Returns:
+            A validator for the Unix CSV Dialect.
+        """
+        unix = csv.unix_dialect()
+        return cls(
+            delimiter=unix.delimiter,
+            doublequote=unix.doublequote,
+            escapechar=unix.escapechar,
+            lineterminator=unix.lineterminator,
+            quotechar=unix.quotechar,
+            skipinitialspace=unix.skipinitialspace,
+            strict=unix.strict,
+        )
