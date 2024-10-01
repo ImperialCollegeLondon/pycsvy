@@ -26,8 +26,16 @@ python = "^3.9"
 PyYAML = "^6.0"
 pydantic = "^2.9.2"
 
-[tool.poetry.group.dev]
-optional = true
+# A list of all of the optional dependencies, which are included in the
+# below `extras`. They can be opted into by apps.
+numpy = { version = "^1.24.2", optional = true }
+pandas = { version = "^2.0.0", optional = true }
+polars = { version = "^1.8.2", optional = true }
+
+[tool.poetry.extras]
+numpy = ["numpy"]
+pandas = ["pandas"]
+polars = ["polars"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2"
@@ -42,9 +50,6 @@ bump2version = "^1.0.1"
 coverage = "^7.1.0"
 polars = "^1.8.2"
 ruff = "^0.6.8"
-
-[tool.poetry.group.docs]
-optional = true
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.1"

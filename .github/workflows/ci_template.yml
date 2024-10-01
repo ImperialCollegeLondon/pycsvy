@@ -32,7 +32,7 @@ jobs:
         poetry-version: 1.8.3
 
     - name: Install dependencies
-      run: poetry install --with dev
+      run: poetry install
 
     - name: Run tests
       run: poetry run pytest
