@@ -51,6 +51,16 @@
         "infra",
         "code"
       ]
+    },
+    {
+      "login": "dc2917",
+      "name": "Dan Cummins",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45606273?v=4",
+      "profile": "https://dc2917.github.io",
+      "contributions": [
+        "infra",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
