@@ -20,7 +20,7 @@ easy for data and metadata to get separated.
 
 CSVY is a small Python package to handle CSV files in which the metadata in the header
 is formatted in YAML. It supports reading/writing tabular data contained in numpy
-arrays, pandas DataFrames and nested lists, as well as metadata using a standard python
+arrays, pandas DataFrames, polars DataFrames, and nested lists, as well as metadata using a standard python
 dictionary. Ultimately, it aims to incorporate information about the [CSV
 dialect](https://specs.frictionlessdata.io/csv-dialect/) used and a [Table
 Schema](https://specs.frictionlessdata.io/table-schema/) specifying the contents of each
@@ -34,8 +34,12 @@ column to aid the reading and interpretation of the data.
 pip install pycsvy
 ```
 
-In order to support reading into `numpy` arrays or into `pandas` DataFrames, you will
-need to install those two packages, too.
+In order to support reading into `numpy` arrays, `pandas` DataFrames or `polars` DataFrames, you will
+need to install those packages, too. This can be support by specifying extras, ie:
+
+```bash
+pip install pycsvy[pandas, polars]
+```
 
 ## Usage
 
@@ -84,12 +88,19 @@ data, metadata = csvy.read_to_array("important_data.csv")
 
 # To read into a pandas DataFrame
 data, metadata = csvy.read_to_dataframe("important_data.csv")
+
+# To read into a polars LazyFrame
+data, metadata = csvy.read_to_polars("important_data.csv")
+
+# To read into a polars DataFrame
+data, metadata = csvy.read_to_polars("important_data.csv", eager=True)
 ```
 
 The appropriate writer/reader will be selected based on the type of `data`:
 
 - numpy array: `np.savetxt` and `np.loadtxt`
 - pandas DataFrame: `pd.DataFrame.to_csv` and `pd.read_csv`
+- polars DataFrame/LazyFrame: `pl.DataFrame.write_csv` and `pl.scan_csv`
 - nested lists:' `csv.writer` and `csv.reader`
 
 Options can be passed to the tabular data writer/reader by setting the `csv_options`
