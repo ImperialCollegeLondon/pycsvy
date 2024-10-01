@@ -45,7 +45,7 @@ jobs:
         poetry-version: 1.8.3
 
     - name: Install dependencies
-      run: poetry install --with docs
+      run: poetry install
 
     - name: Deploy Docs
       run: poetry run mkdocs gh-deploy --force
