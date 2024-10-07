@@ -39,5 +39,5 @@ jobs:
 
     - name: Upload coverage to Codecov
       if: success() && (matrix.os == 'ubuntu-latest' && matrix.python-version == 3.9)
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
 
