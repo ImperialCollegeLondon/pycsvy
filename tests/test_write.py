@@ -59,11 +59,11 @@ def test_write_numpy(mock_save, tmpdir):
 
     filename = tmpdir / "some_file.csv"
 
-    data = []
+    data: list = []
     assert not write_numpy(filename, data)
 
-    data = np.array([])
-    assert write_numpy(filename, data)
+    data2 = np.array([])
+    assert write_numpy(filename, data2)
     mock_save.assert_called_once()
 
 
@@ -76,7 +76,7 @@ def test_write_pandas(mock_save, tmpdir):
 
     filename = tmpdir / "some_file.csv"
 
-    data = []
+    data: list = []
     assert not write_pandas(filename, data)
 
     data = pd.DataFrame()
@@ -93,17 +93,17 @@ def test_write_polars(mock_save, tmpdir, mocker):
 
     filename = tmpdir / "some_file.csv"
 
-    data = []
+    data: list = []
     assert not write_polars(filename, data)
 
-    data = pl.DataFrame()
-    assert write_polars(filename, data)
+    data2 = pl.DataFrame()
+    assert write_polars(filename, data2)
     mock_save.assert_called_once()
 
-    data = pl.LazyFrame()
+    data3 = pl.LazyFrame()
     collect_spy = mocker.spy(data, "collect")
     mock_save.reset_mock()
-    assert write_polars(filename, data)
+    assert write_polars(filename, data3)
     collect_spy.assert_called_once()
     mock_save.assert_called_once()
 
@@ -167,7 +167,7 @@ def test_writer_writerow(mock_write_header, mock_csv_writer, tmpdir):
 
     data = (1, 2, 3)
     writer.writerow(data)
-    writer._writer.writerow.assert_called_once_with(data)
+    writer._writer.writerow.assert_called_once_with(data)  # type: ignore [attr-defined]
 
 
 @patch("csv.writer")
@@ -181,7 +181,7 @@ def test_writer_writerows(mock_write_header, mock_csv_writer, tmpdir):
 
     data = ((1, 2, 3),)
     writer.writerows(data)
-    writer._writer.writerows.assert_called_once_with(data)
+    writer._writer.writerows.assert_called_once_with(data)  # type: ignore [attr-defined]
 
 
 def test_writer_close(tmpdir):
@@ -250,11 +250,15 @@ def test_write_data(mock_write_csv):
     KNOWN_WRITERS.clear()
     KNOWN_WRITERS.append(MagicMock(return_value=True))
     write_data(filename, data, comment, **csv_options)
-    KNOWN_WRITERS[0].assert_called_once_with(filename, data, comment, **csv_options)
+    KNOWN_WRITERS[0].assert_called_once_with(  # type: ignore [attr-defined]
+        filename, data, comment, **csv_options
+    )
     mock_write_csv.assert_not_called()
 
     KNOWN_WRITERS.clear()
     KNOWN_WRITERS.append(MagicMock(return_value=False))
     write_data(filename, data, comment, **csv_options)
-    KNOWN_WRITERS[0].assert_called_once_with(filename, data, comment, **csv_options)
+    KNOWN_WRITERS[0].assert_called_once_with(  # type: ignore [attr-defined]
+        filename, data, comment, **csv_options
+    )
     mock_write_csv.assert_called_once_with(filename, data, comment, **csv_options)

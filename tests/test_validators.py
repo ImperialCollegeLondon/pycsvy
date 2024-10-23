@@ -58,10 +58,10 @@ def test_register_validator_duplicate(validators_registry):
     # With overwriting, we should not raise an error,
     # and the validator should be overwritten.
     @register_validator(name, overwrite=True)
-    class MyOverwritingValidator(BaseModel):
+    class MyNewOverwritingValidator(BaseModel):
         pass
 
-    assert validators_registry[name] == MyOverwritingValidator
+    assert validators_registry[name] == MyNewOverwritingValidator
 
 
 def test_register_validator_not_base_model(validators_registry):
@@ -70,7 +70,7 @@ def test_register_validator_not_base_model(validators_registry):
 
     with pytest.raises(TypeError):
 
-        @register_validator("not_base_model")
+        @register_validator("not_base_model")  # type: ignore [arg-type]
         class NotBaseModel:
             pass
 
