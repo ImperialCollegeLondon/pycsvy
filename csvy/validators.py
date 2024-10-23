@@ -1,7 +1,7 @@
 """This module contains validators for the CSVY file format."""
 
 import csv
-from typing import Callable, Optional, TypeVar
+from typing import Any, Callable, Optional, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -38,7 +38,7 @@ def register_validator(
     return decorator
 
 
-def validate_read(header: dict) -> dict:
+def validate_read(header: dict[str, Any]) -> dict[str, Any]:
     """Runs the validators on the header in a read operation.
 
     This function runs the validators on the header. It uses the keys of the header to
@@ -60,7 +60,7 @@ def validate_read(header: dict) -> dict:
     return validated_header
 
 
-def validate_write(header: dict) -> dict:
+def validate_write(header: dict[str, Any]) -> dict[str, Any]:
     """Uses the validators to create the header in a write operation.
 
     Transforms the header with validators to a header with dictionaries that can be
