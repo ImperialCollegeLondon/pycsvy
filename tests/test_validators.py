@@ -76,3 +76,21 @@ def test_register_validator_not_base_model():
         @register_validator("not_base_model")
         class NotBaseModel:
             pass
+
+
+def test_run_validators_in_read():
+    """Test that we can run validators on the header."""
+    from pydantic import BaseModel, PositiveInt
+
+    from csvy.validators import register_validator, validate_read
+
+    @register_validator("my_validator")
+    class MyValidator(BaseModel):
+        value: PositiveInt
+
+    header = {"author": "Gandalf", "my_validator": {"value": 42}}
+    validated_header = validate_read(header)
+
+    assert isinstance(validated_header["my_validator"], MyValidator)
+    assert validated_header["my_validator"].value == 42
+    assert validated_header["author"] == header["author"]

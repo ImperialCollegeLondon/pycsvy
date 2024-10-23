@@ -38,6 +38,28 @@ def register_validator(
     return decorator
 
 
+def validate_read(header: dict) -> dict:
+    """Runs the validators on the header in a read operation.
+
+    This function runs the validators on the header. It uses the keys of the header to
+    find the validators in the registry and runs them on the corresponding values.
+
+    Args:
+        header: The header of the CSVY file.
+
+    Returns:
+        The validated header.
+    """
+    validated_header = {}
+    for key, value in header.items():
+        if key in VALIDATORS_REGISTRY:
+            validator = VALIDATORS_REGISTRY[key]
+            validated_header[key] = validator(**value)
+        else:
+            validated_header[key] = value
+    return validated_header
+
+
 # Create a generic variable that can be 'Parent', or any subclass.
 T = TypeVar("T", bound="CSVDialectValidator")
 
