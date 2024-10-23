@@ -101,7 +101,7 @@ def test_write_polars(mock_save, tmpdir, mocker):
     mock_save.assert_called_once()
 
     data3 = pl.LazyFrame()
-    collect_spy = mocker.spy(data, "collect")
+    collect_spy = mocker.spy(data3, "collect")
     mock_save.reset_mock()
     assert write_polars(filename, data3)
     collect_spy.assert_called_once()
