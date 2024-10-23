@@ -76,7 +76,7 @@ def read_header(
     markers = 0
     nlines = 0
     comment = ""
-    with Path(filename).open("r") as f:
+    with Path(filename).open("r", encoding="utf-8") as f:
         for line in f:
             if nlines == 0:
                 comment = get_comment(line, marker=marker)
@@ -258,7 +258,7 @@ def read_to_list(
     options = csv_options.copy() if csv_options is not None else {}
 
     data = []
-    with open(filename, newline="") as csvfile:
+    with open(filename, encoding="utf-8", newline="") as csvfile:
         csvreader = csv.reader(csvfile, **options)
 
         for _ in range(nlines):

@@ -92,7 +92,9 @@ class Writer:
         buffering = 1 if line_buffering else -1
 
         # Newline must be "" as per csv.writer's documentation
-        self._file = Path(filename).open("w", newline="", buffering=buffering)
+        self._file = Path(filename).open(
+            "w", encoding="utf-8", newline="", buffering=buffering
+        )
         write_header(self._file, header, comment, **yaml_options)
 
         self._writer = csv.writer(self._file, **csv_options)
@@ -134,7 +136,7 @@ def write_header(
             arguments, it will be set to sort_keys=False.
     """
     if not isinstance(file, TextIOBase):
-        with Path(file).open("w") as f:
+        with Path(file).open("w", encoding="utf-8") as f:
             write_header(f, header, comment, **kwargs)
             return
 
@@ -192,7 +194,7 @@ def write_numpy(
 
         kwargs["comments"] = comment
         if isinstance(data, np.ndarray):
-            with open(filename, "a") as f:
+            with open(filename, "a", encoding="utf-8") as f:
                 np.savetxt(f, data, **kwargs)
 
             return True
@@ -224,7 +226,7 @@ def write_pandas(
         import pandas as pd
 
         if isinstance(data, pd.DataFrame):
-            with open(filename, "a", newline="") as f:
+            with open(filename, "a", encoding="utf-8", newline="") as f:
                 data.to_csv(f, **kwargs)
 
             return True
@@ -260,7 +262,7 @@ def write_polars(
             # collect the data into a DataFrame first
             data = data.collect()
         if isinstance(data, pl.DataFrame):
-            with open(filename, "a", newline="") as f:
+            with open(filename, "a", encoding="utf-8", newline="") as f:
                 data.write_csv(f, **kwargs)
 
             return True
@@ -287,7 +289,7 @@ def write_csv(
     Returns:
         True if the writer worked, False otherwise.
     """
-    with open(filename, "a", newline="") as f:
+    with open(filename, "a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f, **kwargs)
         for row in data:
             writer.writerow(row)
