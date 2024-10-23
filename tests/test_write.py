@@ -145,12 +145,13 @@ def test_writer(mock_write_header, mock_csv_writer, csv_options, yaml_options, t
     filename = tmpdir / "some_file.csv"
     header = {"name": "HAL"}
     comment = "# "
+    encoding = "utf-8"
 
-    writer = Writer(filename, header, comment, csv_options, yaml_options)
+    writer = Writer(filename, header, comment, encoding, csv_options, yaml_options)
     csv_options = csv_options or {}
     yaml_options = yaml_options or {}
     mock_write_header.assert_called_once_with(
-        writer._file, header, comment, **yaml_options
+        writer._file, header, comment, encoding, **yaml_options
     )
 
     mock_csv_writer.assert_called_once_with(writer._file, **csv_options)
@@ -221,6 +222,7 @@ def test_write(mock_write_data, mock_write_header):
     data = [[1, 2], [3, 4]]
     header = {"name": "HAL"}
     comment = "# "
+    encoding = "encoding"
     csv_options = {"delimiter": ","}
     yaml_options = {"sort_keys": False}
 
@@ -229,12 +231,17 @@ def test_write(mock_write_data, mock_write_header):
         data,
         header,
         comment,
+        encoding,
         csv_options=csv_options,
         yaml_options=yaml_options,
     )
 
-    mock_write_header.assert_called_once_with(filename, header, comment, **yaml_options)
-    mock_write_data.assert_called_once_with(filename, data, comment, **csv_options)
+    mock_write_header.assert_called_once_with(
+        filename, header, comment, encoding, **yaml_options
+    )
+    mock_write_data.assert_called_once_with(
+        filename, data, comment, encoding, **csv_options
+    )
 
 
 @patch("csvy.writers.write_csv")
@@ -245,16 +252,19 @@ def test_write_data(mock_write_csv):
     filename = "here.csv"
     data = [[1, 2], [3, 4]]
     comment = "# "
+    encoding = "encoding"
     csv_options = {"delimiter": ","}
 
     KNOWN_WRITERS.clear()
     KNOWN_WRITERS.append(MagicMock(return_value=True))
-    write_data(filename, data, comment, **csv_options)
+    write_data(filename, data, comment, encoding, **csv_options)
     KNOWN_WRITERS[0].assert_called_once_with(filename, data, comment, **csv_options)
     mock_write_csv.assert_not_called()
 
     KNOWN_WRITERS.clear()
     KNOWN_WRITERS.append(MagicMock(return_value=False))
-    write_data(filename, data, comment, **csv_options)
+    write_data(filename, data, comment, encoding, **csv_options)
     KNOWN_WRITERS[0].assert_called_once_with(filename, data, comment, **csv_options)
-    mock_write_csv.assert_called_once_with(filename, data, comment, **csv_options)
+    mock_write_csv.assert_called_once_with(
+        filename, data, comment, encoding, **csv_options
+    )
