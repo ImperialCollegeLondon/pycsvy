@@ -45,14 +45,14 @@ def test_register_validator_duplicate(validators_registry):
     name = "my_validator"
 
     @register_validator(name)
-    class MyValidator(BaseModel):
+    class _(BaseModel):
         pass
 
     # Without overwriting, we should raise an error.
     with pytest.raises(ValueError):
 
         @register_validator(name)
-        class MyOverwritingValidator(BaseModel):
+        class _(BaseModel):  # type: ignore [no-redef]
             pass
 
     # With overwriting, we should not raise an error,
