@@ -60,6 +60,27 @@ def validate_read(header: dict) -> dict:
     return validated_header
 
 
+def validate_write(header: dict) -> dict:
+    """Uses the validators to create the header in a write operation.
+
+    Transforms the header with validators to a header with dictionaries that can be
+    saved as yaml. It is the reversed operation of validate_read, so calling
+    validate_write(validate_read(header)) should return the original header.
+
+    Args:
+        header: Dictionary to be saved as the header of the CSVY file.
+
+    Returns:
+        The validated header.
+    """
+    validated_header = {}
+    for key, value in header.items():
+        validated_header[key] = (
+            value.model_dump() if isinstance(value, BaseModel) else value
+        )
+    return validated_header
+
+
 # Create a generic variable that can be 'Parent', or any subclass.
 T = TypeVar("T", bound="CSVDialectValidator")
 
