@@ -59,13 +59,14 @@ def get_comment(line: str, marker: str = "---") -> str:
 
 
 def read_header(
-    filename: Path | str, marker: str = "---", **kwargs: Any
+    filename: Path | str, marker: str = "---", encoding: str = "utf-8", **kwargs: Any
 ) -> tuple[dict[str, Any], int, str]:
     """Read the yaml-formatted header from a file.
 
     Args:
         filename: Name of the file to read the header from.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         **kwargs: Arguments to pass to 'yaml.safe_load'.
 
     Returns:
@@ -76,7 +77,7 @@ def read_header(
     markers = 0
     nlines = 0
     comment = ""
-    with Path(filename).open("r", encoding="utf-8") as f:
+    with Path(filename).open("r", encoding=encoding) as f:
         for line in f:
             if nlines == 0:
                 comment = get_comment(line, marker=marker)
@@ -94,24 +95,26 @@ def read_header(
 
 
 def read_metadata(
-    filename: Path | str, marker: str = "---", **kwargs: Any
+    filename: Path | str, marker: str = "---", encoding: str = "utf-8", **kwargs: Any
 ) -> dict[str, Any]:
     """Read the yaml-formatted metadata from a file.
 
     Args:
         filename: Name of the file to read the header from.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         **kwargs: Arguments to pass to 'yaml.safe_load'.
 
     Returns:
         The metadata stored in the header.
     """
-    return read_header(filename, marker, **kwargs)[0]
+    return read_header(filename, marker, encoding, **kwargs)[0]
 
 
 def read_to_array(
     filename: Path | str,
     marker: str = "---",
+    encoding: str = "utf-8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[NDArray, dict[str, Any]]:
@@ -120,6 +123,7 @@ def read_to_array(
     Args:
         filename:  Name of the file to read.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         csv_options: Options to pass to np.loadtxt.
         yaml_options: Options to pass to yaml.safe_load.
 
@@ -136,7 +140,9 @@ def read_to_array(
     import numpy as np
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
+    header, nlines, comment = read_header(
+        filename, marker=marker, encoding=encoding, **yaml_options
+    )
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines + options.get("skiprows", 0)
@@ -147,6 +153,7 @@ def read_to_array(
 def read_to_dataframe(
     filename: Path | str,
     marker: str = "---",
+    encoding: str = "utf-8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[DataFrame, dict[str, Any]]:
@@ -158,6 +165,7 @@ def read_to_dataframe(
     Args:
         filename:  Name of the file to read.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         csv_options: Options to pass to pd.read_csv.
         yaml_options: Options to pass to yaml.safe_load.
 
@@ -174,7 +182,9 @@ def read_to_dataframe(
     import pandas as pd
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
+    header, nlines, comment = read_header(
+        filename, marker=marker, encoding=encoding, **yaml_options
+    )
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines
@@ -185,6 +195,7 @@ def read_to_dataframe(
 def read_to_polars(
     filename: Path | str,
     marker: str = "---",
+    encoding: str = "utf-8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
     eager: bool = False,
@@ -201,6 +212,7 @@ def read_to_polars(
     Args:
         filename:  Name of the file to read.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         csv_options: Options to pass to pl.scan_csv.
         yaml_options: Options to pass to yaml.safe_load.
         eager: Whether to load the data into memory.
@@ -218,7 +230,9 @@ def read_to_polars(
     import polars as pl
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
+    header, nlines, comment = read_header(
+        filename, marker=marker, encoding=encoding, **yaml_options
+    )
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skip_rows"] = nlines
@@ -233,6 +247,7 @@ def read_to_polars(
 def read_to_list(
     filename: Path | str,
     marker: str = "---",
+    encoding: str = "utf-8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[list[list], dict[str, Any]]:
@@ -241,6 +256,7 @@ def read_to_list(
     Args:
         filename: Name of the file to read.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         csv_options: Options to pass to csv.reader.
         yaml_options: Options to pass to yaml.safe_load.
 
@@ -253,7 +269,9 @@ def read_to_list(
     import csv
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, _ = read_header(filename, marker=marker, **yaml_options)
+    header, nlines, _ = read_header(
+        filename, marker=marker, encoding=encoding, **yaml_options
+    )
 
     options = csv_options.copy() if csv_options is not None else {}
 
