@@ -20,3 +20,59 @@ def test_shortcut_dialects_roundtrip(shortcut):
     assert dialect.lineterminator == actual.lineterminator
     assert dialect.quotechar == actual.quotechar
     assert dialect.skipinitialspace == actual.skipinitialspace
+
+
+def test_register_validator():
+    """Test that we can register a new validator."""
+    from pydantic import BaseModel
+
+    from csvy.validators import VALIDATORS_REGISTRY, register_validator
+
+    @register_validator("my_validator")
+    class MyValidator(BaseModel):
+        pass
+
+    assert VALIDATORS_REGISTRY["my_validator"] == MyValidator
+
+    # We clean up the registry to avoid side effects in other tests.
+    VALIDATORS_REGISTRY.pop("my_validator")
+
+
+def test_register_validator_duplicate():
+    """Test that we cannot register a validator with the same name."""
+    from pydantic import BaseModel
+
+    from csvy.validators import VALIDATORS_REGISTRY, register_validator
+
+    # With overwriting, we should not raise an error.
+    name = "my_validator"
+
+    @register_validator(name)
+    class MyValidator(BaseModel):
+        pass
+
+    # Without overwriting, we should raise an error.
+    with pytest.raises(ValueError):
+
+        @register_validator(name)
+        class MyOverwritingValidator(BaseModel):
+            pass
+
+    # With overwriting, we should not raise an error,
+    # and the validator should be overwritten.
+    @register_validator(name, overwrite=True)
+    class MyOverwritingValidator(BaseModel):
+        pass
+
+    assert VALIDATORS_REGISTRY[name] == MyOverwritingValidator
+
+
+def test_register_validator_not_base_model():
+    """Test that we cannot register a validator that is not a BaseModel."""
+    from csvy.validators import register_validator
+
+    with pytest.raises(TypeError):
+
+        @register_validator("not_base_model")
+        class NotBaseModel:
+            pass
