@@ -71,7 +71,7 @@ def test_register_validator_not_base_model(validators_registry):
     with pytest.raises(TypeError):
 
         @register_validator("not_base_model")  # type: ignore [arg-type]
-        class NotBaseModel:
+        class _:
             pass
 
 
@@ -100,7 +100,7 @@ def test_validate_read_missing(validators_registry):
     from csvy.validators import register_validator, validate_read
 
     @register_validator("my_validator")
-    class MyValidator(BaseModel):
+    class _(BaseModel):
         value: PositiveInt
 
     header = {"author": "Gandalf", "my_validator": {}}
@@ -116,7 +116,7 @@ def test_validate_write(validators_registry):
     from csvy.validators import register_validator, validate_read, validate_write
 
     @register_validator("my_validator")
-    class MyValidator(BaseModel):
+    class _(BaseModel):
         value: PositiveInt
 
     header = {"author": "Gandalf", "my_validator": {"value": 42}}
