@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
@@ -270,3 +271,58 @@ def read_to_list(
             data.append(row)
 
     return data, header
+
+
+class ReaderBase(ABC):
+    """Base class for CSVY readers.
+
+    This class is meant to be subclassed by other classes that implement the read_data
+    method. It provides a common interface for reading CSVY files.
+    """
+
+    def __init__(self, filename: Path | str, marker: str = "---"):
+        """Initializes the ReaderBase object.
+
+        Args:
+            filename: Name of the file to read.
+            marker: The marker characters that indicate the yaml header.
+        """
+        self._filename: Path | str = filename
+        self._marker: str = marker
+        self._nlines: int = 0
+        self._comment: str = ""
+        self._header: dict[str, Any] | None = None
+
+    def read(
+        self, csv_options: dict[str, Any], yaml_options: dict[str, Any]
+    ) -> tuple[Any, dict[str, Any]]:
+        """Reads the file and returns the data.
+
+        Args:
+            csv_options: Options to pass to the read_data method.
+            yaml_options: Options to pass to the read_header method.
+
+        Returns:
+            Tuple containing: The data and the header.
+        """
+        header = self._header or self.read_header(**yaml_options)
+        data = self.read_data(**csv_options)
+        return data, header
+
+    def read_header(self, **kwargs) -> dict[str, Any]:
+        """Reads the header from the file.
+
+        Args:
+            **kwargs: Arguments to pass to the read_header method.
+
+        Returns:
+            The header as a dictionary.
+        """
+        self._header, self._nlines, self._comment = read_header(
+            self._filename, self._marker, **kwargs
+        )
+        return self._header
+
+    @abstractmethod
+    def read_data(self, **kwargs) -> Any:
+        """Reads the data from the file."""
