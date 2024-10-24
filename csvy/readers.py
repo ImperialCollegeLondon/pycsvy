@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABC, abstractmethod
+from itertools import zip_longest
 from pathlib import Path
 from typing import Any
 
@@ -289,8 +290,8 @@ class ReaderBase(ABC):
         """
         self._filename: Path | str = filename
         self._marker: str = marker
-        self._nlines: int = 0
-        self._comment: str = ""
+        self._nlines: int | None = None
+        self._comment: str | None = None
         self._header: dict[str, Any] | None = None
 
     def read(
@@ -326,3 +327,40 @@ class ReaderBase(ABC):
     @abstractmethod
     def read_data(self, **kwargs) -> Any:
         """Reads the data from the file."""
+
+
+class ListReader(ReaderBase):
+    """Reader class for reading CSVY files into a list of lists."""
+
+    def read_data(
+        self, in_columns: bool = False, fillvalue: str = "", **kwargs
+    ) -> list[list]:
+        """Reads the data from the file.
+
+        Args:
+            in_columns: Whether to read the data in columns.
+            fillvalue: Value to use for missing data when reading in columns.
+            **kwargs: Arguments to pass to the csv.reader function.
+
+        Returns:
+            The data as a list of lists.
+        """
+        import csv
+
+        if self._nlines is None:
+            self.read_header()
+
+        data: list[list[str]] = []
+        with open(self._filename, newline="") as csvfile:
+            csvreader = csv.reader(csvfile, **kwargs)
+
+            for _ in range(self._nlines):
+                next(csvreader)
+
+            for row in csvreader:
+                data.append(row)
+
+        if in_columns:
+            data = list(map(list, zip_longest(*data, fillvalue=fillvalue)))
+
+        return data
