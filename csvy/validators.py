@@ -1,10 +1,8 @@
 """This module contains validators for the CSVY file format."""
 
-from __future__ import annotations
-
 import csv
 from enum import Enum
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, TypeVar, Union
 
 from pydantic import BaseModel, Field
 
@@ -117,7 +115,7 @@ class CSVDialectValidator(BaseModel):
 
     delimiter: str = Field(default=",")
     doublequote: bool = Field(default=True)
-    escapechar: str | None = Field(default=None)
+    escapechar: Union[str, None] = Field(default=None)
     lineterminator: str = Field(default="\r\n")
     quotechar: str = Field(default='"')
     skipinitialspace: bool = Field(default=False)
