@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from __future__ import annotations
+
 import csv
 from collections.abc import Mapping
 from enum import Enum
-from typing import Any, Callable, TypeVar, Union
+from typing import Any, Callable, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -132,7 +134,7 @@ class CSVDialectValidator(BaseModel):
 
     delimiter: str = Field(default=",")
     doublequote: bool = Field(default=True)
-    escapechar: Union[str, None] = Field(default=None)
+    escapechar: str | None = Field(default=None)
     lineterminator: str = Field(default="\r\n")
     quotechar: str = Field(default='"')
     skipinitialspace: bool = Field(default=False)
