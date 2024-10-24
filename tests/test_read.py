@@ -109,7 +109,7 @@ def test_read_to_polars(data_path):
 
     import csvy.readers as readers
 
-    readers.LazyFrame = None
+    readers.LazyFrame = None  # type: ignore [misc]
 
     with pytest.raises(ModuleNotFoundError):
         read_to_polars(data_path)

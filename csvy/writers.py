@@ -11,6 +11,8 @@ from typing import Any
 
 import yaml
 
+from .validators import validate_write
+
 KNOWN_WRITERS: list[Callable[[Path | str, Any, str], bool]] = []
 
 
@@ -133,15 +135,16 @@ def write_header(
         **kwargs: Arguments to pass to 'yaml.safe_dump'. If "sort_keys" is not one of
             arguments, it will be set to sort_keys=False.
     """
+    header_ = validate_write(header)
     if not isinstance(file, TextIOBase):
         with Path(file).open("w") as f:
-            write_header(f, header, comment, **kwargs)
+            write_header(f, header_, comment, **kwargs)
             return
 
     if "sort_keys" not in kwargs:
         kwargs["sort_keys"] = False
 
-    stream = yaml.safe_dump(header, **kwargs)
+    stream = yaml.safe_dump(header_, **kwargs)
     stream = "\n".join([f"{comment}" + line for line in stream.split("\n")])
     marker = f"{comment}---\n"
     stream = marker + stream + "---\n"
