@@ -125,3 +125,13 @@ def test_read_to_list(array_data_path):
     assert len(data[0]) == 4
     assert isinstance(header, dict)
     assert len(header) > 0
+
+
+@pytest.mark.parametrize("in_columns,num", [(False, 15), (True, 4)])
+def test_ListReader_read_data(in_columns, num, array_data_path):
+    """Test the read_to_dict function."""
+    from csvy.readers import ListReader
+
+    data = ListReader(array_data_path).read_data(in_columns=in_columns, delimiter=",")
+    assert isinstance(data, list)
+    assert len(data) == num
