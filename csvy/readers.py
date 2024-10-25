@@ -147,7 +147,7 @@ def read_to_array(
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines + options.get("skiprows", 0)
     options["comments"] = comment[0] if len(comment) >= 1 else "#"
-    return np.loadtxt(filename, **options), header
+    return np.loadtxt(filename, encoding=encoding, **options), header
 
 
 def read_to_dataframe(
@@ -189,7 +189,7 @@ def read_to_dataframe(
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines
     options["comment"] = comment[0] if len(comment) >= 1 else None
-    return pd.read_csv(filename, **options), header
+    return pd.read_csv(filename, encoding=encoding, **options), header
 
 
 def read_to_polars(
@@ -238,7 +238,7 @@ def read_to_polars(
     options["skip_rows"] = nlines
     options["comment_prefix"] = comment[0] if len(comment) >= 1 else None
 
-    lf = pl.scan_csv(filename, **options)
+    lf = pl.scan_csv(filename, encoding=encoding, **options)
     if eager:
         return lf.collect(), header
     return lf, header
