@@ -219,10 +219,14 @@ def read_to_polars(
 
     Raises:
         ModuleNotFoundError: If polars is not found.
+        ValueError: If an invalid character encoding is specified.
 
     Returns:
         Tuple containing: The polars LazyFrame and the header as a dictionary.
     """
+    if encoding not in ("utf8", "utf8-lossy"):
+        raise ValueError("Encoding must be either 'utf8' or 'utf8-lossy'")
+
     if LazyFrame is None:
         raise ModuleNotFoundError(
             "Module polars is not present. Install it to read data into DataFrame."
@@ -231,7 +235,7 @@ def read_to_polars(
 
     yaml_options = yaml_options if yaml_options is not None else {}
     header, nlines, comment = read_header(
-        filename, marker=marker, encoding=encoding, **yaml_options
+        filename, marker=marker, encoding="utf-8", **yaml_options
     )
 
     options = csv_options.copy() if csv_options is not None else {}

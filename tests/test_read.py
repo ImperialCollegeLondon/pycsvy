@@ -118,6 +118,9 @@ def test_read_to_polars(data_path):
     with pytest.raises(ModuleNotFoundError):
         read_to_polars(data_path)
 
+    with pytest.raises(ValueError):
+        read_to_polars(data_path, encoding="utf-9")
+
 
 def test_read_to_list(array_data_path):
     """Test the read_to_list function."""
