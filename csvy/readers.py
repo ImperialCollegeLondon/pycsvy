@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 
@@ -195,7 +195,7 @@ def read_to_dataframe(
 def read_to_polars(
     filename: Path | str,
     marker: str = "---",
-    encoding: str = "utf-8",
+    encoding: Literal["utf8", "utf8-lossy"] = "utf8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
     eager: bool = False,
