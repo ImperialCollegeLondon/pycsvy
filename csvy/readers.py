@@ -276,7 +276,7 @@ def read_to_list(
     options = csv_options.copy() if csv_options is not None else {}
 
     data = []
-    with open(filename, encoding="utf-8", newline="") as csvfile:
+    with open(filename, encoding=encoding, newline="") as csvfile:
         csvreader = csv.reader(csvfile, **options)
 
         for _ in range(nlines):
