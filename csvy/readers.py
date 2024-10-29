@@ -272,41 +272,27 @@ def read_to_list(
     return data, header
 
 
-def basic_read(
-    filename: Path | str,
-    marker: str = "---",
-    csv_options: dict[str, Any] | None = None,
-    yaml_options: dict[str, Any] | None = None,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Reads a CSVY file and returns data in a dictionary format with header and data.
-
-    This function only requires the `pyyaml` dependency, so it provides a basic read
-    functionality that outputs a dictionary with two main keys: 'columns' and 'data'.
+def basic_read(filename: Path | str, marker: str = "---", **kwargs: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+    """
+    Reads a CSVY file into a dictionary with 'columns' and 'data'.
 
     Args:
         filename: Name of the file to read.
-        marker: The marker characters that indicate the yaml header.
-        csv_options: Options to pass to csv.reader.
-        yaml_options: Options to pass to yaml.safe_load.
+        marker: The marker characters that indicate the YAML header.
+        **kwargs: Additional arguments for YAML parsing.
 
     Returns:
         Tuple containing:
-            - A dictionary with 'columns' (list of column names) and 'data' (2D list of row data).
+            - A dictionary with 'columns' (list of column names) and 
+              'data' (2D list of row data).
             - A dictionary with metadata from the header.
     """
-    import csv
+    data, metadata = read_to_list(filename, marker=marker, **kwargs)
+    
+    # Clean column names and data rows
+    columns = [col.strip() for col in data[0]] if data else []
+    row_data = [[cell.strip() for cell in row] for row in data[1:]] if len(data) > 1 else []
+    
+    return {"columns": columns, "data": row_data}, metadata
 
-    yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, _ = read_header(filename, marker=marker, **yaml_options)
 
-    options = csv_options.copy() if csv_options is not None else {}
-
-    with open(filename, newline="") as csvfile:
-        csvreader = csv.reader(csvfile, **options)
-        for _ in range(nlines):
-            next(csvreader)
-
-        columns = next(csvreader)
-        data = [row for row in csvreader]
-
-    return {"columns": columns, "data": data}, header
