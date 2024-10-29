@@ -1,6 +1,5 @@
-"""
-Tests for the basic_read function in the csvy library.
-"""
+"""Tests for the basic_read function in the csvy library."""
+
 import unittest
 from pathlib import Path
 
