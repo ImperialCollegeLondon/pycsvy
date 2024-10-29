@@ -280,7 +280,7 @@ def basic_read(
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Reads a CSVY file and returns data in a dictionary format with header and data.
 
-    This function only requires the `pyyaml` dependency, so it provides a basic read 
+    This function only requires the `pyyaml` dependency, so it provides a basic read
     functionality that outputs a dictionary with two main keys: 'columns' and 'data'.
 
     Args:
@@ -303,10 +303,10 @@ def basic_read(
 
     with open(filename, newline="") as csvfile:
         csvreader = csv.reader(csvfile, **options)
-       
+
         for _ in range(nlines):
             next(csvreader)
-        
+
         columns = next(csvreader)
         data = [row for row in csvreader]
 
