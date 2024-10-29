@@ -303,7 +303,6 @@ def basic_read(
 
     with open(filename, newline="") as csvfile:
         csvreader = csv.reader(csvfile, **options)
-
         for _ in range(nlines):
             next(csvreader)
 
