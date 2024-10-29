@@ -272,9 +272,10 @@ def read_to_list(
     return data, header
 
 
-def basic_read(filename: Path | str, marker: str = "---", **kwargs: Any) -> tuple[dict[str, Any], dict[str, Any]]:
-    """
-    Reads a CSVY file into a dictionary with 'columns' and 'data'.
+def basic_read(
+    filename: Path | str, marker: str = "---", **kwargs: Any
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Reads a CSVY file into a dictionary with 'columns' and 'data'.
 
     Args:
         filename: Name of the file to read.
@@ -283,16 +284,16 @@ def basic_read(filename: Path | str, marker: str = "---", **kwargs: Any) -> tupl
 
     Returns:
         Tuple containing:
-            - A dictionary with 'columns' (list of column names) and 
+            - A dictionary with 'columns' (list of column names) and
               'data' (2D list of row data).
             - A dictionary with metadata from the header.
     """
     data, metadata = read_to_list(filename, marker=marker, **kwargs)
-    
+
     # Clean column names and data rows
     columns = [col.strip() for col in data[0]] if data else []
-    row_data = [[cell.strip() for cell in row] for row in data[1:]] if len(data) > 1 else []
-    
+    row_data = (
+        [[cell.strip() for cell in row] for row in data[1:]] if len(data) > 1 else []
+    )
+
     return {"columns": columns, "data": row_data}, metadata
-
-
