@@ -1,9 +1,0 @@
-# ---
-title: Sample Dataset
-author: User
-description: "This is a test CSVY file"
-# ---
-col1, col2, col3
-1, 2, 3
-4, 5, 6
-7, 8, 9

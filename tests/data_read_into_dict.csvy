@@ -1,0 +1,9 @@
+# ---
+title: Sample Data for Read to Dict
+author: Test User
+description: This is a test file for validating the read_into_dict function.
+# ---
+col1,col2,col3
+1,2,3
+4,5,6
+7,8,9
