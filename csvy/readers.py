@@ -235,6 +235,46 @@ def read_to_polars(
     return lf, header
 
 
+def read_to_list(
+    filename: Path | str,
+    marker: str = "---",
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
+) -> tuple[list[list], dict[str, Any]]:
+    """Reads a CSVY file into a list with the header and a nested list with the data.
+
+    Args:
+        filename: Name of the file to read.
+        marker: The marker characters that indicate the yaml header.
+        csv_options: Options to pass to csv.reader.
+        yaml_options: Options to pass to yaml.safe_load.
+
+    Raises:
+        ModuleNotFoundError: If numpy is not found.
+
+    Returns:
+        Tuple containing: The nested list and the header as a dictionary.
+    """
+    import csv
+
+    yaml_options = yaml_options if yaml_options is not None else {}
+    header, nlines, _ = read_header(filename, marker=marker, **yaml_options)
+
+    options = csv_options.copy() if csv_options is not None else {}
+
+    data = []
+    with open(filename, newline="") as csvfile:
+        csvreader = csv.reader(csvfile, **options)
+
+        for _ in range(nlines):
+            next(csvreader)
+
+        for row in csvreader:
+            data.append(row)
+
+    return data, header
+
+
 def read_into_dict(file_path: Path | str):
     """Read a CSVY file and return its contents as a dictionary and metadata.
 
