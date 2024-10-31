@@ -130,7 +130,7 @@ def read_to_polars(
     yaml_options: dict[str, Any] | None = None,
     eager: bool = False,
 ) -> tuple[LazyFrame | PolarsDataFrame, dict[str, Any]]:
-     """Reads a CSVY file into a dict with the header 
+    """Reads a CSVY file into a dict with the header 
     and a Polars LazyFrame with the data.
     """
     if LazyFrame is None:
