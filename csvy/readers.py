@@ -1,4 +1,5 @@
 """A collection of functions for parsing CSVY files."""
+
 from __future__ import annotations
 
 import csv
