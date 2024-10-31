@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import csv
 import logging
 from itertools import zip_longest
 from pathlib import Path
@@ -235,9 +234,9 @@ def read_to_polars(
         return lf.collect(), header
     return lf, header
 
+
 def read_into_dict(file_path: Path | str):
-    """
-    Read a CSVY file and return its contents as a dictionary and metadata.
+    """Read a CSVY file and return its contents as a dictionary and metadata.
 
     This function assumes that the first row of the data section contains the
     column names.
