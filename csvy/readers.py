@@ -305,14 +305,14 @@ def read_into_dict(file_path: Path | str):
                 section = "data"
             else:
                 break
-            continue  
+            continue
 
         if section == "metadata":
             if ":" in line:
                 key, value = line.split(":", 1)
                 metadata[key.strip()] = value.strip()
         elif section == "data":
-            if line: 
+            if line:
                 data.append(line.split(","))
 
     if data:
