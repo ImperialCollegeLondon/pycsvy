@@ -319,4 +319,4 @@ def read_into_dict(file_path: Path | str):
         data = list(map(list, zip_longest(*data, fillvalue="")))
         data_dict = {data[i][0]: data[i][1:] for i in range(len(data))}
         return data_dict, metadata
-    return {}, {}    
+    return {}, {}
