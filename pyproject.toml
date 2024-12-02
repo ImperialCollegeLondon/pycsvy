@@ -49,7 +49,7 @@ types-PyYAML = "^6.0.7"
 bump2version = "^1.0.1"
 coverage = "^7.1.0"
 polars = "^1.8.2"
-ruff = ">=0.6.8,<0.8.0"
+ruff = ">=0.6.8,<0.9.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.1"
