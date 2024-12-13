@@ -165,7 +165,7 @@ class CSVDialectValidator(BaseModel):
             doublequote=excel.doublequote,
             escapechar=excel.escapechar,
             lineterminator=excel.lineterminator,
-            quotechar=excel.quotechar,
+            quotechar=excel.quotechar or '"',
             skipinitialspace=excel.skipinitialspace,
         )
 
@@ -188,7 +188,7 @@ class CSVDialectValidator(BaseModel):
             doublequote=excel_tab.doublequote,
             escapechar=excel_tab.escapechar,
             lineterminator=excel_tab.lineterminator,
-            quotechar=excel_tab.quotechar,
+            quotechar=excel_tab.quotechar or '"',
             skipinitialspace=excel_tab.skipinitialspace,
         )
 
@@ -209,6 +209,6 @@ class CSVDialectValidator(BaseModel):
             doublequote=unix.doublequote,
             escapechar=unix.escapechar,
             lineterminator=unix.lineterminator,
-            quotechar=unix.quotechar,
+            quotechar=unix.quotechar or '"',
             skipinitialspace=unix.skipinitialspace,
         )
