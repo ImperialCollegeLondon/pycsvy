@@ -45,10 +45,14 @@ def test_read_metadata(read_header_mock, data_path):
 
     filename = "test.csv"
     marker = "!!!"
+    encoding = "hieroglyphics"
     kwargs = {"key": "value"}
-    assert read_metadata(filename=filename, marker=marker, **kwargs) == "a"
+    assert (
+        read_metadata(filename=filename, marker=marker, encoding=encoding, **kwargs)
+        == "a"
+    )
 
-    read_header_mock.assert_called_once_with(filename, marker, **kwargs)
+    read_header_mock.assert_called_once_with(filename, marker, encoding, **kwargs)
 
 
 def test_read_to_array(array_data_path):
@@ -113,6 +117,9 @@ def test_read_to_polars(data_path):
 
     with pytest.raises(ModuleNotFoundError):
         read_to_polars(data_path)
+
+    with pytest.raises(ValueError):
+        read_to_polars(data_path, encoding="utf-9")  # type: ignore [arg-type]
 
 
 def test_read_to_list(array_data_path):
