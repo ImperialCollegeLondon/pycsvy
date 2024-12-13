@@ -269,4 +269,6 @@ def test_write_data(mock_write_csv):
     KNOWN_WRITERS[0].assert_called_once_with(  # type: ignore [attr-defined]
         filename, data, comment, **csv_options
     )
-    mock_write_csv.assert_called_once_with(filename, data, comment, encoding, **csv_options)
+    mock_write_csv.assert_called_once_with(
+        filename, data, comment, encoding, **csv_options
+    )
