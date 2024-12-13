@@ -1,14 +1,91 @@
 """This module contains validators for the CSVY file format."""
 
 import csv
-from typing import Optional, TypeVar
+from typing import Any, Callable, Optional, TypeVar
 
 from pydantic import BaseModel, Field
+
+VALIDATORS_REGISTRY: dict[str, type[BaseModel]] = {}
+"""Registry of validators to run on the header."""
+
+
+def register_validator(
+    name: str, overwrite: bool = False
+) -> Callable[[type[BaseModel]], type[BaseModel]]:
+    """Registers a validator in the registry.
+
+    This function is a decorator that registers a validator in the registry. The name
+    of the validator is used as the key in the registry.
+
+    Args:
+        name: The name of the validator.
+        overwrite: Whether to overwrite the validator if it already exists.
+
+    Returns:
+        The decorator function that registers the validator.
+    """
+
+    def decorator(cls: type[BaseModel]) -> type[BaseModel]:
+        if not issubclass(cls, BaseModel):
+            raise TypeError("Validators must be subclasses of pydantic.BaseModel.")
+
+        if name in VALIDATORS_REGISTRY and not overwrite:
+            raise ValueError(f"Validator with name '{name}' already exists.")
+
+        VALIDATORS_REGISTRY[name] = cls
+        return cls
+
+    return decorator
+
+
+def validate_read(header: dict[str, Any]) -> dict[str, Any]:
+    """Runs the validators on the header in a read operation.
+
+    This function runs the validators on the header. It uses the keys of the header to
+    find the validators in the registry and runs them on the corresponding values.
+
+    Args:
+        header: The header of the CSVY file.
+
+    Returns:
+        The validated header.
+    """
+    validated_header = {}
+    for key, value in header.items():
+        if key in VALIDATORS_REGISTRY:
+            validator = VALIDATORS_REGISTRY[key]
+            validated_header[key] = validator(**value)
+        else:
+            validated_header[key] = value
+    return validated_header
+
+
+def validate_write(header: dict[str, Any]) -> dict[str, Any]:
+    """Uses the validators to create the header in a write operation.
+
+    Transforms the header with validators to a header with dictionaries that can be
+    saved as yaml. It is the reversed operation of validate_read, so calling
+    validate_write(validate_read(header)) should return the original header.
+
+    Args:
+        header: Dictionary to be saved as the header of the CSVY file.
+
+    Returns:
+        The validated header.
+    """
+    validated_header = {}
+    for key, value in header.items():
+        validated_header[key] = (
+            value.model_dump() if isinstance(value, BaseModel) else value
+        )
+    return validated_header
+
 
 # Create a generic variable that can be 'Parent', or any subclass.
 T = TypeVar("T", bound="CSVDialectValidator")
 
 
+@register_validator("csv_dialect")
 class CSVDialectValidator(BaseModel):
     r"""Implements a validator for CSV Dialects.
 

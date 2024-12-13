@@ -40,7 +40,7 @@ jobs:
         python-version: 3.9
 
     - name: Install Poetry
-      uses: abatilo/actions-poetry@v3.0.0
+      uses: abatilo/actions-poetry@v3.0.1
       with:
         poetry-version: 1.8.3
 
@@ -63,7 +63,7 @@ jobs:
         path: dist
 
     - name: Generate artifact attestation for sdist and wheel
-      uses: actions/attest-build-provenance@v1
+      uses: actions/attest-build-provenance@v2
       with:
         subject-path: dist
 
@@ -86,7 +86,7 @@ jobs:
         path: dist
 
     - name: Generate artifact attestation for sdist and wheel
-      uses: actions/attest-build-provenance@v1
+      uses: actions/attest-build-provenance@v2
       with:
         subject-path: dist
 

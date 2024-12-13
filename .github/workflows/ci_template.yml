@@ -27,7 +27,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
   
     - name: Install Poetry
-      uses: abatilo/actions-poetry@v3.0.0
+      uses: abatilo/actions-poetry@v3.0.1
       with:
         poetry-version: 1.8.3
 
@@ -39,5 +39,5 @@ jobs:
 
     - name: Upload coverage to Codecov
       if: success() && (matrix.os == 'ubuntu-latest' && matrix.python-version == 3.9)
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
 
