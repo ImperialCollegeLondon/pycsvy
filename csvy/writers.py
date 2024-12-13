@@ -35,6 +35,7 @@ def write(
     data: Any,
     header: dict[str, Any],
     comment: str = "",
+    encoding: str = "utf-8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> None:
@@ -46,6 +47,7 @@ def write(
         data: The data to add to the file.
         header: Dictionary with the header information to save.
         comment: String to use to mark the header lines as comments.
+        encoding: The character encoding to use in the file to write.
         csv_options: Arguments to pass to the CSV writer, being this `savetxt`, panda's
             `to_csv` or something else. Mind that any argument related to the character
             to indicate a comment or header line will be ignored.
@@ -55,8 +57,8 @@ def write(
     csv_options = csv_options if csv_options is not None else {}
     yaml_options = yaml_options if yaml_options is not None else {}
 
-    write_header(filename, header, comment, **yaml_options)
-    write_data(filename, data, comment, **csv_options)
+    write_header(filename, header, comment, encoding, **yaml_options)
+    write_data(filename, data, comment, encoding, **csv_options)
 
 
 class Writer:
@@ -70,6 +72,7 @@ class Writer:
         filename: Path | str,
         header: dict[str, Any],
         comment: str = "",
+        encoding: str = "utf-8",
         csv_options: dict[str, Any] | None = None,
         yaml_options: dict[str, Any] | None = None,
         line_buffering: bool = False,
@@ -80,6 +83,7 @@ class Writer:
             filename: Path to file. If it exists it will be overwritten.
             header: Dictionary with the header information to save.
             comment: String to use to mark the header lines as comments.
+            encoding: The character encoding to use when writing to file.
             csv_options: Arguments to pass to csv.writer()
             yaml_options: Arguments to pass to the 'yaml.safe_dump' function to control
                 writing the header.
@@ -94,8 +98,10 @@ class Writer:
         buffering = 1 if line_buffering else -1
 
         # Newline must be "" as per csv.writer's documentation
-        self._file = Path(filename).open("w", newline="", buffering=buffering)
-        write_header(self._file, header, comment, **yaml_options)
+        self._file = Path(filename).open(
+            "w", encoding=encoding, newline="", buffering=buffering
+        )
+        write_header(self._file, header, comment, encoding, **yaml_options)
 
         self._writer = csv.writer(self._file, **csv_options)
 
@@ -124,6 +130,7 @@ def write_header(
     file: Path | str | TextIOBase,
     header: dict[str, Any],
     comment: str = "",
+    encoding: str = "utf-8",
     **kwargs: Any,
 ) -> None:
     """Writes the header dictionary into the file with lines starting with comment.
@@ -132,12 +139,13 @@ def write_header(
         file: File handle or path to file. Will be overwritten if it exists.
         header: Dictionary with the header information to save.
         comment: String to use to mark the header lines as comments.
+        encoding: The character encoding to use in the file to write.
         **kwargs: Arguments to pass to 'yaml.safe_dump'. If "sort_keys" is not one of
             arguments, it will be set to sort_keys=False.
     """
     header_ = validate_write(header)
     if not isinstance(file, TextIOBase):
-        with Path(file).open("w") as f:
+        with Path(file).open("w", encoding=encoding) as f:
             write_header(f, header_, comment, **kwargs)
             return
 
@@ -152,7 +160,11 @@ def write_header(
 
 
 def write_data(
-    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str,
+    data: Any,
+    comment: str = "",
+    encoding: str = "utf-8",
+    **kwargs: Any,
 ) -> None:
     """Writes the tabular data to the chosen file, adding it after the header.
 
@@ -164,18 +176,23 @@ def write_data(
             package. If it is a numpy array, the `savetxt` will be used, while if it is
             a pandas Dataframe, the `to_csv` method will be used.
         comment: String to use to mark the header lines as comments.
+        encoding: The character encoding to use in the file to write.
         **kwargs: Arguments to be passed to the underlaying saving method.
     """
     for fun in KNOWN_WRITERS:
         if fun(filename, data, comment, **kwargs):
             return
 
-    write_csv(filename, data, comment, **kwargs)
+    write_csv(filename, data, comment, encoding, **kwargs)
 
 
 @register_writer
 def write_numpy(
-    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str,
+    data: Any,
+    comment: str = "",
+    encoding: str = "utf-8",
+    **kwargs: Any,
 ) -> bool:
     """Writes the numpy array to the chosen file, adding it after the header.
 
@@ -185,6 +202,7 @@ def write_numpy(
         data: The data. If it is a numpy array, it will be saved, otherwise nothing is
             done.
         comment: String to use to mark the header lines as comments.
+        encoding: The character encoding to use in the file to write.
         **kwargs: Arguments to be passed to the underlaying saving method.
 
     Return:
@@ -195,7 +213,7 @@ def write_numpy(
 
         kwargs["comments"] = comment
         if isinstance(data, np.ndarray):
-            with open(filename, "a") as f:
+            with open(filename, "a", encoding=encoding) as f:
                 np.savetxt(f, data, **kwargs)
 
             return True
@@ -208,7 +226,11 @@ def write_numpy(
 
 @register_writer
 def write_pandas(
-    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str,
+    data: Any,
+    comment: str = "",
+    encoding: str = "utf-8",
+    **kwargs: Any,
 ) -> bool:
     """Writes the pandas dataframe to the chosen file, adding it after the header.
 
@@ -218,6 +240,7 @@ def write_pandas(
         data: The data. If it is a pandas dataframe, it will be saved, otherwise nothing
             is done.
         comment: String to use to mark the header lines as comments.
+        encoding: The character encoding to use in the file to write.
         **kwargs: Arguments to be passed to the underlaying saving method.
 
     Returns:
@@ -227,7 +250,7 @@ def write_pandas(
         import pandas as pd
 
         if isinstance(data, pd.DataFrame):
-            with open(filename, "a", newline="") as f:
+            with open(filename, "a", encoding=encoding, newline="") as f:
                 data.to_csv(f, **kwargs)
 
             return True
@@ -240,7 +263,11 @@ def write_pandas(
 
 @register_writer
 def write_polars(
-    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str,
+    data: Any,
+    comment: str = "",
+    encoding: str = "utf-8",
+    **kwargs: Any,
 ) -> bool:
     """Writes the polars dataframe to the chosen file, adding it after the header.
 
@@ -250,6 +277,7 @@ def write_polars(
         data: The data. If it is a polars DataFrame or LazyFrame, it will be saved,
             otherwise nothing is done.
         comment: String to use to mark the header lines as comments.
+        encoding: The character encoding to use in the file to write.
         **kwargs: Arguments to be passed to the underlaying saving method.
 
     Returns:
@@ -263,7 +291,7 @@ def write_polars(
             # collect the data into a DataFrame first
             data = data.collect()
         if isinstance(data, pl.DataFrame):
-            with open(filename, "a", newline="") as f:
+            with open(filename, "a", encoding=encoding, newline="") as f:
                 data.write_csv(f, **kwargs)
 
             return True
@@ -275,7 +303,11 @@ def write_polars(
 
 
 def write_csv(
-    filename: Path | str, data: Any, comment: str = "", **kwargs: Any
+    filename: Path | str,
+    data: Any,
+    comment: str = "",
+    encoding: str = "utf-8",
+    **kwargs: Any,
 ) -> bool:
     """Writes the tabular to the chosen file, adding it after the header.
 
@@ -285,12 +317,13 @@ def write_csv(
         data: The data. Can have anything that counts as a sequence. Each component of
             the sequence will be saved in a different row.
         comment: String to use to mark the header lines as comments.
+        encoding: The character encoding to use in the file to write.
         **kwargs: Arguments to be passed to the underlaying saving method.
 
     Returns:
         True if the writer worked, False otherwise.
     """
-    with open(filename, "a", newline="") as f:
+    with open(filename, "a", encoding=encoding, newline="") as f:
         writer = csv.writer(f, **kwargs)
         for row in data:
             writer.writerow(row)
