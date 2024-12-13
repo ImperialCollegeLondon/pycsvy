@@ -84,7 +84,7 @@ ignore_errors = true
 
 [tool.pytest.ini_options]
 addopts = [
-    "-v", "--ruff", "--ruff-format", "--mypy", "-p", "no:warnings",
+    "-v", "--ruff", "--ruff-format", "--mypy",
     "--cov=csvy", "--cov-report=html:reports/coverage/html",
     "--cov-report=xml:reports/coverage/coverage.xml",
     "--doctest-modules", "--ignore=docs/"

@@ -100,7 +100,7 @@ def test_read_to_polars(data_path):
 
     lazy_data, header = read_to_polars(data_path)
     assert isinstance(lazy_data, pl.LazyFrame)
-    assert tuple(lazy_data.columns) == ("Date", "WTI")
+    assert tuple(lazy_data.collect_schema().names()) == ("Date", "WTI")
     assert isinstance(header, dict)
     assert len(header) > 0
 
