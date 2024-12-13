@@ -46,10 +46,10 @@ pre-commit = ">=2.18.1,<5.0.0"
 numpy = ">=1.24.2,<3.0.0"
 pandas = "^2.0.0"
 types-PyYAML = "^6.0.7"
-bump2version = "^1.0.1"
 coverage = "^7.1.0"
 polars = "^1.8.2"
 ruff = ">=0.6.8,<0.9.0"
+pytest-ruff = "^0.4.1"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.1"
@@ -69,7 +69,25 @@ lint.select = [
 	"UP",  # pyupgrade
 	"RUF", # ruff
 ]
-lint.pydocstyle.convention = "google"
+
+[tool.pycodestyle]
+max-line-length = 88
+convention = "google"
+
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = true
+
+[tool.mypy-setup]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+addopts = [
+    "-v", "--ruff", "--ruff-format", "--mypy",
+    "--cov=csvy", "--cov-report=html:reports/coverage/html",
+    "--cov-report=xml:reports/coverage/coverage.xml",
+    "--doctest-modules", "--ignore=docs/"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,4 +1,4 @@
-"""This module contains validators for the CSVY file format."""
+"""Module that contains validators for the CSVY file format."""
 
 import csv
 from typing import Any, Callable, Optional, TypeVar
@@ -12,7 +12,7 @@ VALIDATORS_REGISTRY: dict[str, type[BaseModel]] = {}
 def register_validator(
     name: str, overwrite: bool = False
 ) -> Callable[[type[BaseModel]], type[BaseModel]]:
-    """Registers a validator in the registry.
+    """Register a validator in the registry.
 
     This function is a decorator that registers a validator in the registry. The name
     of the validator is used as the key in the registry.
@@ -23,6 +23,7 @@ def register_validator(
 
     Returns:
         The decorator function that registers the validator.
+
     """
 
     def decorator(cls: type[BaseModel]) -> type[BaseModel]:
@@ -39,7 +40,7 @@ def register_validator(
 
 
 def validate_read(header: dict[str, Any]) -> dict[str, Any]:
-    """Runs the validators on the header in a read operation.
+    """Run the validators on the header in a read operation.
 
     This function runs the validators on the header. It uses the keys of the header to
     find the validators in the registry and runs them on the corresponding values.
@@ -49,6 +50,7 @@ def validate_read(header: dict[str, Any]) -> dict[str, Any]:
 
     Returns:
         The validated header.
+
     """
     validated_header = {}
     for key, value in header.items():
@@ -61,7 +63,7 @@ def validate_read(header: dict[str, Any]) -> dict[str, Any]:
 
 
 def validate_write(header: dict[str, Any]) -> dict[str, Any]:
-    """Uses the validators to create the header in a write operation.
+    """Use the validators to create the header in a write operation.
 
     Transforms the header with validators to a header with dictionaries that can be
     saved as yaml. It is the reversed operation of validate_read, so calling
@@ -72,6 +74,7 @@ def validate_write(header: dict[str, Any]) -> dict[str, Any]:
 
     Returns:
         The validated header.
+
     """
     validated_header = {}
     for key, value in header.items():
@@ -108,6 +111,7 @@ class CSVDialectValidator(BaseModel):
             characters. It defaults to '"'.
         skipinitialspace: When True, whitespace immediately following the delimiter is
             ignored. It defaults to False.
+
     """
 
     delimiter: str = Field(default=",")
@@ -118,7 +122,7 @@ class CSVDialectValidator(BaseModel):
     skipinitialspace: bool = Field(default=False)
 
     def to_dialect(self) -> csv.Dialect:
-        """Converts the validator to a custom csv.Dialect object.
+        """Convert the validator to a custom csv.Dialect object.
 
         This method converts the validator to a custom csv.Dialect object that can be
         used to read or write CSV files with the specified dialect.
@@ -127,6 +131,7 @@ class CSVDialectValidator(BaseModel):
 
         Returns:
             A custom csv.Dialect object with the specified attributes.
+
         """
         dialect = type(
             "CustomDialect",
@@ -145,13 +150,14 @@ class CSVDialectValidator(BaseModel):
 
     @classmethod
     def excel(cls: type[T]) -> T:
-        """Returns a validator for the Excel CSV Dialect.
+        """Return a validator for the Excel CSV Dialect.
 
         This method returns a validator for the Excel CSV Dialect, which is a common
         dialect used in Excel files.
 
         Returns:
             A validator for the Excel CSV Dialect.
+
         """
         excel = csv.excel()
         return cls(
@@ -159,13 +165,13 @@ class CSVDialectValidator(BaseModel):
             doublequote=excel.doublequote,
             escapechar=excel.escapechar,
             lineterminator=excel.lineterminator,
-            quotechar=excel.quotechar,
+            quotechar=excel.quotechar or '"',
             skipinitialspace=excel.skipinitialspace,
         )
 
     @classmethod
     def excel_tab(cls: type[T]) -> T:
-        """Returns a validator for the Excel Tab CSV Dialect.
+        """Return a validator for the Excel Tab CSV Dialect.
 
         This method returns a validator for the Excel Tab CSV Dialect, which is a common
         dialect used in Excel files with tab delimiters.
@@ -174,6 +180,7 @@ class CSVDialectValidator(BaseModel):
 
         Returns:
             A validator for the Excel Tab CSV Dialect.
+
         """
         excel_tab = csv.excel_tab()
         return cls(
@@ -181,19 +188,20 @@ class CSVDialectValidator(BaseModel):
             doublequote=excel_tab.doublequote,
             escapechar=excel_tab.escapechar,
             lineterminator=excel_tab.lineterminator,
-            quotechar=excel_tab.quotechar,
+            quotechar=excel_tab.quotechar or '"',
             skipinitialspace=excel_tab.skipinitialspace,
         )
 
     @classmethod
     def unix_dialect(cls: type[T]) -> T:
-        """Returns a validator for the Unix CSV Dialect.
+        """Return a validator for the Unix CSV Dialect.
 
         This method returns a validator for the Unix CSV Dialect, which is a common
         dialect used in Unix files.
 
         Returns:
             A validator for the Unix CSV Dialect.
+
         """
         unix = csv.unix_dialect()
         return cls(
@@ -201,6 +209,6 @@ class CSVDialectValidator(BaseModel):
             doublequote=unix.doublequote,
             escapechar=unix.escapechar,
             lineterminator=unix.lineterminator,
-            quotechar=unix.quotechar,
+            quotechar=unix.quotechar or '"',
             skipinitialspace=unix.skipinitialspace,
         )

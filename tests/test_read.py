@@ -69,7 +69,7 @@ def test_read_to_array(array_data_path):
 
     import csvy.readers as readers
 
-    readers.NDArray = None
+    readers.NDArray = None  # type: ignore [assignment]
 
     with pytest.raises(ModuleNotFoundError):
         read_to_array(array_data_path)
@@ -89,7 +89,7 @@ def test_read_to_dataframe(data_path):
 
     import csvy.readers as readers
 
-    readers.DataFrame = None
+    readers.DataFrame = None  # type: ignore [assignment]
 
     with pytest.raises(ModuleNotFoundError):
         read_to_dataframe(data_path)
@@ -104,7 +104,7 @@ def test_read_to_polars(data_path):
 
     lazy_data, header = read_to_polars(data_path)
     assert isinstance(lazy_data, pl.LazyFrame)
-    assert tuple(lazy_data.columns) == ("Date", "WTI")
+    assert tuple(lazy_data.collect_schema().names()) == ("Date", "WTI")
     assert isinstance(header, dict)
     assert len(header) > 0
 
@@ -113,7 +113,7 @@ def test_read_to_polars(data_path):
 
     import csvy.readers as readers
 
-    readers.LazyFrame = None  # type: ignore [misc]
+    readers.LazyFrame = None  # type: ignore [assignment, misc]
 
     with pytest.raises(ModuleNotFoundError):
         read_to_polars(data_path)
