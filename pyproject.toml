@@ -31,6 +31,7 @@ pydantic = "^2.9.2"
 numpy = { version = ">=1.24.2,<3.0.0", optional = true }
 pandas = { version = "^2.0.0", optional = true }
 polars = { version = "^1.8.2", optional = true }
+pytest-ruff = "^0.4.1"
 
 [tool.poetry.extras]
 numpy = ["numpy"]
@@ -69,7 +70,25 @@ lint.select = [
 	"UP",  # pyupgrade
 	"RUF", # ruff
 ]
-lint.pydocstyle.convention = "google"
+
+[tool.pycodestyle]
+max-line-length = 88
+convention = "google"
+
+[tool.mypy]
+ignore_missing_imports = true
+strict_optional = false
+
+[tool.mypy-setup]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+addopts = [
+    "-v", "--ruff", "--ruff-format", "--mypy", "-p", "no:warnings",
+    "--cov=csvy", "--cov-report=html:reports/coverage/html",
+    "--cov-report=xml:reports/coverage/coverage.xml",
+    "--doctest-modules", "--ignore=docs/"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
