@@ -119,7 +119,7 @@ def test_read_to_polars(data_path):
         read_to_polars(data_path)
 
     with pytest.raises(ValueError):
-        read_to_polars(data_path, encoding="utf-9")
+        read_to_polars(data_path, encoding="utf-9")  # type: ignore [arg-type]
 
 
 def test_read_to_list(array_data_path):
