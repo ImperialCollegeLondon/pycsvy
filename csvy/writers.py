@@ -24,6 +24,7 @@ def register_writer(fun: Callable[[Path | str, Any, str], bool]) -> Callable:
 
     Returns:
         Callable: the writer function.
+
     """
     if fun not in KNOWN_WRITERS:
         KNOWN_WRITERS.append(fun)
@@ -38,7 +39,7 @@ def write(
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> None:
-    """Writes the data and header in a CSV file, formating the header as yaml.
+    """Write the data and header in a CSV file, formating the header as yaml.
 
     Args:
         filename: Name of the file to save the information into. If it exists, it will
@@ -51,6 +52,7 @@ def write(
             to indicate a comment or header line will be ignored.
         yaml_options: Arguments to pass to the 'yaml.safe_dump' function to control
             writing the header.
+
     """
     csv_options = csv_options if csv_options is not None else {}
     yaml_options = yaml_options if yaml_options is not None else {}
@@ -84,6 +86,7 @@ class Writer:
             yaml_options: Arguments to pass to the 'yaml.safe_dump' function to control
                 writing the header.
             line_buffering: Line buffering instead of chunk buffering (default False).
+
         """
         if not csv_options:
             csv_options = {}
@@ -126,7 +129,7 @@ def write_header(
     comment: str = "",
     **kwargs: Any,
 ) -> None:
-    """Writes the header dictionary into the file with lines starting with comment.
+    """Write the header dictionary into the file with lines starting with comment.
 
     Args:
         file: File handle or path to file. Will be overwritten if it exists.
@@ -134,6 +137,7 @@ def write_header(
         comment: String to use to mark the header lines as comments.
         **kwargs: Arguments to pass to 'yaml.safe_dump'. If "sort_keys" is not one of
             arguments, it will be set to sort_keys=False.
+
     """
     header_ = validate_write(header)
     if not isinstance(file, TextIOBase):
@@ -154,7 +158,7 @@ def write_header(
 def write_data(
     filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> None:
-    """Writes the tabular data to the chosen file, adding it after the header.
+    """Write the tabular data to the chosen file, adding it after the header.
 
     Args:
         filename: Name of the file to save the data into. The data will be added to the
@@ -165,6 +169,7 @@ def write_data(
             a pandas Dataframe, the `to_csv` method will be used.
         comment: String to use to mark the header lines as comments.
         **kwargs: Arguments to be passed to the underlaying saving method.
+
     """
     for fun in KNOWN_WRITERS:
         if fun(filename, data, comment, **kwargs):
@@ -177,7 +182,7 @@ def write_data(
 def write_numpy(
     filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
-    """Writes the numpy array to the chosen file, adding it after the header.
+    """Write the numpy array to the chosen file, adding it after the header.
 
     Args:
         filename: Name of the file to save the data into. The data will be added to the
@@ -189,6 +194,7 @@ def write_numpy(
 
     Return:
         True if the writer worked, False otherwise.
+
     """
     try:
         import numpy as np
@@ -210,7 +216,7 @@ def write_numpy(
 def write_pandas(
     filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
-    """Writes the pandas dataframe to the chosen file, adding it after the header.
+    """Write the pandas dataframe to the chosen file, adding it after the header.
 
     Args:
         filename: Name of the file to save the data into. The data will be added to the
@@ -222,6 +228,7 @@ def write_pandas(
 
     Returns:
         True if the writer worked, False otherwise.
+
     """
     try:
         import pandas as pd
@@ -242,7 +249,7 @@ def write_pandas(
 def write_polars(
     filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
-    """Writes the polars dataframe to the chosen file, adding it after the header.
+    """Write the polars dataframe to the chosen file, adding it after the header.
 
     Args:
         filename: Name of the file to save the data into. The data will be added to the
@@ -254,6 +261,7 @@ def write_polars(
 
     Returns:
         True if the writer worked, False otherwise.
+
     """
     try:
         import polars as pl
@@ -277,7 +285,7 @@ def write_polars(
 def write_csv(
     filename: Path | str, data: Any, comment: str = "", **kwargs: Any
 ) -> bool:
-    """Writes the tabular to the chosen file, adding it after the header.
+    """Write the tabular to the chosen file, adding it after the header.
 
     Args:
         filename: Name of the file to save the data into. The data will be added to the
@@ -289,6 +297,7 @@ def write_csv(
 
     Returns:
         True if the writer worked, False otherwise.
+
     """
     with open(filename, "a", newline="") as f:
         writer = csv.writer(f, **kwargs)

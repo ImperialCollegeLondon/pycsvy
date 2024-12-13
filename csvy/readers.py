@@ -38,7 +38,7 @@ from .validators import validate_read
 
 
 def get_comment(line: str, marker: str = "---") -> str:
-    """Retrieves the comment character used in the header.
+    """Retrieve the comment character used in the header.
 
     Given that we know the header limiting markers are '---' it is possible to
     automatically find out the comment character by simply retrieving what is
@@ -53,6 +53,7 @@ def get_comment(line: str, marker: str = "---") -> str:
 
     Returns:
         The comment character found.
+
     """
     if marker not in line:
         raise ValueError(f"Yaml header marker '{marker}' not found in line '{line}'.")
@@ -73,6 +74,7 @@ def read_header(
     Returns:
         Tuple containing: a dictionary with the header information, the number of header
             lines, and the comment character.
+
     """
     header = []
     markers = 0
@@ -107,6 +109,7 @@ def read_metadata(
 
     Returns:
         The metadata stored in the header.
+
     """
     return read_header(filename, marker, **kwargs)[0]
 
@@ -117,7 +120,7 @@ def read_to_array(
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[NDArray, dict[str, Any]]:
-    """Reads a CSVY file into dict with the header and array with the data.
+    """Read a CSVY file into dict with the header and array with the data.
 
     Args:
         filename:  Name of the file to read.
@@ -130,6 +133,7 @@ def read_to_array(
 
     Returns:
         Tuple containing: The numpy array and the header as a dictionary.
+
     """
     if NDArray is None:
         raise ModuleNotFoundError(
@@ -152,7 +156,7 @@ def read_to_dataframe(
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[DataFrame, dict[str, Any]]:
-    """Reads a CSVY file into dict with the header and a DataFrame with the data.
+    """Read a CSVY file into dict with the header and a DataFrame with the data.
 
     Possible 'skiprows' and 'comment' argument provided in the 'csv_options' dictionary
     will be ignored.
@@ -168,6 +172,7 @@ def read_to_dataframe(
 
     Returns:
         Tuple containing: The pandas DataFrame and the header as a dictionary.
+
     """
     if DataFrame is None:
         raise ModuleNotFoundError(
@@ -191,7 +196,7 @@ def read_to_polars(
     yaml_options: dict[str, Any] | None = None,
     eager: bool = False,
 ) -> tuple[LazyFrame | PolarsDataFrame, dict[str, Any]]:
-    """Reads a CSVY file into dict with the header and a Polars LazyFrame with the data.
+    """Read a CSVY file into dict with the header and a Polars LazyFrame with the data.
 
     This uses the `scan_csv` method from Polars to read the data. This returns a polars
     LazyFrame, which means the data is not loaded into memory until it is needed. To
@@ -212,6 +217,7 @@ def read_to_polars(
 
     Returns:
         Tuple containing: The polars LazyFrame and the header as a dictionary.
+
     """
     if LazyFrame is None:
         raise ModuleNotFoundError(
@@ -238,7 +244,7 @@ def read_to_list(
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[list[list], dict[str, Any]]:
-    """Reads a CSVY file into a list with the header and a nested list with the data.
+    """Read a CSVY file into a list with the header and a nested list with the data.
 
     Args:
         filename: Name of the file to read.
@@ -251,6 +257,7 @@ def read_to_list(
 
     Returns:
         Tuple containing: The nested list and the header as a dictionary.
+
     """
     import csv
 
