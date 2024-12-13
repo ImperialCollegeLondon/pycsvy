@@ -111,11 +111,12 @@ YAML-formatted header, respectively.
 You can also instruct a writer to use line buffering, instead of the usual chunk buffering.
 
 Finally, you can control the character(s) used to indicate comments by setting the
-`comment` keyword when writing a file. By default, there is no character (""). During reading, the comment character is found atomatically.
+`comment` keyword when writing a file. By default, there is no character ("").
+During reading, the comment character is found automatically.
 
 Note that, by default, these reader functions will assume UTF-8 encoding. You can choose a
 different character encoding by setting the `encoding` keyword argument to any of these
-reader or writer functions. For example, on Windows, Python will assume Windows-1252 encoding,
+reader or writer functions. For example, on Windows, Windows-1252 encoding is often used,
 which can be specified via `encoding='cp1252'`.
 
 ## Contributors ✨
