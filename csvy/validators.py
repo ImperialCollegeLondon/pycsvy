@@ -45,8 +45,11 @@ def validate_header(header: dict[str, Any]) -> dict[str, Any]:
     This function runs the validators on the header. It uses the keys of the header to
     find the validators in the registry and runs them on the corresponding values. As
     a result, some values in the header may be replaced by the validated values in the
-    form of Pydantic models. If the header is an already validated header, the
-    validators are not run in the values that are already Pydantic models.
+    form of Pydantic models.
+
+    If the header is an already validated header, the Pydantic models within, if any,
+    are dumped to dictionaries and re-validated, again. This accounts for the case where
+    attributes of the Pydantic models are changed to invalid values.
 
     Args:
         header: The header of the CSVY file.
@@ -55,13 +58,18 @@ def validate_header(header: dict[str, Any]) -> dict[str, Any]:
         The validated header.
 
     """
-    validated_header = {}
+    validated_header: dict[str, Any] = {}
     for key, value in header.items():
-        if isinstance(value, BaseModel) or key not in VALIDATORS_REGISTRY:
-            validated_header[key] = value
-        else:
+        value_ = value.model_dump() if isinstance(value, BaseModel) else value
+        if key in VALIDATORS_REGISTRY:
+            if not isinstance(value_, dict):
+                raise ValueError(
+                    f"Value for '{key}' must be a dictionary, not a '{type(value_)}'."
+                )
             validator = VALIDATORS_REGISTRY[key]
-            validated_header[key] = validator(**value)
+            validated_header[key] = validator(**value_)
+        else:
+            validated_header[key] = value_
     return validated_header
 
 

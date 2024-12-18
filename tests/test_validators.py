@@ -92,8 +92,13 @@ def test_validate_header(validators_registry):
     assert validated_header["my_validator"].value == 42
     assert validated_header["author"] == header["author"]
 
-    # If the header is already validated, the validators should not run.
+    # If the header is already validated, it should pass
     assert validate_header(validated_header) == validated_header
+
+    # But if the validated header is changed to an invalid value, it should fail
+    validated_header["my_validator"].value = -1
+    with pytest.raises(ValueError):
+        validate_header(validated_header)
 
 
 def test_validate_read_missing(validators_registry):
