@@ -39,11 +39,14 @@ def register_validator(
     return decorator
 
 
-def validate_read(header: dict[str, Any]) -> dict[str, Any]:
-    """Run the validators on the header in a read operation.
+def validate_header(header: dict[str, Any]) -> dict[str, Any]:
+    """Run the validators on the header.
 
     This function runs the validators on the header. It uses the keys of the header to
-    find the validators in the registry and runs them on the corresponding values.
+    find the validators in the registry and runs them on the corresponding values. As
+    a result, some values in the header may be replaced by the validated values in the
+    form of Pydantic models. If the header is an already validated header, the
+    validators are not run in the values that are already Pydantic models.
 
     Args:
         header: The header of the CSVY file.
@@ -54,11 +57,11 @@ def validate_read(header: dict[str, Any]) -> dict[str, Any]:
     """
     validated_header = {}
     for key, value in header.items():
-        if key in VALIDATORS_REGISTRY:
+        if isinstance(value, BaseModel) or key not in VALIDATORS_REGISTRY:
+            validated_header[key] = value
+        else:
             validator = VALIDATORS_REGISTRY[key]
             validated_header[key] = validator(**value)
-        else:
-            validated_header[key] = value
     return validated_header
 
 

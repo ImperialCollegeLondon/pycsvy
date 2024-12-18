@@ -79,14 +79,14 @@ def test_validate_read(validators_registry):
     """Test that we can run validators on the header."""
     from pydantic import BaseModel, PositiveInt
 
-    from csvy.validators import register_validator, validate_read
+    from csvy.validators import register_validator, validate_header
 
     @register_validator("my_validator")
     class MyValidator(BaseModel):
         value: PositiveInt
 
     header = {"author": "Gandalf", "my_validator": {"value": 42}}
-    validated_header = validate_read(header)
+    validated_header = validate_header(header)
 
     assert isinstance(validated_header["my_validator"], MyValidator)
     assert validated_header["my_validator"].value == 42
@@ -97,7 +97,7 @@ def test_validate_read_missing(validators_registry):
     """Test that we can run validators on the header."""
     from pydantic import BaseModel, PositiveInt, ValidationError
 
-    from csvy.validators import register_validator, validate_read
+    from csvy.validators import register_validator, validate_header
 
     @register_validator("my_validator")
     class _(BaseModel):
@@ -106,21 +106,21 @@ def test_validate_read_missing(validators_registry):
     header = {"author": "Gandalf", "my_validator": {}}
 
     with pytest.raises(ValidationError):
-        validate_read(header)
+        validate_header(header)
 
 
 def test_validate_write(validators_registry):
     """Test that we can create the header using the validators."""
     from pydantic import BaseModel, PositiveInt
 
-    from csvy.validators import header_to_dict, register_validator, validate_read
+    from csvy.validators import header_to_dict, register_validator, validate_header
 
     @register_validator("my_validator")
     class _(BaseModel):
         value: PositiveInt
 
     header = {"author": "Gandalf", "my_validator": {"value": 42}}
-    validated_header = validate_read(header)
+    validated_header = validate_header(header)
     new_header = header_to_dict(validated_header)
 
     assert new_header == header

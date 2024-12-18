@@ -11,7 +11,7 @@ from typing import Any
 
 import yaml
 
-from .validators import header_to_dict
+from .validators import header_to_dict, validate_header
 
 KNOWN_WRITERS: list[Callable[[Path | str, Any, str], bool]] = []
 
@@ -147,7 +147,7 @@ def write_header(
             arguments, it will be set to sort_keys=False.
 
     """
-    header_ = header_to_dict(header)
+    header_ = header_to_dict(validate_header(header))
     if not isinstance(file, TextIOBase):
         with Path(file).open("w", encoding=encoding) as f:
             write_header(f, header_, comment, **kwargs)

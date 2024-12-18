@@ -34,7 +34,7 @@ except ModuleNotFoundError:
         "Polars is not installed. Reading into a pl.DataFrame will not work."
     )
 
-from .validators import validate_read
+from .validators import validate_header
 
 
 def get_comment(line: str, marker: str = "---") -> str:
@@ -95,7 +95,7 @@ def read_header(
             line = line.lstrip(comment)
             header.append(line)
 
-    return validate_read(yaml.safe_load("".join(header), **kwargs)), nlines, comment
+    return validate_header(yaml.safe_load("".join(header), **kwargs)), nlines, comment
 
 
 def read_metadata(
