@@ -75,7 +75,7 @@ def test_register_validator_not_base_model(validators_registry):
             pass
 
 
-def test_validate_read(validators_registry):
+def test_validate_header(validators_registry):
     """Test that we can run validators on the header."""
     from pydantic import BaseModel, PositiveInt
 
@@ -91,6 +91,9 @@ def test_validate_read(validators_registry):
     assert isinstance(validated_header["my_validator"], MyValidator)
     assert validated_header["my_validator"].value == 42
     assert validated_header["author"] == header["author"]
+
+    # If the header is already validated, the validators should not run.
+    assert validate_header(validated_header) == validated_header
 
 
 def test_validate_read_missing(validators_registry):
