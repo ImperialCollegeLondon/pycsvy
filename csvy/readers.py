@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from itertools import zip_longest
 from pathlib import Path
 from typing import Any, Literal
 
@@ -299,3 +300,51 @@ def read_to_list(
             data.append(row)
 
     return data, header
+
+
+def read_to_dict(
+    filename: Path | str,
+    marker: str = "---",
+    encoding: str = "utf-8",
+    column_names: list[Any] | int | None = None,
+    fillvalue: Any = "",
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
+) -> tuple[dict[str, list[Any]], dict[str, Any]]:
+    """Read a CSVY file into a dictionary with the header and the data as dictionaries.
+
+    Args:
+        filename: Name of the file to read.
+        marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
+        column_names: Either a list with the column names, the row number containing the
+            column names or None. If None (the default) and a 'column_names' key is not
+            included in the header, an automatic column name ('col_0', 'col_1', ...)
+            will be used. If not None, this will override the column names indicated in
+            the header if the 'column_names' key is present.
+        fillvalue: Value to use for missing data.
+        csv_options: Options to pass to csv.DictReader.
+        yaml_options: Options to pass to yaml.safe_load.
+
+    Returns:
+        Tuple containing: The data and the header both as a dictionaries.
+
+    """
+    data, header = read_to_list(filename, marker, encoding, csv_options, yaml_options)
+
+    longest_row = len(max(data, key=len))
+    column_names = column_names or header.get("column_names", None)
+    if not column_names:
+        column_names = [f"col_{i}" for i in range(len(data[longest_row]))]
+    else:
+        if isinstance(column_names, int):
+            column_names = data.pop(column_names)
+
+        if len(column_names) < longest_row:
+            raise ValueError(
+                "Required column names has less values than the data: "
+                f"({len({column_names})}<{longest_row})."
+            )
+
+    columns = list(map(list, zip_longest(*data, fillvalue=fillvalue)))
+    return dict(zip(column_names, columns)), header
