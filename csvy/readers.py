@@ -313,6 +313,8 @@ def read_to_dict(
 ) -> tuple[dict[str, list[Any]], dict[str, Any]]:
     """Read a CSVY file into a dictionary with the header and the data as dictionaries.
 
+    Internally, it calls `read_to_list` and then transforms the data into a dictionary.
+
     Args:
         filename: Name of the file to read.
         marker: The marker characters that indicate the yaml header.
