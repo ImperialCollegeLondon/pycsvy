@@ -101,7 +101,7 @@ def test_validate_header(validators_registry):
         validate_header(validated_header)
 
 
-def test_validate_read_missing(validators_registry):
+def test_validate_header_missing(validators_registry):
     """Test that we can run validators on the header."""
     from pydantic import BaseModel, PositiveInt, ValidationError
 
@@ -114,6 +114,22 @@ def test_validate_read_missing(validators_registry):
     header = {"author": "Gandalf", "my_validator": {}}
 
     with pytest.raises(ValidationError):
+        validate_header(header)
+
+
+def test_validate_header_wrong_type(validators_registry):
+    """Test that we can run validators on the header."""
+    from pydantic import BaseModel, PositiveInt
+
+    from csvy.validators import register_validator, validate_header
+
+    @register_validator("my_validator")
+    class _(BaseModel):
+        value: PositiveInt
+
+    header = {"author": "Gandalf", "my_validator": 42}
+
+    with pytest.raises(TypeError):
         validate_header(header)
 
 

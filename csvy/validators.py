@@ -1,6 +1,7 @@
 """Module that contains validators for the CSVY file format."""
 
 import csv
+from collections.abc import Mapping
 from typing import Any, Callable, Optional, TypeVar
 
 from pydantic import BaseModel, Field
@@ -62,9 +63,9 @@ def validate_header(header: dict[str, Any]) -> dict[str, Any]:
     for key, value in header.items():
         value_ = value.model_dump() if isinstance(value, BaseModel) else value
         if key in VALIDATORS_REGISTRY:
-            if not isinstance(value_, dict):
-                raise ValueError(
-                    f"Value for '{key}' must be a dictionary, not a '{type(value_)}'."
+            if not isinstance(value_, Mapping):
+                raise TypeError(
+                    f"Value for '{key}' must be a mapping, not a '{type(value_)}'."
                 )
             validator = VALIDATORS_REGISTRY[key]
             validated_header[key] = validator(**value_)
