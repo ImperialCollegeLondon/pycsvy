@@ -62,18 +62,17 @@ def validate_read(header: dict[str, Any]) -> dict[str, Any]:
     return validated_header
 
 
-def validate_write(header: dict[str, Any]) -> dict[str, Any]:
-    """Use the validators to create the header in a write operation.
+def header_to_dict(header: dict[str, Any]) -> dict[str, Any]:
+    """Transform the header into a serializable dictionary.
 
     Transforms the header with validators to a header with dictionaries that can be
-    saved as yaml. It is the reversed operation of validate_read, so calling
-    validate_write(validate_read(header)) should return the original header.
+    saved as yaml.
 
     Args:
         header: Dictionary to be saved as the header of the CSVY file.
 
     Returns:
-        The validated header.
+        The validated header, as a serializable dictionary.
 
     """
     validated_header = {}

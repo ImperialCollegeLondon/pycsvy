@@ -113,7 +113,7 @@ def test_validate_write(validators_registry):
     """Test that we can create the header using the validators."""
     from pydantic import BaseModel, PositiveInt
 
-    from csvy.validators import register_validator, validate_read, validate_write
+    from csvy.validators import header_to_dict, register_validator, validate_read
 
     @register_validator("my_validator")
     class _(BaseModel):
@@ -121,6 +121,6 @@ def test_validate_write(validators_registry):
 
     header = {"author": "Gandalf", "my_validator": {"value": 42}}
     validated_header = validate_read(header)
-    new_header = validate_write(validated_header)
+    new_header = header_to_dict(validated_header)
 
     assert new_header == header
