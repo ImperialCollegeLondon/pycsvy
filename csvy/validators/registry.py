@@ -1,6 +1,6 @@
 """Registry of validators to run on the header."""
 
-from typing import Callable
+from collections.abc import Callable
 
 from pydantic import BaseModel
 
