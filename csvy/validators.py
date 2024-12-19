@@ -476,6 +476,41 @@ class IntegerColumnValidator(CommonValidator):
     )
 
 
+class BooleanColumnValidator(CommonValidator):
+    """Validator for the boolean columns in the Table Schema.
+
+    This class is used to validate the boolean columns in the Table Schema. It is based
+    on the columns defined in the Table Schema specification.
+
+    Attributes:
+        type_: A string specifying the type, with valid values being 'boolean'.
+        format_: A string specifying a format, with valid values being 'default' and
+            None.
+        trueValues: A list of strings that should be considered as True. If None,
+            ['true', 'True', 'TRUE', '1'] is used.
+        falseValues: A list of strings that should be considered as False. If None,
+            ['false', 'False', 'FALSE', '0'] is used
+
+    """
+
+    type_: Literal[TypeEnum.BOOLEAN] = Field(
+        TypeEnum.BOOLEAN, alias="type", description="A string specifying the type."
+    )
+    format_: FormatDefault | None = Field(
+        None, alias="format", description="A string specifying a format."
+    )
+    trueValues: list[str] | None = Field(
+        None,
+        description="A list of strings that should be considered as True. If None, "
+        + "['true', 'True', 'TRUE', '1'] is used.",
+    )
+    falseValues: list[str] | None = Field(
+        None,
+        description="A list of strings that should be considered as False. If None, "
+        + "['false', 'False', 'FALSE', '0'] is used.",
+    )
+
+
 ColumnValidator = Annotated[
     DefaultColumnValidator
     | StringColumnValidator
