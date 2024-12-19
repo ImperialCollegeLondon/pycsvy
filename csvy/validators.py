@@ -269,6 +269,20 @@ class FormatString(str, Enum):
     UUID = "uuid"
 
 
+class FormatDateTime(str, Enum):
+    """Enumeration of the formats for the Table Schema for the datetime type.
+
+    default: Declares that the datetime objects follows the ISO8601 format.
+        - datetime: YYYY-MM-DD
+        - time: hh:mm:ss in 24-hour time and UTC timezone.
+        - datetime: YYYY-MM-DDThh:mm:ssZ in 24-hour time and UTC timezone.
+    any: Any parsable datetime format.
+    """
+
+    DEFAULT = "default"
+    ANY = "any"
+
+
 class ConstraintsValidator(BaseModel):
     """Validator for the constraints in the Table Schema.
 
@@ -511,11 +525,39 @@ class BooleanColumnValidator(CommonValidator):
     )
 
 
+class DateTimeColumnValidator(CommonValidator):
+    """Validator for the datetime columns in the Table Schema.
+
+    This class is used to validate the datetime columns in the Table Schema. It is based
+    on the columns defined in the Table Schema specification.
+
+    Attributes:
+        type_: A string specifying the type, with valid values being 'datetime'.
+        format_: A string specifying a format. It can be 'default' or 'any', or a string
+            with a custom format parsable by Python / C standard 'strptime', eg.
+            '%d/%m/%y'.
+
+    """
+
+    type_: Literal[TypeEnum.DATETIME, TypeEnum.DATE, TypeEnum.TIME] = Field(
+        TypeEnum.DATETIME, alias="type", description="A string specifying the type."
+    )
+    format_: FormatDateTime | str | None = Field(
+        None,
+        alias="format",
+        description="A string specifying a format. It can be "
+        + "'default' or 'any', or a string with a custom format parsable by Python / C "
+        + "standard 'strptime', eg. '%d/%m/%y'.",
+    )
+
+
 ColumnValidator = Annotated[
     DefaultColumnValidator
     | StringColumnValidator
     | NumberColumnValidator
-    | IntegerColumnValidator,
+    | IntegerColumnValidator
+    | BooleanColumnValidator
+    | DateTimeColumnValidator,
     Field(discriminator="type_"),
 ]
 """Annotated type for the ColumnValidator."""
