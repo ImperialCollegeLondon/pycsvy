@@ -340,10 +340,10 @@ def read_to_dict(
         if isinstance(column_names, int):
             column_names = data.pop(column_names)
 
-        if len(column_names) < longest_row:
+        if len(column_names) != longest_row:
             raise ValueError(
-                "Required column names has less values than the data: "
-                f"({len({column_names})}<{longest_row})."
+                "The number of column names must be exactly the length of the longest "
+                f"row ({len({column_names})} != {longest_row})."
             )
 
     columns = list(map(list, zip_longest(*data, fillvalue=fillvalue)))
