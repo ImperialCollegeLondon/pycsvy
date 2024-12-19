@@ -79,6 +79,7 @@ convention = "google"
 ignore_missing_imports = true
 check_untyped_defs = true
 exclude = "docs"
+plugins = ['pydantic.mypy']
 
 [tool.mypy-setup]
 ignore_errors = true
