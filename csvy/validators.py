@@ -5,7 +5,7 @@ from __future__ import annotations
 import csv
 from collections.abc import Mapping
 from enum import Enum
-from typing import Any, Callable, TypeVar
+from typing import Annotated, Any, Callable, Literal, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -237,6 +237,7 @@ class TypeEnum(str, Enum):
     """Enumeration of the possible types for the Table Schema."""
 
     STRING = "string"
+    NUMBER = "number"
     INTEGER = "integer"
     BOOLEAN = "boolean"
     OBJECT = "object"
@@ -250,6 +251,22 @@ class TypeEnum(str, Enum):
     GEOPOINT = "geopoint"
     GEOJSON = "geojson"
     ANY = "any"
+
+
+class FormatDefault(str, Enum):
+    """Enumeration of the possible formats for the Table Schema."""
+
+    DEFAULT = "default"
+
+
+class FormatString(str, Enum):
+    """Enumeration of the possible formats for the Table Schema for the string type."""
+
+    DEFAULT = "default"
+    EMAIL = "email"
+    URI = "uri"
+    BINARY = "binary"
+    UUID = "uuid"
 
 
 class ConstraintsValidator(BaseModel):
@@ -285,7 +302,7 @@ class ConstraintsValidator(BaseModel):
     enum: list[Any] | None = Field(None)
 
 
-class ColumnValidator(BaseModel):
+class CommonValidator(BaseModel):
     """Validator for the columns in the Table Schema.
 
     This class is used to validate the columns in the Table Schema. It is based on the
@@ -295,7 +312,6 @@ class ColumnValidator(BaseModel):
         name: The name of the column.
         title: A nicer human readable label or title for the field.
         type_: A string specifying the type.
-        format_: A string specifying a format.
         example: An example value for the field.
         description: A description for the field.
         constraints: A dictionary of constraints for the field.
@@ -308,9 +324,6 @@ class ColumnValidator(BaseModel):
     )
     type_: TypeEnum | None = Field(
         None, alias="type", description="A string specifying the type."
-    )
-    format_: str | None = Field(
-        None, alias="format", description="A string specifying a format."
     )
     example: str | None = Field(None, description="An example value for the field.")
     description: str | None = Field(None, description="A description for the field.")
@@ -338,3 +351,136 @@ class ColumnValidator(BaseModel):
             if isinstance(value, Enum):
                 output[key] = value.value
         return output
+
+
+class DefaultColumnValidator(CommonValidator):
+    """Default column validator for anything that does not have a specific one.
+
+    Attributes:
+        type_: A string specifying the type, valid values are any of the TypeEnum that
+            do not have a specific validator.
+        format_: A string specifying a format, with valid values being 'default' and
+            None.
+
+    """
+
+    type_: (
+        Literal[
+            TypeEnum.OBJECT,
+            TypeEnum.ARRAY,
+            TypeEnum.YEAR,
+            TypeEnum.YEARMONTH,
+            TypeEnum.DURATION,
+            TypeEnum.ANY,
+        ]
+        | None
+    ) = Field(None, alias="type", description="A string specifying the type.")
+    format_: FormatDefault | None = Field(
+        None, alias="format", description="A string specifying a format."
+    )
+
+
+class StringColumnValidator(CommonValidator):
+    """Validator for the string columns in the Table Schema.
+
+    This class is used to validate the string columns in the Table Schema. It is based
+    on the columns defined in the Table Schema specification.
+
+    Attributes:
+        type_: A string specifying the type, with valid values being 'string'.
+        format_: A string specifying a format, with valid values being 'default',
+            'email', 'uri', 'binary', 'uuid' and None.
+
+    """
+
+    type_: Literal[TypeEnum.STRING] = Field(
+        TypeEnum.STRING, alias="type", description="A string specifying the type."
+    )
+    format_: FormatString | None = Field(
+        None, alias="format", description="A string specifying a format."
+    )
+
+
+class NumberColumnValidator(CommonValidator):
+    """Validator for the number columns in the Table Schema.
+
+    This class is used to validate the number columns in the Table Schema. It is based
+    on the columns defined in the Table Schema specification.
+
+    Attributes:
+        type_: A string specifying the type, with valid values being 'number'.
+        format_: A string specifying a format, with valid values being 'default' and
+            None.
+        decimalChar: The character used to separate the integer and fractional. If
+            None, '.' is used.
+        groupChar: The character used to separate groups of thousands. None assumed.
+        bareNumber: If True, the number is a bare number, without any formatting. If
+            None, True is used. If false the contents of this field may contain leading
+            and/or trailing non-numeric characters that must be stripped to parse the
+            number, eg. '95%', '£50.5'.
+
+    """
+
+    type_: Literal[TypeEnum.NUMBER] = Field(
+        TypeEnum.NUMBER, alias="type", description="A string specifying the type."
+    )
+    format_: FormatDefault | None = Field(
+        None, alias="format", description="A string specifying a format."
+    )
+    decimalChar: str | None = Field(
+        None,
+        description="The character used to separate the integer and fractional. "
+        + "If None, '.' is used.",
+    )
+    groupChar: str | None = Field(
+        None, description="The character used to separate groups of thousands."
+    )
+    bareNumber: bool | None = Field(
+        None,
+        description="If True, the number is a bare number, without any formatting."
+        + "If None, True is used. If false the contents of this field may contain "
+        + "leading and/or trailing non-numeric characters that must be stripped to "
+        + "parse the number, eg. '95%', '£50.5'.",
+    )
+
+
+class IntegerColumnValidator(CommonValidator):
+    """Validator for the integer columns in the Table Schema.
+
+    This class is used to validate the integer columns in the Table Schema. It is based
+    on the columns defined in the Table Schema specification.
+
+    Attributes:
+        type_: A string specifying the type, with valid values being 'integer'.
+        format_: A string specifying a format, with valid values being 'default' and
+            None.
+        bareNumber: If True, the number is a bare number, without any formatting. If
+            None, True is used. If false the contents of this field may contain leading
+            and/or trailing non-numeric characters that must be stripped to parse the
+            number, eg. '95%', '£50'.
+
+    """
+
+    type_: Literal[TypeEnum.INTEGER] = Field(
+        TypeEnum.INTEGER, alias="type", description="A string specifying the type."
+    )
+    format_: FormatDefault | None = Field(
+        None, alias="format", description="A string specifying a format."
+    )
+    bareNumber: bool | None = Field(
+        None,
+        description="If True, the number is a bare number, without any formatting."
+        + "If None, True is used. If false the contents of this field may contain "
+        + "leading and/or trailing non-numeric characters that must be stripped to "
+        + "parse the number, eg. '95%', '£50'.",
+    )
+
+
+ColumnValidator = Annotated[
+    DefaultColumnValidator
+    | StringColumnValidator
+    | NumberColumnValidator
+    | IntegerColumnValidator,
+    Field(discriminator="type_"),
+]
+"""Annotated type for the ColumnValidator."""
