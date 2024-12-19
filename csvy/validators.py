@@ -283,6 +283,37 @@ class FormatDateTime(str, Enum):
     ANY = "any"
 
 
+class FormatGeoPoint(str, Enum):
+    """Enumeration of the formats for the Table Schema for the geopoint type.
+
+    default: Declares that the geopoint objects follows the ISO6709 format, ie.
+        latitude and longitude, are provided as a string, eg. '37.7749,-122.4194'.
+    array: Declares that the geopoint objects are an array with two numbers, eg.
+        [37.7749, -122.4194].
+    object: Declares that the geopoint objects are  JSON object with with 'lon'
+        and 'lat' keys, eg. "{'lat': 37.7749, 'lon': -122.4194}".
+
+    """
+
+    DEFAULT = "default"
+    ARRAY = "array"
+    OBJECT = "object"
+
+
+class FormatGeoJSON(str, Enum):
+    """Enumeration of the formats for the Table Schema for the geojson type.
+
+    default: Declares that the geojson objects are JSON objects that follow the
+        GeoJSON specification.
+    topojson: Declares that the geojson objects are JSON objects that follow the
+        TopoJSON specification.
+
+    """
+
+    DEFAULT = "default"
+    TOPOJSON = "topojson"
+
+
 class ConstraintsValidator(BaseModel):
     """Validator for the constraints in the Table Schema.
 
@@ -551,13 +582,57 @@ class DateTimeColumnValidator(CommonValidator):
     )
 
 
+class GeopointColumnValidator(CommonValidator):
+    """Validator for the geopoint columns in the Table Schema.
+
+    This class is used to validate the geopoint columns in the Table Schema. It is based
+    on the columns defined in the Table Schema specification.
+
+    Attributes:
+        type_: A string specifying the type, with valid values being 'geopoint'.
+        format_: A string specifying a format, with valid values being 'default',
+            'array', 'object' and None.
+
+    """
+
+    type_: Literal[TypeEnum.GEOPOINT] = Field(
+        TypeEnum.GEOPOINT, alias="type", description="A string specifying the type."
+    )
+    format_: FormatGeoPoint | None = Field(
+        None, alias="format", description="A string specifying a format."
+    )
+
+
+class GeoJSONColumnValidator(CommonValidator):
+    """Validator for the geojson columns in the Table Schema.
+
+    This class is used to validate the geojson columns in the Table Schema. It is based
+    on the columns defined in the Table Schema specification.
+
+    Attributes:
+        type_: A string specifying the type, with valid values being 'geojson'.
+        format_: A string specifying a format, with valid values being 'default',
+            'topojson' and None.
+
+    """
+
+    type_: Literal[TypeEnum.GEOJSON] = Field(
+        TypeEnum.GEOJSON, alias="type", description="A string specifying the type."
+    )
+    format_: FormatGeoJSON | None = Field(
+        None, alias="format", description="A string specifying a format."
+    )
+
+
 ColumnValidator = Annotated[
     DefaultColumnValidator
     | StringColumnValidator
     | NumberColumnValidator
     | IntegerColumnValidator
     | BooleanColumnValidator
-    | DateTimeColumnValidator,
+    | DateTimeColumnValidator
+    | GeopointColumnValidator
+    | GeoJSONColumnValidator,
     Field(discriminator="type_"),
 ]
 """Annotated type for the ColumnValidator."""
