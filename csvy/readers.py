@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import logging
+from abc import ABC, abstractmethod
+from itertools import zip_longest
 from pathlib import Path
 from typing import Any, Literal
 
@@ -299,3 +301,95 @@ def read_to_list(
             data.append(row)
 
     return data, header
+
+
+class ReaderBase(ABC):
+    """Base class for CSVY readers.
+
+    This class is meant to be subclassed by other classes that implement the read_data
+    method. It provides a common interface for reading CSVY files.
+    """
+
+    def __init__(self, filename: Path | str, marker: str = "---"):
+        """Initializes the ReaderBase object.
+
+        Args:
+            filename: Name of the file to read.
+            marker: The marker characters that indicate the yaml header.
+        """
+        self._filename: Path | str = filename
+        self._marker: str = marker
+        self._nlines: int | None = None
+        self._comment: str | None = None
+        self._header: dict[str, Any] | None = None
+
+    def read(
+        self, csv_options: dict[str, Any], yaml_options: dict[str, Any]
+    ) -> tuple[Any, dict[str, Any]]:
+        """Reads the file and returns the data.
+
+        Args:
+            csv_options: Options to pass to the read_data method.
+            yaml_options: Options to pass to the read_header method.
+
+        Returns:
+            Tuple containing: The data and the header.
+        """
+        header = self._header or self.read_header(**yaml_options)
+        data = self.read_data(**csv_options)
+        return data, header
+
+    def read_header(self, **kwargs) -> dict[str, Any]:
+        """Reads the header from the file.
+
+        Args:
+            **kwargs: Arguments to pass to the read_header method.
+
+        Returns:
+            The header as a dictionary.
+        """
+        self._header, self._nlines, self._comment = read_header(
+            self._filename, self._marker, **kwargs
+        )
+        return self._header
+
+    @abstractmethod
+    def read_data(self, **kwargs) -> Any:
+        """Reads the data from the file."""
+
+
+class ListReader(ReaderBase):
+    """Reader class for reading CSVY files into a list of lists."""
+
+    def read_data(
+        self, in_columns: bool = False, fillvalue: str = "", **kwargs
+    ) -> list[list]:
+        """Reads the data from the file.
+
+        Args:
+            in_columns: Whether to read the data in columns.
+            fillvalue: Value to use for missing data when reading in columns.
+            **kwargs: Arguments to pass to the csv.reader function.
+
+        Returns:
+            The data as a list of lists.
+        """
+        import csv
+
+        if self._nlines is None:
+            self.read_header()
+
+        data: list[list[str]] = []
+        with open(self._filename, newline="") as csvfile:
+            csvreader = csv.reader(csvfile, **kwargs)
+
+            for _ in range(self._nlines):
+                next(csvreader)
+
+            for row in csvreader:
+                data.append(row)
+
+        if in_columns:
+            data = list(map(list, zip_longest(*data, fillvalue=fillvalue)))
+
+        return data
