@@ -1,7 +1,7 @@
 # CSVY for Python
 
 [![PyPI version shields.io](https://img.shields.io/pypi/v/pycsvy.svg)](https://pypi.python.org/pypi/pycsvy/)
-[![Conda Version](https://img.shields.io/conda/vn/conda-forge/pycsvy.svg)](https://anaconda.org/conda-forge/pycsvy) 
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/pycsvy.svg)](https://anaconda.org/conda-forge/pycsvy)
 [![PyPI status](https://img.shields.io/pypi/status/pycsvy.svg)](https://pypi.python.org/pypi/pycsvy/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pycsvy.svg)](https://pypi.python.org/pypi/pycsvy/)
 [![PyPI license](https://img.shields.io/pypi/l/pycsvy.svg)](https://pypi.python.org/pypi/pycsvy/)
@@ -37,9 +37,9 @@ column to aid the reading and interpretation of the data.
 pip install pycsvy
 ```
 
-or 
+or
 
-```
+```bash
 conda install --channel=conda-forge pycsvy
 ```
 
