@@ -320,7 +320,7 @@ def read_to_dict(
         filename: Name of the file to read.
         marker: The marker characters that indicate the yaml header.
         encoding: The character encoding in the file to read.
-        csv_options: Options to pass to csv.DictReader.
+        csv_options: Options to pass to csv.reader.
         yaml_options: Options to pass to yaml.safe_load.
         column_names: Either a list with the column names, the row number containing the
             column names or None. If None (the default) an automatic column name
