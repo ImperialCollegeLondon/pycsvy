@@ -335,7 +335,7 @@ def read_to_dict(
 
     longest_row = len(max(data, key=len))
     if column_names is None:
-        column_names = [f"col_{i}" for i in range(len(data[longest_row]))]
+        column_names = [f"col_{i}" for i in range(longest_row)]
     else:
         if isinstance(column_names, int):
             column_names = data.pop(column_names)
