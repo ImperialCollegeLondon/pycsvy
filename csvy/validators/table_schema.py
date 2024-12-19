@@ -145,8 +145,8 @@ class CommonValidator(BaseModel):
     )
     example: str | None = Field(None, description="An example value for the field.")
     description: str | None = Field(None, description="A description for the field.")
-    constraints: ConstraintsValidator | None = Field(
-        None, description="A dictionary of constraints for the field."
+    constraints: ConstraintsValidator = Field(
+        ConstraintsValidator(), description="A dictionary of constraints for the field."
     )
 
     def model_dump(self, *args, **kwargs) -> dict[str, Any]:
@@ -168,6 +168,8 @@ class CommonValidator(BaseModel):
         for key, value in output.items():
             if isinstance(value, Enum):
                 output[key] = value.value
+        if "constraints" in output and not output["constraints"]:
+            del output["constraints"]
         return output
 
 
