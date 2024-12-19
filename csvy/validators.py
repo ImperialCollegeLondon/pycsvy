@@ -409,17 +409,15 @@ class DefaultColumnValidator(CommonValidator):
 
     """
 
-    type_: (
-        Literal[
-            TypeEnum.OBJECT,
-            TypeEnum.ARRAY,
-            TypeEnum.YEAR,
-            TypeEnum.YEARMONTH,
-            TypeEnum.DURATION,
-            TypeEnum.ANY,
-        ]
-        | None
-    ) = Field(None, alias="type", description="A string specifying the type.")
+    type_: Literal[
+        TypeEnum.OBJECT,
+        TypeEnum.ARRAY,
+        TypeEnum.YEAR,
+        TypeEnum.YEARMONTH,
+        TypeEnum.DURATION,
+        TypeEnum.ANY,
+        None,
+    ] = Field(None, alias="type", description="A string specifying the type.")
     format_: FormatDefault | None = Field(
         None, alias="format", description="A string specifying a format."
     )
@@ -625,8 +623,7 @@ class GeoJSONColumnValidator(CommonValidator):
 
 
 ColumnValidator = Annotated[
-    DefaultColumnValidator
-    | StringColumnValidator
+    StringColumnValidator
     | NumberColumnValidator
     | IntegerColumnValidator
     | BooleanColumnValidator
@@ -636,3 +633,47 @@ ColumnValidator = Annotated[
     Field(discriminator="type_"),
 ]
 """Annotated type for the ColumnValidator."""
+
+
+@register_validator("schema")
+class SchemaValidator(BaseModel):
+    """Validator for the Table Schema in the CSVY file.
+
+    This class is used to validate the Table Schema in the CSVY file. It is based on the
+    schema defined in the Table Schema specification.
+
+    Attributes:
+        fields: A list of column validators.
+
+    """
+
+    fields: list[ColumnValidator | DefaultColumnValidator] = Field(
+        ..., description="A list of column validators."
+    )
+    missingValues: list[str] | None = Field(
+        None,
+        description="A list of strings that should be considered as missing values. "
+        + "If None, [''] (an empty string) is used.",
+    )
+
+    def model_dump(self, *args, **kwargs) -> dict[str, Any]:
+        """Dump the model to a dictionary.
+
+        This method dumps the model to a dictionary. It sets exclude_unset to True and
+        by_alias to True, so that only the attributes that were set are included in the
+        dictionary and their aliases are always used.
+
+        Finally, it converts the attributes that are Enum instances to their values.
+
+        Returns:
+            A dictionary with the model attributes.
+
+        """
+        kwargs["exclude_unset"] = True
+        kwargs["by_alias"] = True
+        output = super().model_dump(*args, **kwargs)
+        for field in output["fields"]:
+            for key, value in field.items():
+                if isinstance(value, Enum):
+                    field[key] = value.value
+        return output
