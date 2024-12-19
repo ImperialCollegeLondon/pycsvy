@@ -127,6 +127,25 @@ def test_write_csv(mock_save, tmpdir):
 
 
 @patch("csv.writer")
+def test_write_dict(mock_save, tmpdir):
+    """Test the write_csv function."""
+    from csvy.writers import write_dict
+
+    class Writer:
+        writerow = MagicMock()
+
+    mock_save.return_value = Writer
+    filename = tmpdir / "some_file.csv"
+
+    data = {"a": [1, 2, 3, 4], "b": [1, 2, 3], "c": [1, 2, 3, 4, 5]}
+    expected_rows = max(len(v) for v in data.values()) + 1  # +1 for the column names
+    assert write_dict(filename, data)
+
+    mock_save.assert_called_once()
+    assert Writer.writerow.call_count == expected_rows
+
+
+@patch("csv.writer")
 @patch("csvy.writers.write_header")
 @pytest.mark.parametrize(
     "csv_options,yaml_options",

@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import csv
 import logging
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from io import TextIOBase
+from itertools import zip_longest
 from pathlib import Path
 from typing import Any
 
@@ -308,6 +309,43 @@ def write_polars(
         logging.getLogger().debug("Polars is not installed, so not using 'write_csv'.")
 
     return False
+
+
+@register_writer
+def write_dict(
+    filename: Path | str,
+    data: Any,
+    comment: str = "",
+    encoding: str = "utf-8",
+    *,
+    fillvalue: Any = None,
+    **kwargs: Any,
+) -> bool:
+    """Write the dictionary to the chosen file, adding it after the header.
+
+    It transofrms the dictionary into a tabular format before saving it using the
+    generic `write_csv` function.
+
+    Args:
+        filename: Name of the file to save the data into. The data will be added to the
+            end of the file.
+        data: The data as a dictionary.
+        comment: String to use to mark the header lines as comments.
+        encoding: The character encoding to use in the file to write.
+        fillvalue: Value to use to fill the missing values in the dictionary.
+        **kwargs: Arguments to be passed to the underlaying saving method.
+
+    Returns:
+        True if the writer worked, False otherwise.
+
+    """
+    if not isinstance(data, Mapping):
+        return False
+
+    data_ = [list(data.keys())]
+    data_.extend(list(map(list, zip_longest(*data.values(), fillvalue=fillvalue))))
+
+    return write_csv(filename, data_, comment, encoding, **kwargs)
 
 
 def write_csv(

@@ -310,7 +310,7 @@ def read_to_dict(
     yaml_options: dict[str, Any] | None = None,
     *,
     column_names: list[Any] | int | None = None,
-    fillvalue: Any = "",
+    fillvalue: Any = None,
 ) -> tuple[dict[str, list[Any]], dict[str, Any]]:
     """Read a CSVY file into a dictionary with the header and the data as dictionaries.
 
