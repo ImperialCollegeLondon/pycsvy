@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from itertools import zip_longest
 from pathlib import Path
 from typing import Any, Literal
 
@@ -299,3 +300,51 @@ def read_to_list(
             data.append(row)
 
     return data, header
+
+
+def read_to_dict(
+    filename: Path | str,
+    marker: str = "---",
+    encoding: str = "utf-8",
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
+    *,
+    column_names: list[Any] | int | None = None,
+    fillvalue: Any = None,
+) -> tuple[dict[str, list[Any]], dict[str, Any]]:
+    """Read a CSVY file into a dictionary with the header and the data as dictionaries.
+
+    Internally, it calls `read_to_list` and then transforms the data into a dictionary.
+
+    Args:
+        filename: Name of the file to read.
+        marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
+        csv_options: Options to pass to csv.reader.
+        yaml_options: Options to pass to yaml.safe_load.
+        column_names: Either a list with the column names, the row number containing the
+            column names or None. If None (the default) an automatic column name
+            ('col_0', 'col_1', ...) will be used.
+        fillvalue: Value to use for missing data in the columns.
+
+    Returns:
+        Tuple containing: The data and the header both as a dictionaries.
+
+    """
+    data, header = read_to_list(filename, marker, encoding, csv_options, yaml_options)
+
+    longest_row = len(max(data, key=len))
+    if column_names is None:
+        column_names = [f"col_{i}" for i in range(longest_row)]
+    else:
+        if isinstance(column_names, int):
+            column_names = data.pop(column_names)
+
+        if len(column_names) != longest_row:
+            raise ValueError(
+                "The number of column names must be exactly the length of the longest "
+                f"row ({len({column_names})} != {longest_row})."
+            )
+
+    columns = list(map(list, zip_longest(*data, fillvalue=fillvalue)))
+    return dict(zip(column_names, columns)), header
