@@ -133,7 +133,6 @@ class CommonValidator(BaseModel):
     Attributes:
         name: The name of the column.
         title: A nicer human readable label or title for the field.
-        type_: A string specifying the type.
         example: An example value for the field.
         description: A description for the field.
         constraints: A dictionary of constraints for the field.
@@ -143,9 +142,6 @@ class CommonValidator(BaseModel):
     name: str = Field(..., description="Column name.")
     title: str | None = Field(
         None, description="A nicer human readable label or title for the field."
-    )
-    type_: TypeEnum | None = Field(
-        None, alias="type", description="A string specifying the type."
     )
     example: str | None = Field(None, description="An example value for the field.")
     description: str | None = Field(None, description="A description for the field.")

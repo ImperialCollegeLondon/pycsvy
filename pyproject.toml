@@ -78,6 +78,7 @@ convention = "google"
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
+exclude = "docs"
 
 [tool.mypy-setup]
 ignore_errors = true
