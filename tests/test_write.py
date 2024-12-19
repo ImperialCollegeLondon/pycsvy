@@ -138,7 +138,7 @@ def test_write_dict(mock_save, tmpdir):
     filename = tmpdir / "some_file.csv"
 
     data = {"a": [1, 2, 3, 4], "b": [1, 2, 3], "c": [1, 2, 3, 4, 5]}
-    expected_rows = max(len(v) for v in data.values()) + 1  # +1 for the column names
+    expected_rows = max(map(len, data.values())) + 1  # +1 for the column names
     assert write_dict(filename, data)
 
     mock_save.assert_called_once()

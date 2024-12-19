@@ -323,7 +323,7 @@ def write_dict(
 ) -> bool:
     """Write the dictionary to the chosen file, adding it after the header.
 
-    It transofrms the dictionary into a tabular format before saving it using the
+    It transforms the dictionary into a tabular format before saving it using the
     generic `write_csv` function.
 
     Args:
