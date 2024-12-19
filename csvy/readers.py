@@ -306,10 +306,11 @@ def read_to_dict(
     filename: Path | str,
     marker: str = "---",
     encoding: str = "utf-8",
-    column_names: list[Any] | int | None = None,
-    fillvalue: Any = "",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
+    *,
+    column_names: list[Any] | int | None = None,
+    fillvalue: Any = "",
 ) -> tuple[dict[str, list[Any]], dict[str, Any]]:
     """Read a CSVY file into a dictionary with the header and the data as dictionaries.
 
@@ -319,12 +320,12 @@ def read_to_dict(
         filename: Name of the file to read.
         marker: The marker characters that indicate the yaml header.
         encoding: The character encoding in the file to read.
+        csv_options: Options to pass to csv.DictReader.
+        yaml_options: Options to pass to yaml.safe_load.
         column_names: Either a list with the column names, the row number containing the
             column names or None. If None (the default) an automatic column name
             ('col_0', 'col_1', ...) will be used.
         fillvalue: Value to use for missing data in the columns.
-        csv_options: Options to pass to csv.DictReader.
-        yaml_options: Options to pass to yaml.safe_load.
 
     Returns:
         Tuple containing: The data and the header both as a dictionaries.
