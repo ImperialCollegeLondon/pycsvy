@@ -132,3 +132,47 @@ def test_read_to_list(array_data_path):
     assert len(data[0]) == 4
     assert isinstance(header, dict)
     assert len(header) > 0
+
+
+def test_read_to_dict_with_default_column_names(array_data_path):
+    """Test the read_to_list function."""
+    from csvy.readers import read_to_dict
+
+    data, header = read_to_dict(array_data_path, csv_options={"delimiter": ","})
+
+    assert isinstance(data, dict)
+    assert len(data) == 4
+    assert list(data.keys()) == ["col_0", "col_1", "col_2", "col_3"]
+    assert len(data["col_0"]) == 15
+    assert len(header) > 0
+
+
+def test_read_to_dict_with_custom_column_names(array_data_path):
+    """Test the read_to_list function."""
+    from csvy.readers import read_to_dict
+
+    column_names = ["A", "B", "C", "D"]
+    data, header = read_to_dict(
+        array_data_path, column_names=column_names, csv_options={"delimiter": ","}
+    )
+
+    assert isinstance(data, dict)
+    assert len(data) == 4
+    assert list(data.keys()) == column_names
+    assert len(data["A"]) == 15
+    assert len(header) > 0
+
+
+def test_read_to_dict_with_row_based_column_names(data_path):
+    """Test the read_to_list function."""
+    from csvy.readers import read_to_dict
+
+    data, header = read_to_dict(
+        data_path, column_names=0, csv_options={"delimiter": ","}
+    )
+
+    assert isinstance(data, dict)
+    assert len(data) == 2
+    assert list(data.keys()) == ["Date", "WTI"]
+    assert len(data["Date"]) == 15
+    assert len(header) > 0
