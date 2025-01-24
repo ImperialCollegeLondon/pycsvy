@@ -79,7 +79,7 @@ def test_read_to_dataframe(data_path):
     """Test the read_to_dataframe function."""
     import pandas as pd
 
-    from csvy.readers import read_to_dataframe
+    from csvy import read_to_dataframe
 
     data, header = read_to_dataframe(data_path)
     assert isinstance(data, pd.DataFrame)
@@ -100,7 +100,7 @@ def test_read_to_polars(data_path):
     import polars as pl
     from polars.testing import assert_frame_equal
 
-    from csvy.readers import read_to_polars
+    from csvy import read_to_polars
 
     lazy_data, header = read_to_polars(data_path)
     assert isinstance(lazy_data, pl.LazyFrame)
@@ -124,7 +124,7 @@ def test_read_to_polars(data_path):
 
 def test_read_to_list(array_data_path):
     """Test the read_to_list function."""
-    from csvy.readers import read_to_list
+    from csvy import read_to_list
 
     data, header = read_to_list(array_data_path, csv_options={"delimiter": ","})
     assert isinstance(data, list)
@@ -136,7 +136,7 @@ def test_read_to_list(array_data_path):
 
 def test_read_to_dict_with_default_column_names(array_data_path):
     """Test the read_to_list function."""
-    from csvy.readers import read_to_dict
+    from csvy import read_to_dict
 
     data, header = read_to_dict(array_data_path, csv_options={"delimiter": ","})
 
@@ -149,7 +149,7 @@ def test_read_to_dict_with_default_column_names(array_data_path):
 
 def test_read_to_dict_with_custom_column_names(array_data_path):
     """Test the read_to_list function."""
-    from csvy.readers import read_to_dict
+    from csvy import read_to_dict
 
     column_names = ["A", "B", "C", "D"]
     data, header = read_to_dict(
@@ -165,7 +165,7 @@ def test_read_to_dict_with_custom_column_names(array_data_path):
 
 def test_read_to_dict_with_row_based_column_names(data_path):
     """Test the read_to_list function."""
-    from csvy.readers import read_to_dict
+    from csvy import read_to_dict
 
     data, header = read_to_dict(
         data_path, column_names=0, csv_options={"delimiter": ","}
