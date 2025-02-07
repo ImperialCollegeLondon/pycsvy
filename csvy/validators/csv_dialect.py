@@ -1,99 +1,16 @@
-"""Module that contains validators for the CSVY file format."""
+"""CSV Dialect-related validation."""
+
+from __future__ import annotations
 
 import csv
-from collections.abc import Mapping
-from typing import Any, Callable, Optional, TypeVar
+from enum import Enum
+from typing import Any, TypeVar
 
 from pydantic import BaseModel, Field
 
-VALIDATORS_REGISTRY: dict[str, type[BaseModel]] = {}
-"""Registry of validators to run on the header."""
+from .registry import register_validator
 
-
-def register_validator(
-    name: str, overwrite: bool = False
-) -> Callable[[type[BaseModel]], type[BaseModel]]:
-    """Register a validator in the registry.
-
-    This function is a decorator that registers a validator in the registry. The name
-    of the validator is used as the key in the registry.
-
-    Args:
-        name: The name of the validator.
-        overwrite: Whether to overwrite the validator if it already exists.
-
-    Returns:
-        The decorator function that registers the validator.
-
-    """
-
-    def decorator(cls: type[BaseModel]) -> type[BaseModel]:
-        if not issubclass(cls, BaseModel):
-            raise TypeError("Validators must be subclasses of pydantic.BaseModel.")
-
-        if name in VALIDATORS_REGISTRY and not overwrite:
-            raise ValueError(f"Validator with name '{name}' already exists.")
-
-        VALIDATORS_REGISTRY[name] = cls
-        return cls
-
-    return decorator
-
-
-def validate_header(header: dict[str, Any]) -> dict[str, Any]:
-    """Run the validators on the header.
-
-    This function runs the validators on the header. It uses the keys of the header to
-    find the validators in the registry and runs them on the corresponding values. As
-    a result, some values in the header may be replaced by the validated values in the
-    form of Pydantic models.
-
-    If the header is an already validated header, the Pydantic models within, if any,
-    are dumped to dictionaries and re-validated, again. This accounts for the case where
-    attributes of the Pydantic models are changed to invalid values.
-
-    Args:
-        header: The header of the CSVY file.
-
-    Returns:
-        The validated header.
-
-    """
-    validated_header: dict[str, Any] = {}
-    for key, value in header.items():
-        value_ = value.model_dump() if isinstance(value, BaseModel) else value
-        if key in VALIDATORS_REGISTRY:
-            if not isinstance(value_, Mapping):
-                raise TypeError(
-                    f"Value for '{key}' must be a mapping, not a '{type(value_)}'."
-                )
-            validator = VALIDATORS_REGISTRY[key]
-            validated_header[key] = validator(**value_)
-        else:
-            validated_header[key] = value_
-    return validated_header
-
-
-def header_to_dict(header: dict[str, Any]) -> dict[str, Any]:
-    """Transform the header into a serializable dictionary.
-
-    Transforms the header with validators to a header with dictionaries that can be
-    saved as yaml.
-
-    Args:
-        header: Dictionary to be saved as the header of the CSVY file.
-
-    Returns:
-        The validated header, as a serializable dictionary.
-
-    """
-    validated_header = {}
-    for key, value in header.items():
-        validated_header[key] = (
-            value.model_dump() if isinstance(value, BaseModel) else value
-        )
-    return validated_header
-
+# CSV Dialect-related validation
 
 # Create a generic variable that can be 'Parent', or any subclass.
 T = TypeVar("T", bound="CSVDialectValidator")
@@ -127,7 +44,7 @@ class CSVDialectValidator(BaseModel):
 
     delimiter: str = Field(default=",")
     doublequote: bool = Field(default=True)
-    escapechar: Optional[str] = Field(default=None)
+    escapechar: str | None = Field(default=None)
     lineterminator: str = Field(default="\r\n")
     quotechar: str = Field(default='"')
     skipinitialspace: bool = Field(default=False)
@@ -223,3 +140,113 @@ class CSVDialectValidator(BaseModel):
             quotechar=unix.quotechar or '"',
             skipinitialspace=unix.skipinitialspace,
         )
+
+
+# Table Schema-related validation
+
+
+class TypeEnum(str, Enum):
+    """Enumeration of the possible types for the Table Schema."""
+
+    STRING = "string"
+    INTEGER = "integer"
+    BOOLEAN = "boolean"
+    OBJECT = "object"
+    ARRAY = "array"
+    DATE = "date"
+    TIME = "time"
+    DATETIME = "datetime"
+    YEAR = "year"
+    YEARMONTH = "yearmonth"
+    DURATION = "duration"
+    GEOPOINT = "geopoint"
+    GEOJSON = "geojson"
+    ANY = "any"
+
+
+class ConstraintsValidator(BaseModel):
+    """Validator for the constraints in the Table Schema.
+
+    This class is used to validate the constraints in the Table Schema. It is based on
+    the constraints defined in the Table Schema specification.
+
+    Attributes:
+        required: A boolean indicating if the value is required.
+        unique: A boolean indicating if the value is unique.
+        minimum: The minimum of the value. Applies to types: integer, number, date,
+            time, datetime, year, yearmonth.
+        maximum: The maximum value. Applies to types: integer, number, date,
+            time, datetime, year, yearmonth.
+        minLength: The minimum length of the field. Applies to collections (string,
+            array, object).
+        maxLength: The maximum length of the field. Applies to collections (string,
+            array, object).
+        pattern: A regular expression pattern that the value must match. Applies to
+            types: string.
+        enum: A list of possible values for the field.
+
+    """
+
+    required: bool | None = Field(None)
+    unique: bool | None = Field(None)
+    minimum: int | float | None = Field(None)
+    maximum: int | float | None = Field(None)
+    minLength: int | None = Field(None)
+    maxLength: int | None = Field(None)
+    pattern: str | None = Field(None)
+    enum: list[Any] | None = Field(None)
+
+
+class ColumnValidator(BaseModel):
+    """Validator for the columns in the Table Schema.
+
+    This class is used to validate the columns in the Table Schema. It is based on the
+    columns defined in the Table Schema specification.
+
+    Attributes:
+        name: The name of the column.
+        title: A nicer human readable label or title for the field.
+        type_: A string specifying the type.
+        format_: A string specifying a format.
+        example: An example value for the field.
+        description: A description for the field.
+        constraints: A dictionary of constraints for the field.
+
+    """
+
+    name: str = Field(..., description="Column name.")
+    title: str | None = Field(
+        None, description="A nicer human readable label or title for the field."
+    )
+    type_: TypeEnum | None = Field(
+        None, alias="type", description="A string specifying the type."
+    )
+    format_: str | None = Field(
+        None, alias="format", description="A string specifying a format."
+    )
+    example: str | None = Field(None, description="An example value for the field.")
+    description: str | None = Field(None, description="A description for the field.")
+    constraints: ConstraintsValidator | None = Field(
+        None, description="A dictionary of constraints for the field."
+    )
+
+    def model_dump(self, *args, **kwargs) -> dict[str, Any]:
+        """Dump the model to a dictionary.
+
+        This method dumps the model to a dictionary. It sets exclude_unset to True and
+        by_alias to True, so that only the attributes that were set are included in the
+        dictionary and their aliases are always used.
+
+        Finally, it converts the attributes that are Enum instances to their values.
+
+        Returns:
+            A dictionary with the model attributes.
+
+        """
+        kwargs["exclude_unset"] = True
+        kwargs["by_alias"] = True
+        output = super().model_dump(*args, **kwargs)
+        for key, value in output.items():
+            if isinstance(value, Enum):
+                output[key] = value.value
+        return output

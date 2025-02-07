@@ -12,7 +12,7 @@ jobs:
     uses: ./.github/workflows/ci_template.yml
     with:
       os: '["ubuntu-latest", "windows-latest", "macos-latest"]'
-      python-version: '["3.9", "3.10", "3.11", "3.12"]'
+      python-version: '["3.10", "3.11", "3.12", "3.13"]'
 
   build-wheel:
     needs: test
@@ -37,10 +37,10 @@ jobs:
 
     - uses: actions/setup-python@v5
       with:
-        python-version: 3.9
+        python-version: 3.10
 
     - name: Install Poetry
-      uses: abatilo/actions-poetry@v3.0.1
+      uses: abatilo/actions-poetry@v4.0.0
       with:
         poetry-version: 1.8.3
 

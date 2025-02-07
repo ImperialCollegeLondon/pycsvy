@@ -8,7 +8,7 @@ def test_shortcut_dialects_roundtrip(shortcut):
     """Test that the shortcut dialects roundtrip to the actual dialects."""
     import csv
 
-    from csvy.validators import CSVDialectValidator
+    from csvy.validators.csv_dialect import CSVDialectValidator
 
     validator = getattr(CSVDialectValidator, shortcut)()
     dialect = validator.to_dialect()
