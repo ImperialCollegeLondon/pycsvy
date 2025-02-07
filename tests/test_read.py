@@ -45,10 +45,14 @@ def test_read_metadata(read_header_mock, data_path):
 
     filename = "test.csv"
     marker = "!!!"
+    encoding = "hieroglyphics"
     kwargs = {"key": "value"}
-    assert read_metadata(filename=filename, marker=marker, **kwargs) == "a"
+    assert (
+        read_metadata(filename=filename, marker=marker, encoding=encoding, **kwargs)
+        == "a"
+    )
 
-    read_header_mock.assert_called_once_with(filename, marker, **kwargs)
+    read_header_mock.assert_called_once_with(filename, marker, encoding, **kwargs)
 
 
 def test_read_to_array(array_data_path):
@@ -65,7 +69,7 @@ def test_read_to_array(array_data_path):
 
     import csvy.readers as readers
 
-    readers.NDArray = None
+    readers.NDArray = None  # type: ignore [assignment]
 
     with pytest.raises(ModuleNotFoundError):
         read_to_array(array_data_path)
@@ -85,7 +89,7 @@ def test_read_to_dataframe(data_path):
 
     import csvy.readers as readers
 
-    readers.DataFrame = None
+    readers.DataFrame = None  # type: ignore [assignment]
 
     with pytest.raises(ModuleNotFoundError):
         read_to_dataframe(data_path)
@@ -100,7 +104,7 @@ def test_read_to_polars(data_path):
 
     lazy_data, header = read_to_polars(data_path)
     assert isinstance(lazy_data, pl.LazyFrame)
-    assert tuple(lazy_data.columns) == ("Date", "WTI")
+    assert tuple(lazy_data.collect_schema().names()) == ("Date", "WTI")
     assert isinstance(header, dict)
     assert len(header) > 0
 
@@ -109,10 +113,13 @@ def test_read_to_polars(data_path):
 
     import csvy.readers as readers
 
-    readers.LazyFrame = None  # type: ignore [misc]
+    readers.LazyFrame = None  # type: ignore [assignment, misc]
 
     with pytest.raises(ModuleNotFoundError):
         read_to_polars(data_path)
+
+    with pytest.raises(ValueError):
+        read_to_polars(data_path, encoding="utf-9")  # type: ignore [arg-type]
 
 
 def test_read_to_list(array_data_path):
@@ -124,4 +131,48 @@ def test_read_to_list(array_data_path):
     assert len(data) == 15
     assert len(data[0]) == 4
     assert isinstance(header, dict)
+    assert len(header) > 0
+
+
+def test_read_to_dict_with_default_column_names(array_data_path):
+    """Test the read_to_list function."""
+    from csvy.readers import read_to_dict
+
+    data, header = read_to_dict(array_data_path, csv_options={"delimiter": ","})
+
+    assert isinstance(data, dict)
+    assert len(data) == 4
+    assert list(data.keys()) == ["col_0", "col_1", "col_2", "col_3"]
+    assert len(data["col_0"]) == 15
+    assert len(header) > 0
+
+
+def test_read_to_dict_with_custom_column_names(array_data_path):
+    """Test the read_to_list function."""
+    from csvy.readers import read_to_dict
+
+    column_names = ["A", "B", "C", "D"]
+    data, header = read_to_dict(
+        array_data_path, column_names=column_names, csv_options={"delimiter": ","}
+    )
+
+    assert isinstance(data, dict)
+    assert len(data) == 4
+    assert list(data.keys()) == column_names
+    assert len(data["A"]) == 15
+    assert len(header) > 0
+
+
+def test_read_to_dict_with_row_based_column_names(data_path):
+    """Test the read_to_list function."""
+    from csvy.readers import read_to_dict
+
+    data, header = read_to_dict(
+        data_path, column_names=0, csv_options={"delimiter": ","}
+    )
+
+    assert isinstance(data, dict)
+    assert len(data) == 2
+    assert list(data.keys()) == ["Date", "WTI"]
+    assert len(data["Date"]) == 15
     assert len(header) > 0

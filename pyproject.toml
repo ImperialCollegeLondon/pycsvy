@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pycsvy"
-version = "0.2.2"
+version = "0.2.3"
 description = "Python reader/writer for CSV files with YAML header information."
 authors = ["Diego Alonso Álvarez <d.alonso-alvarez@imperial.ac.uk>"]
 license = "BSD-3-Clause"
@@ -11,10 +11,10 @@ classifiers = [
 	"Intended Audience :: Developers",
 	"Intended Audience :: Science/Research",
 	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
 	"Programming Language :: Python :: 3.11",
 	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
 	"License :: OSI Approved :: BSD License",
 	"Operating System :: OS Independent",
 ]
@@ -22,7 +22,7 @@ classifiers = [
 packages = [{ include = "csvy" }]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 PyYAML = "^6.0"
 pydantic = "^2.9.2"
 eval-type-backport = "^0.2.0"
@@ -40,28 +40,28 @@ polars = ["polars"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.2,<9.0"
-pytest-cov = ">=3,<6"
+pytest-cov = ">=3,<7"
 pytest-mypy = "^0.9.1"
 pytest-mock = "^3.7.0"
 pre-commit = ">=2.18.1,<5.0.0"
 numpy = ">=1.24.2,<3.0.0"
 pandas = "^2.0.0"
 types-PyYAML = "^6.0.7"
-bump2version = "^1.0.1"
 coverage = "^7.1.0"
 polars = "^1.8.2"
-ruff = ">=0.6.8,<0.8.0"
+ruff = ">=0.6.8,<0.9.0"
+pytest-ruff = "^0.4.1"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.1"
-mkdocstrings = { extras = ["python"], version = ">=0.19,<0.27" }
+mkdocstrings = { extras = ["python"], version = ">=0.19,<0.28" }
 mkdocs-material = ">=8.5.7,<10.0.0"
 mkdocs-gen-files = "^0.4.0"
 mkdocs-literate-nav = "^0.5.0"
 mkdocs-section-index = "^0.3.4"
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 lint.select = [
 	"D",   # pydocstyle
 	"E",   # pycodestyle
@@ -70,7 +70,27 @@ lint.select = [
 	"UP",  # pyupgrade
 	"RUF", # ruff
 ]
-lint.pydocstyle.convention = "google"
+
+[tool.pycodestyle]
+max-line-length = 88
+convention = "google"
+
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = true
+exclude = "docs"
+plugins = ['pydantic.mypy']
+
+[tool.mypy-setup]
+ignore_errors = true
+
+[tool.pytest.ini_options]
+addopts = [
+    "-v", "--ruff", "--ruff-format", "--mypy",
+    "--cov=csvy", "--cov-report=html:reports/coverage/html",
+    "--cov-report=xml:reports/coverage/coverage.xml",
+    "--doctest-modules", "--ignore=docs/"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

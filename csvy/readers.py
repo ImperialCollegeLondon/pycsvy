@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import logging
+from itertools import zip_longest
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 
@@ -34,11 +35,11 @@ except ModuleNotFoundError:
         "Polars is not installed. Reading into a pl.DataFrame will not work."
     )
 
-from .validators import validate_read
+from .validators import validate_header
 
 
 def get_comment(line: str, marker: str = "---") -> str:
-    """Retrieves the comment character used in the header.
+    """Retrieve the comment character used in the header.
 
     Given that we know the header limiting markers are '---' it is possible to
     automatically find out the comment character by simply retrieving what is
@@ -53,6 +54,7 @@ def get_comment(line: str, marker: str = "---") -> str:
 
     Returns:
         The comment character found.
+
     """
     if marker not in line:
         raise ValueError(f"Yaml header marker '{marker}' not found in line '{line}'.")
@@ -61,24 +63,26 @@ def get_comment(line: str, marker: str = "---") -> str:
 
 
 def read_header(
-    filename: Path | str, marker: str = "---", **kwargs: Any
+    filename: Path | str, marker: str = "---", encoding: str = "utf-8", **kwargs: Any
 ) -> tuple[dict[str, Any], int, str]:
     """Read the yaml-formatted header from a file.
 
     Args:
         filename: Name of the file to read the header from.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         **kwargs: Arguments to pass to 'yaml.safe_load'.
 
     Returns:
         Tuple containing: a dictionary with the header information, the number of header
             lines, and the comment character.
+
     """
     header = []
     markers = 0
     nlines = 0
     comment = ""
-    with Path(filename).open("r") as f:
+    with Path(filename).open("r", encoding=encoding) as f:
         for line in f:
             if nlines == 0:
                 comment = get_comment(line, marker=marker)
@@ -92,36 +96,40 @@ def read_header(
             line = line.lstrip(comment)
             header.append(line)
 
-    return validate_read(yaml.safe_load("".join(header), **kwargs)), nlines, comment
+    return validate_header(yaml.safe_load("".join(header), **kwargs)), nlines, comment
 
 
 def read_metadata(
-    filename: Path | str, marker: str = "---", **kwargs: Any
+    filename: Path | str, marker: str = "---", encoding: str = "utf-8", **kwargs: Any
 ) -> dict[str, Any]:
     """Read the yaml-formatted metadata from a file.
 
     Args:
         filename: Name of the file to read the header from.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         **kwargs: Arguments to pass to 'yaml.safe_load'.
 
     Returns:
         The metadata stored in the header.
+
     """
-    return read_header(filename, marker, **kwargs)[0]
+    return read_header(filename, marker, encoding, **kwargs)[0]
 
 
 def read_to_array(
     filename: Path | str,
     marker: str = "---",
+    encoding: str = "utf-8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[NDArray, dict[str, Any]]:
-    """Reads a CSVY file into dict with the header and array with the data.
+    """Read a CSVY file into dict with the header and array with the data.
 
     Args:
         filename:  Name of the file to read.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         csv_options: Options to pass to np.loadtxt.
         yaml_options: Options to pass to yaml.safe_load.
 
@@ -130,6 +138,7 @@ def read_to_array(
 
     Returns:
         Tuple containing: The numpy array and the header as a dictionary.
+
     """
     if NDArray is None:
         raise ModuleNotFoundError(
@@ -138,21 +147,24 @@ def read_to_array(
     import numpy as np
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
+    header, nlines, comment = read_header(
+        filename, marker=marker, encoding=encoding, **yaml_options
+    )
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines + options.get("skiprows", 0)
     options["comments"] = comment[0] if len(comment) >= 1 else "#"
-    return np.loadtxt(filename, **options), header
+    return np.loadtxt(filename, encoding=encoding, **options), header
 
 
 def read_to_dataframe(
     filename: Path | str,
     marker: str = "---",
+    encoding: str = "utf-8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[DataFrame, dict[str, Any]]:
-    """Reads a CSVY file into dict with the header and a DataFrame with the data.
+    """Read a CSVY file into dict with the header and a DataFrame with the data.
 
     Possible 'skiprows' and 'comment' argument provided in the 'csv_options' dictionary
     will be ignored.
@@ -160,6 +172,7 @@ def read_to_dataframe(
     Args:
         filename:  Name of the file to read.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         csv_options: Options to pass to pd.read_csv.
         yaml_options: Options to pass to yaml.safe_load.
 
@@ -168,6 +181,7 @@ def read_to_dataframe(
 
     Returns:
         Tuple containing: The pandas DataFrame and the header as a dictionary.
+
     """
     if DataFrame is None:
         raise ModuleNotFoundError(
@@ -176,22 +190,25 @@ def read_to_dataframe(
     import pandas as pd
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
+    header, nlines, comment = read_header(
+        filename, marker=marker, encoding=encoding, **yaml_options
+    )
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skiprows"] = nlines
     options["comment"] = comment[0] if len(comment) >= 1 else None
-    return pd.read_csv(filename, **options), header
+    return pd.read_csv(filename, encoding=encoding, **options), header
 
 
 def read_to_polars(
     filename: Path | str,
     marker: str = "---",
+    encoding: Literal["utf8", "utf8-lossy"] = "utf8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
     eager: bool = False,
 ) -> tuple[LazyFrame | PolarsDataFrame, dict[str, Any]]:
-    """Reads a CSVY file into dict with the header and a Polars LazyFrame with the data.
+    """Read a CSVY file into dict with the header and a Polars LazyFrame with the data.
 
     This uses the `scan_csv` method from Polars to read the data. This returns a polars
     LazyFrame, which means the data is not loaded into memory until it is needed. To
@@ -203,16 +220,22 @@ def read_to_polars(
     Args:
         filename:  Name of the file to read.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         csv_options: Options to pass to pl.scan_csv.
         yaml_options: Options to pass to yaml.safe_load.
         eager: Whether to load the data into memory.
 
     Raises:
         ModuleNotFoundError: If polars is not found.
+        ValueError: If an invalid character encoding is specified.
 
     Returns:
         Tuple containing: The polars LazyFrame and the header as a dictionary.
+
     """
+    if encoding not in ("utf8", "utf8-lossy"):
+        raise ValueError("Encoding must be either 'utf8' or 'utf8-lossy'")
+
     if LazyFrame is None:
         raise ModuleNotFoundError(
             "Module polars is not present. Install it to read data into DataFrame."
@@ -220,13 +243,15 @@ def read_to_polars(
     import polars as pl
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, comment = read_header(filename, marker=marker, **yaml_options)
+    header, nlines, comment = read_header(
+        filename, marker=marker, encoding="utf-8", **yaml_options
+    )
 
     options = csv_options.copy() if csv_options is not None else {}
     options["skip_rows"] = nlines
     options["comment_prefix"] = comment[0] if len(comment) >= 1 else None
 
-    lf = pl.scan_csv(filename, **options)
+    lf = pl.scan_csv(filename, encoding=encoding, **options)
     if eager:
         return lf.collect(), header
     return lf, header
@@ -235,14 +260,16 @@ def read_to_polars(
 def read_to_list(
     filename: Path | str,
     marker: str = "---",
+    encoding: str = "utf-8",
     csv_options: dict[str, Any] | None = None,
     yaml_options: dict[str, Any] | None = None,
 ) -> tuple[list[list], dict[str, Any]]:
-    """Reads a CSVY file into a list with the header and a nested list with the data.
+    """Read a CSVY file into a list with the header and a nested list with the data.
 
     Args:
         filename: Name of the file to read.
         marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
         csv_options: Options to pass to csv.reader.
         yaml_options: Options to pass to yaml.safe_load.
 
@@ -251,16 +278,19 @@ def read_to_list(
 
     Returns:
         Tuple containing: The nested list and the header as a dictionary.
+
     """
     import csv
 
     yaml_options = yaml_options if yaml_options is not None else {}
-    header, nlines, _ = read_header(filename, marker=marker, **yaml_options)
+    header, nlines, _ = read_header(
+        filename, marker=marker, encoding=encoding, **yaml_options
+    )
 
     options = csv_options.copy() if csv_options is not None else {}
 
     data = []
-    with open(filename, newline="") as csvfile:
+    with open(filename, encoding=encoding, newline="") as csvfile:
         csvreader = csv.reader(csvfile, **options)
 
         for _ in range(nlines):
@@ -270,3 +300,51 @@ def read_to_list(
             data.append(row)
 
     return data, header
+
+
+def read_to_dict(
+    filename: Path | str,
+    marker: str = "---",
+    encoding: str = "utf-8",
+    csv_options: dict[str, Any] | None = None,
+    yaml_options: dict[str, Any] | None = None,
+    *,
+    column_names: list[Any] | int | None = None,
+    fillvalue: Any = None,
+) -> tuple[dict[str, list[Any]], dict[str, Any]]:
+    """Read a CSVY file into a dictionary with the header and the data as dictionaries.
+
+    Internally, it calls `read_to_list` and then transforms the data into a dictionary.
+
+    Args:
+        filename: Name of the file to read.
+        marker: The marker characters that indicate the yaml header.
+        encoding: The character encoding in the file to read.
+        csv_options: Options to pass to csv.reader.
+        yaml_options: Options to pass to yaml.safe_load.
+        column_names: Either a list with the column names, the row number containing the
+            column names or None. If None (the default) an automatic column name
+            ('col_0', 'col_1', ...) will be used.
+        fillvalue: Value to use for missing data in the columns.
+
+    Returns:
+        Tuple containing: The data and the header both as a dictionaries.
+
+    """
+    data, header = read_to_list(filename, marker, encoding, csv_options, yaml_options)
+
+    longest_row = len(max(data, key=len))
+    if column_names is None:
+        column_names = [f"col_{i}" for i in range(longest_row)]
+    else:
+        if isinstance(column_names, int):
+            column_names = data.pop(column_names)
+
+        if len(column_names) != longest_row:
+            raise ValueError(
+                "The number of column names must be exactly the length of the longest "
+                f"row ({len({column_names})} != {longest_row})."
+            )
+
+    columns = list(map(list, zip_longest(*data, fillvalue=fillvalue)))
+    return dict(zip(column_names, columns)), header

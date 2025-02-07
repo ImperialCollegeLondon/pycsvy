@@ -1,13 +1,16 @@
 # CSVY for Python
 
-[![Test and build](https://github.com/ImperialCollegeLondon/csvy/actions/workflows/ci.yml/badge.svg)](https://github.com/ImperialCollegeLondon/csvy/actions/workflows/ci.yml)
 [![PyPI version shields.io](https://img.shields.io/pypi/v/pycsvy.svg)](https://pypi.python.org/pypi/pycsvy/)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/pycsvy.svg)](https://anaconda.org/conda-forge/pycsvy)
 [![PyPI status](https://img.shields.io/pypi/status/pycsvy.svg)](https://pypi.python.org/pypi/pycsvy/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pycsvy.svg)](https://pypi.python.org/pypi/pycsvy/)
 [![PyPI license](https://img.shields.io/pypi/l/pycsvy.svg)](https://pypi.python.org/pypi/pycsvy/)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/pycsvy/badges/platforms.svg)](https://anaconda.org/conda-forge/pycsvy)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/pycsvy/badges/latest_release_date.svg)](https://anaconda.org/conda-forge/pycsvy)
+[![Test and build](https://github.com/ImperialCollegeLondon/csvy/actions/workflows/ci.yml/badge.svg)](https://github.com/ImperialCollegeLondon/csvy/actions/workflows/ci.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/ImperialCollegeLondon/pycsvy/develop.svg)](https://results.pre-commit.ci/latest/github/ImperialCollegeLondon/pycsvy/develop)
 [![codecov](https://codecov.io/gh/ImperialCollegeLondon/pycsvy/branch/develop/graph/badge.svg?token=N03KYNUD18)](https://codecov.io/gh/ImperialCollegeLondon/pycsvy)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8d1b791b315f4814a128d94483499561)](https://app.codacy.com/gh/ImperialCollegeLondon/pycsvy/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ImperialCollegeLondon/pycsvy&amp;utm_campaign=Badge_Grade)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/ImperialCollegeLondon/pycsvy/develop.svg)](https://results.pre-commit.ci/latest/github/ImperialCollegeLondon/pycsvy/develop)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
@@ -28,10 +31,16 @@ column to aid the reading and interpretation of the data.
 
 ## Installation
 
-'pycsvy' is available in PyPI therefore its installation is as easy as:
+'pycsvy' is available in PyPI and conda-forge therefore its installation is as easy as:
 
 ```bash
 pip install pycsvy
+```
+
+or
+
+```bash
+conda install --channel=conda-forge pycsvy
 ```
 
 In order to support reading into `numpy` arrays, `pandas` DataFrames or `polars` DataFrames, you will
@@ -111,7 +120,13 @@ YAML-formatted header, respectively.
 You can also instruct a writer to use line buffering, instead of the usual chunk buffering.
 
 Finally, you can control the character(s) used to indicate comments by setting the
-`comment` keyword when writing a file. By default, there is no character (""). During reading, the comment character is found atomatically.
+`comment` keyword when writing a file. By default, there is no character ("").
+During reading, the comment character is found automatically.
+
+Note that, by default, these reader functions will assume UTF-8 encoding. You can choose a
+different character encoding by setting the `encoding` keyword argument to any of these
+reader or writer functions. For example, on Windows, Windows-1252 encoding is often used,
+which can be specified via `encoding='cp1252'`.
 
 ## Contributors ✨
 

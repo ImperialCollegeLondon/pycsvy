@@ -8,7 +8,7 @@ def test_shortcut_dialects_roundtrip(shortcut):
     """Test that the shortcut dialects roundtrip to the actual dialects."""
     import csv
 
-    from csvy.validators import CSVDialectValidator
+    from csvy.validators.csv_dialect import CSVDialectValidator
 
     validator = getattr(CSVDialectValidator, shortcut)()
     dialect = validator.to_dialect()
@@ -75,29 +75,37 @@ def test_register_validator_not_base_model(validators_registry):
             pass
 
 
-def test_validate_read(validators_registry):
+def test_validate_header(validators_registry):
     """Test that we can run validators on the header."""
     from pydantic import BaseModel, PositiveInt
 
-    from csvy.validators import register_validator, validate_read
+    from csvy.validators import register_validator, validate_header
 
     @register_validator("my_validator")
     class MyValidator(BaseModel):
         value: PositiveInt
 
     header = {"author": "Gandalf", "my_validator": {"value": 42}}
-    validated_header = validate_read(header)
+    validated_header = validate_header(header)
 
     assert isinstance(validated_header["my_validator"], MyValidator)
     assert validated_header["my_validator"].value == 42
     assert validated_header["author"] == header["author"]
 
+    # If the header is already validated, it should pass
+    assert validate_header(validated_header) == validated_header
 
-def test_validate_read_missing(validators_registry):
+    # But if the validated header is changed to an invalid value, it should fail
+    validated_header["my_validator"].value = -1
+    with pytest.raises(ValueError):
+        validate_header(validated_header)
+
+
+def test_validate_header_missing(validators_registry):
     """Test that we can run validators on the header."""
     from pydantic import BaseModel, PositiveInt, ValidationError
 
-    from csvy.validators import register_validator, validate_read
+    from csvy.validators import register_validator, validate_header
 
     @register_validator("my_validator")
     class _(BaseModel):
@@ -106,21 +114,37 @@ def test_validate_read_missing(validators_registry):
     header = {"author": "Gandalf", "my_validator": {}}
 
     with pytest.raises(ValidationError):
-        validate_read(header)
+        validate_header(header)
+
+
+def test_validate_header_wrong_type(validators_registry):
+    """Test that we can run validators on the header."""
+    from pydantic import BaseModel, PositiveInt
+
+    from csvy.validators import register_validator, validate_header
+
+    @register_validator("my_validator")
+    class _(BaseModel):
+        value: PositiveInt
+
+    header = {"author": "Gandalf", "my_validator": 42}
+
+    with pytest.raises(TypeError):
+        validate_header(header)
 
 
 def test_validate_write(validators_registry):
     """Test that we can create the header using the validators."""
     from pydantic import BaseModel, PositiveInt
 
-    from csvy.validators import register_validator, validate_read, validate_write
+    from csvy.validators import header_to_dict, register_validator, validate_header
 
     @register_validator("my_validator")
     class _(BaseModel):
         value: PositiveInt
 
     header = {"author": "Gandalf", "my_validator": {"value": 42}}
-    validated_header = validate_read(header)
-    new_header = validate_write(validated_header)
+    validated_header = validate_header(header)
+    new_header = header_to_dict(validated_header)
 
     assert new_header == header

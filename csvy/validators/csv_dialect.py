@@ -1,88 +1,14 @@
-"""This module contains validators for the CSVY file format."""
+"""CSV Dialect-related validation."""
 
 from __future__ import annotations
 
 import csv
 from enum import Enum
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 from pydantic import BaseModel, Field
 
-VALIDATORS_REGISTRY: dict[str, type[BaseModel]] = {}
-"""Registry of validators to run on the header."""
-
-
-def register_validator(
-    name: str, overwrite: bool = False
-) -> Callable[[type[BaseModel]], type[BaseModel]]:
-    """Registers a validator in the registry.
-
-    This function is a decorator that registers a validator in the registry. The name
-    of the validator is used as the key in the registry.
-
-    Args:
-        name: The name of the validator.
-        overwrite: Whether to overwrite the validator if it already exists.
-
-    Returns:
-        The decorator function that registers the validator.
-    """
-
-    def decorator(cls: type[BaseModel]) -> type[BaseModel]:
-        if not issubclass(cls, BaseModel):
-            raise TypeError("Validators must be subclasses of pydantic.BaseModel.")
-
-        if name in VALIDATORS_REGISTRY and not overwrite:
-            raise ValueError(f"Validator with name '{name}' already exists.")
-
-        VALIDATORS_REGISTRY[name] = cls
-        return cls
-
-    return decorator
-
-
-def validate_read(header: dict[str, Any]) -> dict[str, Any]:
-    """Runs the validators on the header in a read operation.
-
-    This function runs the validators on the header. It uses the keys of the header to
-    find the validators in the registry and runs them on the corresponding values.
-
-    Args:
-        header: The header of the CSVY file.
-
-    Returns:
-        The validated header.
-    """
-    validated_header = {}
-    for key, value in header.items():
-        if key in VALIDATORS_REGISTRY:
-            validator = VALIDATORS_REGISTRY[key]
-            validated_header[key] = validator(**value)
-        else:
-            validated_header[key] = value
-    return validated_header
-
-
-def validate_write(header: dict[str, Any]) -> dict[str, Any]:
-    """Uses the validators to create the header in a write operation.
-
-    Transforms the header with validators to a header with dictionaries that can be
-    saved as yaml. It is the reversed operation of validate_read, so calling
-    validate_write(validate_read(header)) should return the original header.
-
-    Args:
-        header: Dictionary to be saved as the header of the CSVY file.
-
-    Returns:
-        The validated header.
-    """
-    validated_header = {}
-    for key, value in header.items():
-        validated_header[key] = (
-            value.model_dump() if isinstance(value, BaseModel) else value
-        )
-    return validated_header
-
+from .registry import register_validator
 
 # CSV Dialect-related validation
 
@@ -113,6 +39,7 @@ class CSVDialectValidator(BaseModel):
             characters. It defaults to '"'.
         skipinitialspace: When True, whitespace immediately following the delimiter is
             ignored. It defaults to False.
+
     """
 
     delimiter: str = Field(default=",")
@@ -123,7 +50,7 @@ class CSVDialectValidator(BaseModel):
     skipinitialspace: bool = Field(default=False)
 
     def to_dialect(self) -> csv.Dialect:
-        """Converts the validator to a custom csv.Dialect object.
+        """Convert the validator to a custom csv.Dialect object.
 
         This method converts the validator to a custom csv.Dialect object that can be
         used to read or write CSV files with the specified dialect.
@@ -132,6 +59,7 @@ class CSVDialectValidator(BaseModel):
 
         Returns:
             A custom csv.Dialect object with the specified attributes.
+
         """
         dialect = type(
             "CustomDialect",
@@ -150,13 +78,14 @@ class CSVDialectValidator(BaseModel):
 
     @classmethod
     def excel(cls: type[T]) -> T:
-        """Returns a validator for the Excel CSV Dialect.
+        """Return a validator for the Excel CSV Dialect.
 
         This method returns a validator for the Excel CSV Dialect, which is a common
         dialect used in Excel files.
 
         Returns:
             A validator for the Excel CSV Dialect.
+
         """
         excel = csv.excel()
         return cls(
@@ -164,13 +93,13 @@ class CSVDialectValidator(BaseModel):
             doublequote=excel.doublequote,
             escapechar=excel.escapechar,
             lineterminator=excel.lineterminator,
-            quotechar=excel.quotechar,
+            quotechar=excel.quotechar or '"',
             skipinitialspace=excel.skipinitialspace,
         )
 
     @classmethod
     def excel_tab(cls: type[T]) -> T:
-        """Returns a validator for the Excel Tab CSV Dialect.
+        """Return a validator for the Excel Tab CSV Dialect.
 
         This method returns a validator for the Excel Tab CSV Dialect, which is a common
         dialect used in Excel files with tab delimiters.
@@ -179,6 +108,7 @@ class CSVDialectValidator(BaseModel):
 
         Returns:
             A validator for the Excel Tab CSV Dialect.
+
         """
         excel_tab = csv.excel_tab()
         return cls(
@@ -186,19 +116,20 @@ class CSVDialectValidator(BaseModel):
             doublequote=excel_tab.doublequote,
             escapechar=excel_tab.escapechar,
             lineterminator=excel_tab.lineterminator,
-            quotechar=excel_tab.quotechar,
+            quotechar=excel_tab.quotechar or '"',
             skipinitialspace=excel_tab.skipinitialspace,
         )
 
     @classmethod
     def unix_dialect(cls: type[T]) -> T:
-        """Returns a validator for the Unix CSV Dialect.
+        """Return a validator for the Unix CSV Dialect.
 
         This method returns a validator for the Unix CSV Dialect, which is a common
         dialect used in Unix files.
 
         Returns:
             A validator for the Unix CSV Dialect.
+
         """
         unix = csv.unix_dialect()
         return cls(
@@ -206,7 +137,7 @@ class CSVDialectValidator(BaseModel):
             doublequote=unix.doublequote,
             escapechar=unix.escapechar,
             lineterminator=unix.lineterminator,
-            quotechar=unix.quotechar,
+            quotechar=unix.quotechar or '"',
             skipinitialspace=unix.skipinitialspace,
         )
 
@@ -253,6 +184,7 @@ class ConstraintsValidator(BaseModel):
         pattern: A regular expression pattern that the value must match. Applies to
             types: string.
         enum: A list of possible values for the field.
+
     """
 
     required: bool | None = Field(None)
@@ -279,6 +211,7 @@ class ColumnValidator(BaseModel):
         example: An example value for the field.
         description: A description for the field.
         constraints: A dictionary of constraints for the field.
+
     """
 
     name: str = Field(..., description="Column name.")
@@ -298,7 +231,7 @@ class ColumnValidator(BaseModel):
     )
 
     def model_dump(self, *args, **kwargs) -> dict[str, Any]:
-        """Dumps the model to a dictionary.
+        """Dump the model to a dictionary.
 
         This method dumps the model to a dictionary. It sets exclude_unset to True and
         by_alias to True, so that only the attributes that were set are included in the
@@ -308,6 +241,7 @@ class ColumnValidator(BaseModel):
 
         Returns:
             A dictionary with the model attributes.
+
         """
         kwargs["exclude_unset"] = True
         kwargs["by_alias"] = True
