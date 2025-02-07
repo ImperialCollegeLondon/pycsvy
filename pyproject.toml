@@ -11,10 +11,10 @@ classifiers = [
 	"Intended Audience :: Developers",
 	"Intended Audience :: Science/Research",
 	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.9",
 	"Programming Language :: Python :: 3.10",
 	"Programming Language :: Python :: 3.11",
 	"Programming Language :: Python :: 3.12",
+	"Programming Language :: Python :: 3.13",
 	"License :: OSI Approved :: BSD License",
 	"Operating System :: OS Independent",
 ]
@@ -22,9 +22,10 @@ classifiers = [
 packages = [{ include = "csvy" }]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 PyYAML = "^6.0"
 pydantic = "^2.9.2"
+eval-type-backport = "^0.2.0"
 
 # A list of all of the optional dependencies, which are included in the
 # below `extras`. They can be opted into by apps.
@@ -60,7 +61,7 @@ mkdocs-literate-nav = "^0.5.0"
 mkdocs-section-index = "^0.3.4"
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 lint.select = [
 	"D",   # pydocstyle
 	"E",   # pycodestyle
@@ -77,6 +78,8 @@ convention = "google"
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
+exclude = "docs"
+plugins = ['pydantic.mypy']
 
 [tool.mypy-setup]
 ignore_errors = true
