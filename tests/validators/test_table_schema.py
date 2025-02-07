@@ -39,6 +39,7 @@ def test_common_validator():
     assert validator.title == "Test Column"
     assert validator.example == "example_value"
     assert validator.description == "This is a test column."
+    assert validator.constraints
     assert validator.constraints.required is True
     assert validator.constraints.unique is True
 
