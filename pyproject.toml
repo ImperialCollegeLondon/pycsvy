@@ -50,7 +50,7 @@ types-PyYAML = "^6.0.7"
 coverage = "^7.1.0"
 polars = "^1.8.2"
 ruff = ">=0.6.8,<0.13.0"
-pytest-ruff = "^0.4.1"
+pytest-ruff = ">=0.4.1,<0.6.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.1"
