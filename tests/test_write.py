@@ -351,7 +351,7 @@ def test_write_csv_options_override_dialect(tmp_path):
             "quotechar" in msg and "conflicts" in msg for msg in warning_messages
         )
 
-    read_data, read_header = csvy.read_to_list(output_file)
+    _, read_header = csvy.read_to_list(output_file)
 
     dialect = read_header["csv_dialect"]
     assert dialect.delimiter == ","
