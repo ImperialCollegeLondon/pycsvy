@@ -201,7 +201,7 @@ name;age;city
     expected_data = [
         ["name", "age", "city"],
         ["Alice", "25", "New York"],
-        ["Bob", "30", "London"]
+        ["Bob", "30", "London"],
     ]
     assert data == expected_data
 
@@ -213,8 +213,9 @@ name;age;city
 
 
 def test_read_csv_options_override_dialect(tmp_path):
-    from csvy.readers import read_to_list
     import warnings
+
+    from csvy.readers import read_to_list
 
     csvy_content = """---
 title: Test with dialect override
