@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import logging
+import warnings
 from collections.abc import Callable, Iterable, Mapping
 from io import TextIOBase
 from itertools import zip_longest
@@ -12,9 +13,51 @@ from typing import Any
 
 import yaml
 
-from .validators import header_to_dict, validate_header
+from .validators import CSVDialectValidator, header_to_dict, validate_header
 
 KNOWN_WRITERS: list[Callable[[Path | str, Any, str], bool]] = []
+
+
+def merge_csv_options_with_dialect(
+    header: dict[str, Any],
+    csv_options: dict[str, Any] | None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    merged_options = csv_options.copy() if csv_options is not None else {}
+    updated_header = header.copy()
+
+    if "csv_dialect" in header and isinstance(header["csv_dialect"], CSVDialectValidator):
+        dialect_validator = header["csv_dialect"]
+
+        dialect_mapping = {
+            "delimiter": "delimiter",
+            "quotechar": "quotechar",
+            "escapechar": "escapechar",
+            "doublequote": "doublequote",
+            "skipinitialspace": "skipinitialspace",
+            "lineterminator": "lineterminator",
+        }
+
+        dialect_updated = False
+        for dialect_attr, csv_option in dialect_mapping.items():
+            dialect_value = getattr(dialect_validator, dialect_attr)
+            if csv_option in merged_options:
+                user_value = merged_options[csv_option]
+                if user_value != dialect_value:
+                    warnings.warn(
+                        f"CSV option '{csv_option}' ({user_value!r}) conflicts with "
+                        f"dialect setting ({dialect_value!r}). Using user option.",
+                        UserWarning,
+                        stacklevel=2
+                    )
+                    setattr(dialect_validator, dialect_attr, user_value)
+                    dialect_updated = True
+            else:
+                merged_options[csv_option] = dialect_value
+
+        if dialect_updated:
+            updated_header["csv_dialect"] = dialect_validator
+
+    return merged_options, updated_header
 
 
 def register_writer(fun: Callable[[Path | str, Any, str], bool]) -> Callable:
@@ -60,8 +103,14 @@ def write(
     csv_options = csv_options if csv_options is not None else {}
     yaml_options = yaml_options if yaml_options is not None else {}
 
-    write_header(filename, header, comment, encoding, **yaml_options)
-    write_data(filename, data, comment, encoding, **csv_options)
+    # Validate header to ensure dialect is properly processed
+    validated_header = validate_header(header)
+
+    # Merge CSV options with dialect information
+    merged_options, updated_header = merge_csv_options_with_dialect(validated_header, csv_options)
+
+    write_header(filename, updated_header, comment, encoding, **yaml_options)
+    write_data(filename, data, comment, encoding, **merged_options)
 
 
 class Writer:
@@ -98,6 +147,12 @@ class Writer:
         if not yaml_options:
             yaml_options = {}
 
+        # Validate header to ensure dialect is properly processed
+        validated_header = validate_header(header)
+
+        # Merge CSV options with dialect information
+        merged_options, updated_header = merge_csv_options_with_dialect(validated_header, csv_options)
+
         # Line buffering: 1 and default chunk buffering: -1
         buffering = 1 if line_buffering else -1
 
@@ -105,9 +160,9 @@ class Writer:
         self._file = Path(filename).open(
             "w", encoding=encoding, newline="", buffering=buffering
         )
-        write_header(self._file, header, comment, encoding, **yaml_options)
+        write_header(self._file, updated_header, comment, encoding, **yaml_options)
 
-        self._writer = csv.writer(self._file, **csv_options)
+        self._writer = csv.writer(self._file, **merged_options)
 
     def __enter__(self) -> Writer:
         """Enter the context manager."""

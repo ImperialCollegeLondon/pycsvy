@@ -291,3 +291,95 @@ def test_write_data(mock_write_csv):
     mock_write_csv.assert_called_once_with(
         filename, data, comment, encoding, **csv_options
     )
+
+
+def test_write_with_csv_dialect(tmp_path):
+    import csvy
+    from csvy.validators import CSVDialectValidator
+
+    data = [
+        ["name", "age", "city"],
+        ["Alice", "25", "New York"],
+        ["Bob", "30", "London"]
+    ]
+
+    header = {
+        "title": "Test with dialect",
+        "csv_dialect": {
+            "delimiter": ";",
+            "quotechar": "'"
+        }
+    }
+
+    output_file = tmp_path / "test_write_dialect.csvy"
+    csvy.write(output_file, data, header)
+
+    read_data, read_header = csvy.read_to_list(output_file)
+
+    assert read_data == data
+
+    assert "csv_dialect" in read_header
+    dialect = read_header["csv_dialect"]
+    assert isinstance(dialect, CSVDialectValidator)
+    assert dialect.delimiter == ";"
+    assert dialect.quotechar == "'"
+
+
+def test_write_csv_options_override_dialect(tmp_path):
+    import csvy
+    import warnings
+
+    data = [["name", "age"], ["Alice", "25"]]
+
+    header = {
+        "title": "Test with dialect override",
+        "csv_dialect": {
+            "delimiter": ";",
+            "quotechar": "'"
+        }
+    }
+
+    output_file = tmp_path / "test_write_override.csvy"
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        csvy.write(output_file, data, header, csv_options={"delimiter": ",", "quotechar": '"'})
+
+        assert len(w) >= 2
+        warning_messages = [str(warning.message) for warning in w]
+        assert any("delimiter" in msg and "conflicts" in msg for msg in warning_messages)
+        assert any("quotechar" in msg and "conflicts" in msg for msg in warning_messages)
+
+    read_data, read_header = csvy.read_to_list(output_file)
+
+    dialect = read_header["csv_dialect"]
+    assert dialect.delimiter == ","
+    assert dialect.quotechar == '"'
+
+
+def test_writer_class_with_dialect(tmp_path):
+    import csvy
+    from csvy.validators import CSVDialectValidator
+
+    data = [["name", "age"], ["Alice", "25"]]
+
+    header = {
+        "title": "Test writer class",
+        "csv_dialect": {
+            "delimiter": ";",
+            "quotechar": "'"
+        }
+    }
+
+    output_file = tmp_path / "test_writer_class.csvy"
+    with csvy.Writer(output_file, header) as writer:
+        for row in data:
+            writer.writerow(row)
+
+    read_data, read_header = csvy.read_to_list(output_file)
+
+    assert read_data == data
+    assert "csv_dialect" in read_header
+    dialect = read_header["csv_dialect"]
+    assert isinstance(dialect, CSVDialectValidator)
+    assert dialect.delimiter == ";"
