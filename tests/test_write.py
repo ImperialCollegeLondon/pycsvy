@@ -300,15 +300,12 @@ def test_write_with_csv_dialect(tmp_path):
     data = [
         ["name", "age", "city"],
         ["Alice", "25", "New York"],
-        ["Bob", "30", "London"]
+        ["Bob", "30", "London"],
     ]
 
     header = {
         "title": "Test with dialect",
-        "csv_dialect": {
-            "delimiter": ";",
-            "quotechar": "'"
-        }
+        "csv_dialect": {"delimiter": ";", "quotechar": "'"},
     }
 
     output_file = tmp_path / "test_write_dialect.csvy"
@@ -326,29 +323,33 @@ def test_write_with_csv_dialect(tmp_path):
 
 
 def test_write_csv_options_override_dialect(tmp_path):
-    import csvy
     import warnings
+
+    import csvy
 
     data = [["name", "age"], ["Alice", "25"]]
 
     header = {
         "title": "Test with dialect override",
-        "csv_dialect": {
-            "delimiter": ";",
-            "quotechar": "'"
-        }
+        "csv_dialect": {"delimiter": ";", "quotechar": "'"},
     }
 
     output_file = tmp_path / "test_write_override.csvy"
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        csvy.write(output_file, data, header, csv_options={"delimiter": ",", "quotechar": '"'})
+        csvy.write(
+            output_file, data, header, csv_options={"delimiter": ",", "quotechar": '"'}
+        )
 
         assert len(w) >= 2
         warning_messages = [str(warning.message) for warning in w]
-        assert any("delimiter" in msg and "conflicts" in msg for msg in warning_messages)
-        assert any("quotechar" in msg and "conflicts" in msg for msg in warning_messages)
+        assert any(
+            "delimiter" in msg and "conflicts" in msg for msg in warning_messages
+        )
+        assert any(
+            "quotechar" in msg and "conflicts" in msg for msg in warning_messages
+        )
 
     read_data, read_header = csvy.read_to_list(output_file)
 
@@ -365,10 +366,7 @@ def test_writer_class_with_dialect(tmp_path):
 
     header = {
         "title": "Test writer class",
-        "csv_dialect": {
-            "delimiter": ";",
-            "quotechar": "'"
-        }
+        "csv_dialect": {"delimiter": ";", "quotechar": "'"},
     }
 
     output_file = tmp_path / "test_writer_class.csvy"

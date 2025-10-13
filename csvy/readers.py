@@ -71,7 +71,9 @@ def merge_csv_options_with_dialect(
     merged_options = csv_options.copy() if csv_options is not None else {}
     updated_header = header.copy()
 
-    if "csv_dialect" in header and isinstance(header["csv_dialect"], CSVDialectValidator):
+    if "csv_dialect" in header and isinstance(
+        header["csv_dialect"], CSVDialectValidator
+    ):
         dialect_validator = header["csv_dialect"]
 
         dialect_mapping = {
@@ -93,7 +95,7 @@ def merge_csv_options_with_dialect(
                         f"CSV option '{csv_option}' ({user_value!r}) conflicts with "
                         f"dialect setting ({dialect_value!r}). Using user option.",
                         UserWarning,
-                        stacklevel=2
+                        stacklevel=2,
                     )
                     setattr(dialect_validator, dialect_attr, user_value)
                     dialect_updated = True
@@ -205,7 +207,11 @@ def read_to_array(
     # np.loadtxt only supports 'delimiter' from dialect options
     # Remove unsupported options
     supported_options = {"delimiter"}
-    options = {k: v for k, v in options.items() if k in supported_options or k in ["skiprows", "comments"]}
+    options = {
+        k: v
+        for k, v in options.items()
+        if k in supported_options or k in ["skiprows", "comments"]
+    }
 
     return np.loadtxt(filename, encoding=encoding, **options), header
 
@@ -349,8 +355,6 @@ def read_to_list(
         Tuple containing: The nested list and the header as a dictionary.
 
     """
-    import csv
-
     yaml_options = yaml_options if yaml_options is not None else {}
     header, nlines, _ = read_header(
         filename, marker=marker, encoding=encoding, **yaml_options
