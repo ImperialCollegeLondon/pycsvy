@@ -179,6 +179,7 @@ def test_read_to_dict_with_row_based_column_names(data_path):
 
 
 def test_read_with_csv_dialect(tmp_path):
+    """Test that CSV dialect information is used when reading."""
     from csvy.readers import read_to_list
     from csvy.validators import CSVDialectValidator
 
@@ -213,6 +214,7 @@ name;age;city
 
 
 def test_read_csv_options_override_dialect(tmp_path):
+    """Test that user CSV options override dialect settings with warnings."""
     import warnings
 
     from csvy.readers import read_to_list

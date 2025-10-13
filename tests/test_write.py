@@ -294,6 +294,7 @@ def test_write_data(mock_write_csv):
 
 
 def test_write_with_csv_dialect(tmp_path):
+    """Test that CSV dialect information is used when writing."""
     import csvy
     from csvy.validators import CSVDialectValidator
 
@@ -323,6 +324,7 @@ def test_write_with_csv_dialect(tmp_path):
 
 
 def test_write_csv_options_override_dialect(tmp_path):
+    """Test that user CSV options override dialect settings with warnings."""
     import warnings
 
     import csvy
@@ -359,6 +361,7 @@ def test_write_csv_options_override_dialect(tmp_path):
 
 
 def test_writer_class_with_dialect(tmp_path):
+    """Test that the Writer class properly handles CSV dialect."""
     import csvy
     from csvy.validators import CSVDialectValidator
 
