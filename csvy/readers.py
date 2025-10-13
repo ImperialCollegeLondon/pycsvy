@@ -354,8 +354,6 @@ def read_to_list(
         Tuple containing: The nested list and the header as a dictionary.
 
     """
-    import csv
-
     yaml_options = yaml_options if yaml_options is not None else {}
     header, nlines, _ = read_header(
         filename, marker=marker, encoding=encoding, **yaml_options
