@@ -22,6 +22,7 @@ def merge_csv_options_with_dialect(
     header: dict[str, Any],
     csv_options: dict[str, Any] | None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Merge CSV options with dialect information from header."""
     merged_options = csv_options.copy() if csv_options is not None else {}
     updated_header = header.copy()
 
