@@ -25,7 +25,9 @@ def merge_csv_options_with_dialect(
     merged_options = csv_options.copy() if csv_options is not None else {}
     updated_header = header.copy()
 
-    if "csv_dialect" in header and isinstance(header["csv_dialect"], CSVDialectValidator):
+    if "csv_dialect" in header and isinstance(
+        header["csv_dialect"], CSVDialectValidator
+    ):
         dialect_validator = header["csv_dialect"]
 
         dialect_mapping = {
@@ -47,7 +49,7 @@ def merge_csv_options_with_dialect(
                         f"CSV option '{csv_option}' ({user_value!r}) conflicts with "
                         f"dialect setting ({dialect_value!r}). Using user option.",
                         UserWarning,
-                        stacklevel=2
+                        stacklevel=2,
                     )
                     setattr(dialect_validator, dialect_attr, user_value)
                     dialect_updated = True
@@ -107,7 +109,9 @@ def write(
     validated_header = validate_header(header)
 
     # Merge CSV options with dialect information
-    merged_options, updated_header = merge_csv_options_with_dialect(validated_header, csv_options)
+    merged_options, updated_header = merge_csv_options_with_dialect(
+        validated_header, csv_options
+    )
 
     write_header(filename, updated_header, comment, encoding, **yaml_options)
     write_data(filename, data, comment, encoding, **merged_options)
@@ -151,7 +155,9 @@ class Writer:
         validated_header = validate_header(header)
 
         # Merge CSV options with dialect information
-        merged_options, updated_header = merge_csv_options_with_dialect(validated_header, csv_options)
+        merged_options, updated_header = merge_csv_options_with_dialect(
+            validated_header, csv_options
+        )
 
         # Line buffering: 1 and default chunk buffering: -1
         buffering = 1 if line_buffering else -1
