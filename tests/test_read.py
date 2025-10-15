@@ -240,8 +240,11 @@ name;age;city
         assert "delimiter" in str(w[0].message)
         assert "conflicts" in str(w[0].message)
 
-    assert len(data) == 1
-    assert "name;age;city" in data[0][0]
+    assert len(data) == 2
+    assert len(data[0]) == 1
+    assert len(data[1]) == 1
+    assert data[0][0] == "name;age;city"
+    assert data[1][0] == "Alice;25;'New York'"
 
     dialect = header["csv_dialect"]
     assert dialect.delimiter == ","
