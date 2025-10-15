@@ -176,3 +176,75 @@ def test_read_to_dict_with_row_based_column_names(data_path):
     assert list(data.keys()) == ["Date", "WTI"]
     assert len(data["Date"]) == 15
     assert len(header) > 0
+
+
+def test_read_with_csv_dialect(tmp_path):
+    """Test that CSV dialect information is used when reading."""
+    from csvy.readers import read_to_list
+    from csvy.validators import CSVDialectValidator
+
+    csvy_content = """---
+title: Test with dialect
+csv_dialect:
+  delimiter: ";"
+  quotechar: "'"
+---
+name;age;city
+'Alice';25;'New York'
+'Bob';30;'London'
+"""
+
+    csvy_file = tmp_path / "test_dialect.csvy"
+    csvy_file.write_text(csvy_content)
+
+    data, header = read_to_list(csvy_file)
+
+    expected_data = [
+        ["name", "age", "city"],
+        ["Alice", "25", "New York"],
+        ["Bob", "30", "London"],
+    ]
+    assert data == expected_data
+
+    assert "csv_dialect" in header
+    dialect = header["csv_dialect"]
+    assert isinstance(dialect, CSVDialectValidator)
+    assert dialect.delimiter == ";"
+    assert dialect.quotechar == "'"
+
+
+def test_read_csv_options_override_dialect(tmp_path):
+    """Test that user CSV options override dialect settings with warnings."""
+    import warnings
+
+    from csvy.readers import read_to_list
+
+    csvy_content = """---
+title: Test with dialect override
+csv_dialect:
+  delimiter: ";"
+  quotechar: "'"
+---
+name;age;city
+'Alice';25;'New York'
+"""
+
+    csvy_file = tmp_path / "test_dialect_override.csvy"
+    csvy_file.write_text(csvy_content)
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        data, header = read_to_list(csvy_file, csv_options={"delimiter": ","})
+
+        assert len(w) >= 1
+        assert "delimiter" in str(w[0].message)
+        assert "conflicts" in str(w[0].message)
+
+    assert len(data) == 2
+    assert len(data[0]) == 1
+    assert len(data[1]) == 1
+    assert data[0][0] == "name;age;city"
+    assert data[1][0] == "Alice;25;'New York'"
+
+    dialect = header["csv_dialect"]
+    assert dialect.delimiter == ","
