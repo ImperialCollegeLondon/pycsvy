@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import csv
 import logging
-import warnings
 from collections.abc import Callable, Iterable, Mapping
 from io import TextIOBase
 from itertools import zip_longest
@@ -13,54 +12,10 @@ from typing import Any
 
 import yaml
 
-from .validators import CSVDialectValidator, header_to_dict, validate_header
+from .utils import merge_csv_options_with_dialect
+from .validators import header_to_dict, validate_header
 
 KNOWN_WRITERS: list[Callable[[Path | str, Any, str], bool]] = []
-
-
-def merge_csv_options_with_dialect(
-    header: dict[str, Any],
-    csv_options: dict[str, Any] | None,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Merge CSV options with dialect information from header."""
-    merged_options = csv_options.copy() if csv_options is not None else {}
-    updated_header = header.copy()
-
-    if "csv_dialect" in header and isinstance(
-        header["csv_dialect"], CSVDialectValidator
-    ):
-        dialect_validator = header["csv_dialect"]
-
-        dialect_mapping = {
-            "delimiter": "delimiter",
-            "quotechar": "quotechar",
-            "escapechar": "escapechar",
-            "doublequote": "doublequote",
-            "skipinitialspace": "skipinitialspace",
-            "lineterminator": "lineterminator",
-        }
-
-        dialect_updated = False
-        for dialect_attr, csv_option in dialect_mapping.items():
-            dialect_value = getattr(dialect_validator, dialect_attr)
-            if csv_option in merged_options:
-                user_value = merged_options[csv_option]
-                if user_value != dialect_value:
-                    warnings.warn(
-                        f"CSV option '{csv_option}' ({user_value!r}) conflicts with "
-                        f"dialect setting ({dialect_value!r}). Using user option.",
-                        UserWarning,
-                        stacklevel=2,
-                    )
-                    setattr(dialect_validator, dialect_attr, user_value)
-                    dialect_updated = True
-            else:
-                merged_options[csv_option] = dialect_value
-
-        if dialect_updated:
-            updated_header["csv_dialect"] = dialect_validator
-
-    return merged_options, updated_header
 
 
 def register_writer(fun: Callable[[Path | str, Any, str], bool]) -> Callable:
