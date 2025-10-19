@@ -1,8 +1,7 @@
 """Utility functions for CSVY operations."""
 
-from typing import Any
-
 import warnings
+from typing import Any
 
 from .validators import CSVDialectValidator
 
@@ -26,6 +25,7 @@ def merge_csv_options_with_dialect(
         A tuple containing:
         - merged_options: Dictionary with combined CSV options
         - updated_header: Header dictionary with potentially updated dialect info
+
     """
     merged_options = csv_options.copy() if csv_options is not None else {}
     updated_header = header.copy()
