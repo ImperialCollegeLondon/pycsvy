@@ -49,7 +49,7 @@ def test_merge_csv_options_with_dialect_basic_merge():
     }
     csv_options = {"delimiter": ","}
 
-    merged_options, updated_header = merge_csv_options_with_dialect(header, csv_options)
+    merged_options, _ = merge_csv_options_with_dialect(header, csv_options)
 
     # User option should override dialect
     expected_options = {
@@ -73,9 +73,7 @@ def test_merge_csv_options_with_dialect_conflict_warning():
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        merged_options, updated_header = merge_csv_options_with_dialect(
-            header, csv_options
-        )
+        _, _ = merge_csv_options_with_dialect(header, csv_options)
 
         assert len(w) == 1
         assert "delimiter" in str(w[0].message)
@@ -91,7 +89,7 @@ def test_merge_csv_options_with_dialect_header_update():
     }
     csv_options = {"delimiter": ","}
 
-    merged_options, updated_header = merge_csv_options_with_dialect(header, csv_options)
+    _, updated_header = merge_csv_options_with_dialect(header, csv_options)
 
     # Original header should be unchanged
     assert cast(CSVDialectValidator, header["csv_dialect"]).delimiter == ";"
@@ -113,9 +111,7 @@ def test_merge_csv_options_with_dialect_multiple_conflicts():
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        merged_options, updated_header = merge_csv_options_with_dialect(
-            header, csv_options
-        )
+        _, _ = merge_csv_options_with_dialect(header, csv_options)
 
         # Should have warnings for delimiter and doublequote conflicts
         assert len(w) >= 2
@@ -138,9 +134,7 @@ def test_merge_csv_options_with_dialect_no_conflicts():
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        merged_options, updated_header = merge_csv_options_with_dialect(
-            header, csv_options
-        )
+        merged_options, _ = merge_csv_options_with_dialect(header, csv_options)
 
         # Should have no warnings since values match
         assert len(w) == 0
