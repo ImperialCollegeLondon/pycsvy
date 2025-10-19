@@ -1,6 +1,7 @@
 """Tests for utility functions."""
 
 import warnings
+from typing import cast
 
 from csvy.utils import merge_csv_options_with_dialect
 from csvy.validators import CSVDialectValidator
@@ -21,7 +22,7 @@ def test_merge_csv_options_with_dialect_no_options():
     """Test merging when no CSV options are provided."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'")
+        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
     }
     csv_options = None
 
@@ -44,7 +45,7 @@ def test_merge_csv_options_with_dialect_basic_merge():
     """Test basic merging of dialect and user options."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'")
+        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
     }
     csv_options = {"delimiter": ","}
 
@@ -66,14 +67,14 @@ def test_merge_csv_options_with_dialect_conflict_warning():
     """Test that conflicts between user options and dialect generate warnings."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'")
+        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
     }
     csv_options = {"delimiter": ","}
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        merged_options, updated_header = (
-            merge_csv_options_with_dialect(header, csv_options)
+        merged_options, updated_header = merge_csv_options_with_dialect(
+            header, csv_options
         )
 
         assert len(w) == 1
@@ -86,16 +87,16 @@ def test_merge_csv_options_with_dialect_header_update():
     """Test that header is updated when user options override dialect."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'")
+        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
     }
     csv_options = {"delimiter": ","}
 
     merged_options, updated_header = merge_csv_options_with_dialect(header, csv_options)
 
     # Original header should be unchanged
-    assert header["csv_dialect"].delimiter == ";"
+    assert cast(CSVDialectValidator, header["csv_dialect"]).delimiter == ";"
     # Updated header should reflect the override
-    assert updated_header["csv_dialect"].delimiter == ","
+    assert cast(CSVDialectValidator, updated_header["csv_dialect"]).delimiter == ","
     # They should be different objects
     assert updated_header is not header
 
@@ -106,14 +107,14 @@ def test_merge_csv_options_with_dialect_multiple_conflicts():
         "title": "Test",
         "csv_dialect": CSVDialectValidator(
             delimiter=";", quotechar="'", doublequote=False
-        )
+        ),
     }
     csv_options = {"delimiter": ",", "quotechar": '"', "doublequote": True}
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        merged_options, updated_header = (
-            merge_csv_options_with_dialect(header, csv_options)
+        merged_options, updated_header = merge_csv_options_with_dialect(
+            header, csv_options
         )
 
         # Should have warnings for delimiter and doublequote conflicts
@@ -131,14 +132,14 @@ def test_merge_csv_options_with_dialect_no_conflicts():
     """Test merging when user options don't conflict with dialect."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'")
+        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
     }
     csv_options = {"delimiter": ";", "quotechar": "'"}
 
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        merged_options, updated_header = (
-            merge_csv_options_with_dialect(header, csv_options)
+        merged_options, updated_header = merge_csv_options_with_dialect(
+            header, csv_options
         )
 
         # Should have no warnings since values match
