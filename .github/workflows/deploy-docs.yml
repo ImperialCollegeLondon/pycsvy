@@ -1,0 +1,41 @@
+name: Deploy Documentation
+
+on:
+  release:
+    types: [created] 
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: poetry-lock-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-lock-
+      - name: Install documentation dependencies
+        run: poetry install --with docs --no-root
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Deploy documentation
+        run: |
+          poetry run mike deploy --push --update-aliases ${{ github.ref_name }} latest
