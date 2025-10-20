@@ -12,7 +12,7 @@
 [![codecov](https://codecov.io/gh/ImperialCollegeLondon/pycsvy/branch/develop/graph/badge.svg?token=N03KYNUD18)](https://codecov.io/gh/ImperialCollegeLondon/pycsvy)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8d1b791b315f4814a128d94483499561)](https://app.codacy.com/gh/ImperialCollegeLondon/pycsvy/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ImperialCollegeLondon/pycsvy&amp;utm_campaign=Badge_Grade)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 CSV is a popular format for storing tabular data used in many disciplines. Metadata
@@ -144,6 +144,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://www.imperial.ac.uk/research-software-engineering"><img src="https://avatars.githubusercontent.com/u/6853046?v=4?s=100" width="100px;" alt="James Paul Turner"/><br /><sub><b>James Paul Turner</b></sub></a><br /><a href="#infra-jamesturner246" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=jamesturner246" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://dc2917.github.io"><img src="https://avatars.githubusercontent.com/u/45606273?v=4?s=100" width="100px;" alt="Dan Cummins"/><br /><sub><b>Dan Cummins</b></sub></a><br /><a href="#infra-dc2917" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=dc2917" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mikeheyns"><img src="https://avatars.githubusercontent.com/u/123199379?v=4?s=100" width="100px;" alt="mikeheyns"/><br /><sub><b>mikeheyns</b></sub></a><br /><a href="#infra-mikeheyns" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kaos599"><img src="https://avatars.githubusercontent.com/u/115716485?v=4?s=100" width="100px;" alt="Harsh "/><br /><sub><b>Harsh </b></sub></a><br /><a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=Kaos599" title="Code">💻</a> <a href="https://github.com/ImperialCollegeLondon/pycsvy/commits?author=Kaos599" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
