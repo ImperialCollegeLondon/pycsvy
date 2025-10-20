@@ -64,9 +64,29 @@ def write(
     # Validate header to ensure dialect is properly processed
     validated_header = validate_header(header)
 
+    # Determine overrides based on data type
+    overrides = {}
+    try:
+        import pandas as pd
+
+        if isinstance(data, pd.DataFrame):
+            overrides = {"sep": "delimiter"}
+    except ImportError:
+        pass
+
+    try:
+        import polars as pl
+
+        if isinstance(data, pl.DataFrame | pl.LazyFrame):
+            overrides = {"separator": "delimiter"}
+    except ImportError:
+        pass
+
+    # For numpy arrays and lists, use standard dialect names (no overrides needed)
+
     # Merge CSV options with dialect information
     merged_options, updated_header = merge_csv_options_with_dialect(
-        validated_header, csv_options
+        validated_header, csv_options, overrides=overrides
     )
 
     write_header(filename, updated_header, comment, encoding, **yaml_options)

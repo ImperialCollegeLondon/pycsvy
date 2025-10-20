@@ -78,7 +78,8 @@ def test_merge_csv_options_with_dialect_conflict_warning():
         assert len(w) == 1
         assert "delimiter" in str(w[0].message)
         assert "conflicts" in str(w[0].message)
-        assert "'('" in str(w[0].message)  # Should show the conflicting values
+        # Should indicate user option is used
+        assert "Using user option" in str(w[0].message)
 
 
 def test_merge_csv_options_with_dialect_header_update():

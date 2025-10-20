@@ -210,16 +210,13 @@ def read_to_dataframe(
     )
 
     # Merge CSV options with dialect information
-    merged_options, header = merge_csv_options_with_dialect(header, csv_options)
+    merged_options, header = merge_csv_options_with_dialect(
+        header, csv_options, overrides={"sep": "delimiter"}
+    )
 
     options = merged_options.copy()
     options["skiprows"] = nlines
     options["comment"] = comment[0] if len(comment) >= 1 else None
-
-    # Remove options that conflict with pandas read_csv requirements
-    # pandas uses 'sep' instead of 'delimiter'
-    if "delimiter" in options:
-        options["sep"] = options.pop("delimiter")
 
     return pd.read_csv(filename, encoding=encoding, **options), header
 
@@ -272,15 +269,13 @@ def read_to_polars(
     )
 
     # Merge CSV options with dialect information
-    merged_options, header = merge_csv_options_with_dialect(header, csv_options)
+    merged_options, header = merge_csv_options_with_dialect(
+        header, csv_options, overrides={"separator": "delimiter"}
+    )
 
     options = merged_options.copy()
     options["skip_rows"] = nlines
     options["comment_prefix"] = comment[0] if len(comment) >= 1 else None
-
-    # Polars uses 'separator' instead of 'delimiter'
-    if "delimiter" in options:
-        options["separator"] = options.pop("delimiter")
 
     lf = pl.scan_csv(filename, encoding=encoding, **options)
     if eager:
