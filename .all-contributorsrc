@@ -70,6 +70,15 @@
       "contributions": [
         "infra"
       ]
+    },
+    {
+      "login": "claeusdev",
+      "name": "Nana Adjei Manu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17507528?v=4",
+      "profile": "http://nanamanu.com",
+      "contributions": [
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,
