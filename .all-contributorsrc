@@ -79,6 +79,16 @@
       "contributions": [
         "infra"
       ]
+    },
+    {
+      "login": "Kaos599",
+      "name": "Harsh ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/115716485?v=4",
+      "profile": "https://github.com/Kaos599",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
