@@ -6,6 +6,38 @@ from typing import Any
 from .validators import CSVDialectValidator
 
 
+def get_overrides(data: Any) -> dict[str, str]:
+    """Determine CSV option overrides based on data type.
+
+    Args:
+        data: The data object to check for type-specific overrides.
+
+    Returns:
+        Dictionary mapping library-specific option names to dialect attribute names.
+        For example, {"sep": "delimiter"} maps pandas' "sep" option to the
+        dialect's "delimiter" attribute.
+
+    """
+    overrides = {}
+    try:
+        import pandas as pd
+
+        if isinstance(data, pd.DataFrame):
+            overrides = {"sep": "delimiter"}
+    except ImportError:
+        pass
+
+    try:
+        import polars as pl
+
+        if isinstance(data, (pl.DataFrame, pl.LazyFrame)):
+            overrides = {"separator": "delimiter"}
+    except ImportError:
+        pass
+
+    return overrides
+
+
 def merge_csv_options_with_dialect(
     header: dict[str, Any],
     csv_options: dict[str, Any] | None,

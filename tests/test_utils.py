@@ -3,7 +3,7 @@
 import warnings
 from typing import cast
 
-from csvy.utils import merge_csv_options_with_dialect
+from csvy.utils import get_overrides, merge_csv_options_with_dialect
 from csvy.validators import CSVDialectValidator
 
 
@@ -22,7 +22,10 @@ def test_merge_csv_options_with_dialect_no_options():
     """Test merging when no CSV options are provided."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
+        "csv_dialect": CSVDialectValidator(
+            delimiter=";",
+            quotechar="'",
+        ),
     }
     csv_options = None
 
@@ -45,7 +48,10 @@ def test_merge_csv_options_with_dialect_basic_merge():
     """Test basic merging of dialect and user options."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
+        "csv_dialect": CSVDialectValidator(
+            delimiter=";",
+            quotechar="'",
+        ),
     }
     csv_options = {"delimiter": ","}
 
@@ -67,7 +73,10 @@ def test_merge_csv_options_with_dialect_conflict_warning():
     """Test that conflicts between user options and dialect generate warnings."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
+        "csv_dialect": CSVDialectValidator(
+            delimiter=";",
+            quotechar="'",
+        ),
     }
     csv_options = {"delimiter": ","}
 
@@ -86,7 +95,10 @@ def test_merge_csv_options_with_dialect_header_update():
     """Test that header is updated when user options override dialect."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
+        "csv_dialect": CSVDialectValidator(
+            delimiter=";",
+            quotechar="'",
+        ),
     }
     csv_options = {"delimiter": ","}
 
@@ -105,7 +117,9 @@ def test_merge_csv_options_with_dialect_multiple_conflicts():
     header = {
         "title": "Test",
         "csv_dialect": CSVDialectValidator(
-            delimiter=";", quotechar="'", doublequote=False
+            delimiter=";",
+            quotechar="'",
+            doublequote=False,
         ),
     }
     csv_options = {"delimiter": ",", "quotechar": '"', "doublequote": True}
@@ -129,7 +143,10 @@ def test_merge_csv_options_with_dialect_no_conflicts():
     """Test merging when user options don't conflict with dialect."""
     header = {
         "title": "Test",
-        "csv_dialect": CSVDialectValidator(delimiter=";", quotechar="'"),
+        "csv_dialect": CSVDialectValidator(
+            delimiter=";",
+            quotechar="'",
+        ),
     }
     csv_options = {"delimiter": ";", "quotechar": "'"}
 
@@ -143,3 +160,56 @@ def test_merge_csv_options_with_dialect_no_conflicts():
         # Should include both user option and all dialect options
         assert merged_options["delimiter"] == ";"
         assert merged_options["quotechar"] == "'"
+
+
+def test_get_overrides():
+    """Test the get_overrides function."""
+    # Test with list (no overrides)
+    data = [[1, 2], [3, 4]]
+    assert get_overrides(data) == {}
+
+    # Test with numpy array (no overrides)
+    try:
+        import numpy as np
+
+        data = np.array([[1, 2], [3, 4]])
+        assert get_overrides(data) == {}
+    except ImportError:
+        pass
+
+    # Test with pandas DataFrame (should return sep override)
+    try:
+        import pandas as pd
+
+        data = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
+        assert get_overrides(data) == {"sep": "delimiter"}
+    except ImportError:
+        pass
+
+    # Test with polars DataFrame (should return separator override)
+    try:
+        import polars as pl
+
+        data = pl.DataFrame({"a": [1, 2], "b": [3, 4]})
+        assert get_overrides(data) == {"separator": "delimiter"}
+
+        # Test with polars LazyFrame (should return separator override)
+        lazy_data = data.lazy()
+        assert get_overrides(lazy_data) == {"separator": "delimiter"}
+    except ImportError:
+        pass
+
+
+def test_get_overrides_no_libraries():
+    """Test get_overrides when libraries are not available."""
+    # Test with list (should work regardless of library availability)
+    data = [[1, 2], [3, 4]]
+    assert get_overrides(data) == {}
+
+    # Test with fake DataFrame-like object (should return empty
+    # when libraries aren't available)
+    class FakeDataFrame:
+        pass
+
+    data = FakeDataFrame()
+    assert get_overrides(data) == {}
