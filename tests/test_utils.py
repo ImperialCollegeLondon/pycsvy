@@ -165,15 +165,15 @@ def test_merge_csv_options_with_dialect_no_conflicts():
 def test_get_overrides():
     """Test the get_overrides function."""
     # Test with list (no overrides)
-    data = [[1, 2], [3, 4]]
-    assert get_overrides(data) == {}
+    list_data = [[1, 2], [3, 4]]
+    assert get_overrides(list_data) == {}
 
     # Test with numpy array (no overrides)
     try:
         import numpy as np
 
-        data = np.array([[1, 2], [3, 4]])
-        assert get_overrides(data) == {}
+        numpy_data = np.array([[1, 2], [3, 4]])
+        assert get_overrides(numpy_data) == {}
     except ImportError:
         pass
 
@@ -181,8 +181,8 @@ def test_get_overrides():
     try:
         import pandas as pd
 
-        data = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
-        assert get_overrides(data) == {"sep": "delimiter"}
+        pandas_data = pd.DataFrame({"a": [1, 2], "b": [3, 4]})
+        assert get_overrides(pandas_data) == {"sep": "delimiter"}
     except ImportError:
         pass
 
@@ -190,11 +190,11 @@ def test_get_overrides():
     try:
         import polars as pl
 
-        data = pl.DataFrame({"a": [1, 2], "b": [3, 4]})
-        assert get_overrides(data) == {"separator": "delimiter"}
+        polars_data = pl.DataFrame({"a": [1, 2], "b": [3, 4]})
+        assert get_overrides(polars_data) == {"separator": "delimiter"}
 
         # Test with polars LazyFrame (should return separator override)
-        lazy_data = data.lazy()
+        lazy_data = polars_data.lazy()
         assert get_overrides(lazy_data) == {"separator": "delimiter"}
     except ImportError:
         pass
@@ -203,13 +203,13 @@ def test_get_overrides():
 def test_get_overrides_no_libraries():
     """Test get_overrides when libraries are not available."""
     # Test with list (should work regardless of library availability)
-    data = [[1, 2], [3, 4]]
-    assert get_overrides(data) == {}
+    list_data = [[1, 2], [3, 4]]
+    assert get_overrides(list_data) == {}
 
     # Test with fake DataFrame-like object (should return empty
     # when libraries aren't available)
     class FakeDataFrame:
         pass
 
-    data = FakeDataFrame()
-    assert get_overrides(data) == {}
+    fake_dataframe = FakeDataFrame()
+    assert get_overrides(fake_dataframe) == {}
