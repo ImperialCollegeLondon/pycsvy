@@ -3,15 +3,16 @@
 from pathlib import Path
 
 import mkdocs_gen_files
+from mkdocs_gen_files.nav import Nav
 
-nav = mkdocs_gen_files.Nav()
+nav: Nav = Nav()
 
 for path in sorted(Path("csvy").glob("**/*.py")):
     module_path = path.relative_to(".").with_suffix("")
     doc_path = path.relative_to(".").with_suffix(".md")
     full_doc_path = Path("reference", doc_path)
 
-    parts = list(module_path.parts)
+    parts: tuple[str, ...] = module_path.parts
     if ".array_cache" in parts:
         continue
     elif parts[-1] == "__init__":
@@ -20,7 +21,7 @@ for path in sorted(Path("csvy").glob("**/*.py")):
         full_doc_path = full_doc_path.with_name("index.md")
     elif parts[-1] == "__main__":
         continue
-    nav[parts] = doc_path
+    nav[parts] = doc_path.as_posix()
 
     with mkdocs_gen_files.open(full_doc_path, "w") as fd:
         ident = ".".join(parts)
