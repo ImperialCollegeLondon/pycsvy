@@ -12,7 +12,7 @@ from typing import Any
 
 import yaml
 
-from .utils import merge_csv_options_with_dialect
+from .utils import get_overrides, merge_csv_options_with_dialect
 from .validators import header_to_dict, validate_header
 
 KNOWN_WRITERS: list[Callable[[Path | str, Any, str], bool]] = []
@@ -65,24 +65,7 @@ def write(
     validated_header = validate_header(header)
 
     # Determine overrides based on data type
-    overrides = {}
-    try:
-        import pandas as pd
-
-        if isinstance(data, pd.DataFrame):
-            overrides = {"sep": "delimiter"}
-    except ImportError:
-        pass
-
-    try:
-        import polars as pl
-
-        if isinstance(data, pl.DataFrame | pl.LazyFrame):
-            overrides = {"separator": "delimiter"}
-    except ImportError:
-        pass
-
-    # For numpy arrays and lists, use standard dialect names (no overrides needed)
+    overrides = get_overrides(data)
 
     # Merge CSV options with dialect information
     merged_options, updated_header = merge_csv_options_with_dialect(
