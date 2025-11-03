@@ -1144,18 +1144,18 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polars"
-version = "1.35.0"
+version = "1.35.1"
 description = "Blazingly fast DataFrame library"
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
 files = [
-    {file = "polars-1.35.0-py3-none-any.whl", hash = "sha256:d4b2d37c3d3b15723a95639460ed19b7732f08087b038601b4ecd1e1133c0767"},
-    {file = "polars-1.35.0.tar.gz", hash = "sha256:2e9bff26293c0b208e74d4232313d09053e49b4a04fc8fd3e48def7d3e843ba1"},
+    {file = "polars-1.35.1-py3-none-any.whl", hash = "sha256:c29a933f28aa330d96a633adbd79aa5e6a6247a802a720eead9933f4613bdbf4"},
+    {file = "polars-1.35.1.tar.gz", hash = "sha256:06548e6d554580151d6ca7452d74bceeec4640b5b9261836889b8e68cfd7a62e"},
 ]
 
 [package.dependencies]
-polars-runtime-32 = "1.35.0"
+polars-runtime-32 = "1.35.1"
 
 [package.extras]
 adbc = ["adbc-driver-manager[dbapi]", "adbc-driver-sqlite[dbapi]"]
@@ -1178,8 +1178,8 @@ plot = ["altair (>=5.4.0)"]
 polars-cloud = ["polars_cloud (>=0.0.1a1)"]
 pyarrow = ["pyarrow (>=7.0.0)"]
 pydantic = ["pydantic"]
-rt64 = ["polars-runtime-64 (==1.35.0)"]
-rtcompat = ["polars-runtime-compat (==1.35.0)"]
+rt64 = ["polars-runtime-64 (==1.35.1)"]
+rtcompat = ["polars-runtime-compat (==1.35.1)"]
 sqlalchemy = ["polars[pandas]", "sqlalchemy"]
 style = ["great-tables (>=0.8.0)"]
 timezone = ["tzdata ; platform_system == \"Windows\""]
@@ -1188,19 +1188,19 @@ xlsxwriter = ["xlsxwriter"]
 
 [[package]]
 name = "polars-runtime-32"
-version = "1.35.0"
+version = "1.35.1"
 description = "Blazingly fast DataFrame library"
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
 files = [
-    {file = "polars_runtime_32-1.35.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:e34a07f610c69e1ffd0598ce02c166cfd0db442a4e72474cbb8c7b9ded4407b1"},
-    {file = "polars_runtime_32-1.35.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:d1c5006c033bb63821eb7e2f0c805d6412bd4b92fcf45483528f7a82b66f7d30"},
-    {file = "polars_runtime_32-1.35.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a72fdfd4e51114d4b99583246487959004a5ad59be3798e7ef59041e94d2ba58"},
-    {file = "polars_runtime_32-1.35.0-cp39-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:2ac8a5d13a115b421e39d880b7d786252d6bd31cbcd89a2e4f8a261847f428ed"},
-    {file = "polars_runtime_32-1.35.0-cp39-abi3-win_amd64.whl", hash = "sha256:c15ef252d1ab8f6679ef53078650d6ef919dcf44cbd08ec0b3a9f1b38d51bd2d"},
-    {file = "polars_runtime_32-1.35.0-cp39-abi3-win_arm64.whl", hash = "sha256:4929085b40d8f0ba3f29e33ee37e2f01be00498d110677be38202f9fcf984a57"},
-    {file = "polars_runtime_32-1.35.0.tar.gz", hash = "sha256:4c3e494c23191e30b5da9e4e297b1b292bd3b1d2d1bd08fc5a71ad739751bc4a"},
+    {file = "polars_runtime_32-1.35.1-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:6f051a42f6ae2f26e3bc2cf1f170f2120602976e2a3ffb6cfba742eecc7cc620"},
+    {file = "polars_runtime_32-1.35.1-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:c2232f9cf05ba59efc72d940b86c033d41fd2d70bf2742e8115ed7112a766aa9"},
+    {file = "polars_runtime_32-1.35.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:42f9837348557fd674477ea40a6ac8a7e839674f6dd0a199df24be91b026024c"},
+    {file = "polars_runtime_32-1.35.1-cp39-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:c873aeb36fed182d5ebc35ca17c7eb193fe83ae2ea551ee8523ec34776731390"},
+    {file = "polars_runtime_32-1.35.1-cp39-abi3-win_amd64.whl", hash = "sha256:35cde9453ca7032933f0e58e9ed4388f5a1e415dd0db2dd1e442c81d815e630c"},
+    {file = "polars_runtime_32-1.35.1-cp39-abi3-win_arm64.whl", hash = "sha256:fd77757a6c9eb9865c4bfb7b07e22225207c6b7da382bd0b9bd47732f637105d"},
+    {file = "polars_runtime_32-1.35.1.tar.gz", hash = "sha256:f6b4ec9cd58b31c87af1b8c110c9c986d82345f1d50d7f7595b5d447a19dc365"},
 ]
 
 [[package]]
