@@ -25,7 +25,7 @@ packages = [{ include = "csvy" }]
 python = "^3.10"
 PyYAML = "^6.0"
 pydantic = "^2.9.2"
-eval-type-backport = "^0.2.0"
+eval-type-backport = ">=0.2,<0.4"
 
 # A list of all of the optional dependencies, which are included in the
 # below `extras`. They can be opted into by apps.
