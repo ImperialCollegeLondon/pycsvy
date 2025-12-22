@@ -680,18 +680,18 @@ mkdocs = ">=1.1"
 
 [[package]]
 name = "mkdocs-gen-files"
-version = "0.4.0"
+version = "0.6.0"
 description = "MkDocs plugin to programmatically generate documentation pages during the build"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.9"
 groups = ["docs"]
 files = [
-    {file = "mkdocs-gen-files-0.4.0.tar.gz", hash = "sha256:377bff8ee8e93515916689f483d971643f83a94eed7e92318854da8f344f0163"},
-    {file = "mkdocs_gen_files-0.4.0-py3-none-any.whl", hash = "sha256:3241a4c947ecd11763ca77cc645015305bf71a0e1b9b886801c114fcf9971e71"},
+    {file = "mkdocs_gen_files-0.6.0-py3-none-any.whl", hash = "sha256:815af15f3e2dbfda379629c1b95c02c8e6f232edf2a901186ea3b204ab1135b2"},
+    {file = "mkdocs_gen_files-0.6.0.tar.gz", hash = "sha256:52022dc14dcc0451e05e54a8f5d5e7760351b6701eff816d1e9739577ec5635e"},
 ]
 
 [package.dependencies]
-mkdocs = ">=1.0.3,<2.0.0"
+mkdocs = ">=1.4.1"
 
 [[package]]
 name = "mkdocs-get-deps"
@@ -1930,4 +1930,4 @@ polars = ["polars"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "a07663130c4fae83343093694a8d47204a703da6ddc3a54cfed041ad406c32cb"
+content-hash = "7787f9c432b0f2e75509d743d77e78f9b9f79ab860e85fd4d899c2b4646f7f2a"
