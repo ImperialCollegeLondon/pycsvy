@@ -5,7 +5,7 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.20
+    rev: v0.15.21
     hooks:
       - id: ruff
         types_or: [python]
@@ -13,7 +13,7 @@ repos:
       - id: ruff-format
         types_or: [python]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v2.1.0"
+    rev: "v2.3.0"
     hooks:
       - id: mypy
         additional_dependencies: [types-PyYAML, pydantic]
