@@ -358,7 +358,7 @@ def read_to_dict(
     """
     data, header = read_to_list(filename, marker, encoding, csv_options, yaml_options)
 
-    longest_row = len(max(data, key=len))
+    longest_row = len(max(data, key=len)) if data else 0
     if column_names is None:
         column_names = [f"col_{i}" for i in range(longest_row)]
     else:
