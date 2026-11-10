@@ -178,6 +178,19 @@ def test_read_to_dict_with_row_based_column_names(data_path):
     assert len(header) > 0
 
 
+def test_read_to_dict_with_no_data_rows(tmp_path):
+    """Header-only files return empty data instead of raising."""
+    from csvy import read_to_dict
+
+    csvy_file = tmp_path / "empty.csvy"
+    csvy_file.write_text("---\ntitle: No data\n---\n")
+
+    data, header = read_to_dict(csvy_file)
+
+    assert data == {}
+    assert header["title"] == "No data"
+
+
 def test_read_with_csv_dialect(tmp_path):
     """Test that CSV dialect information is used when reading."""
     from csvy.readers import read_to_list
